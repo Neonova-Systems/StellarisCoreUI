@@ -3,10 +3,8 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
-import CreateEntryContent from "../helper/create-entry-content";
-import CreatePanel from "../helper/create-panel";
+import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
 import { interval } from "ags/time";
-import { playPanelSound } from "../helper/utility";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function FilesystemInfo() {

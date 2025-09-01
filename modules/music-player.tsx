@@ -1,10 +1,8 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import CreatePanel from "../helper/create-panel"
+import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound } from "../helper";
 import { Gtk } from "ags/gtk4"
-import { playAlertSound, playPanelSound } from "../helper/utility";
 import GLib from "gi://GLib?version=2.0";
 import AstalMpris from "gi://AstalMpris?version=0.1";
-import CreateEntryContent from "../helper/create-entry-content";
 import { execAsync } from "ags/process";
 import { interval } from "ags/time";
 

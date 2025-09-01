@@ -2,9 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
-import CreateEntryContent from "../helper/create-entry-content";
-import CreatePanel from "../helper/create-panel";
-import { playPanelSound } from "../helper/utility";
+import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function HardwareInfo() {

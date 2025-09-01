@@ -1,7 +1,7 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { With, Accessor } from "ags"
 import { createState } from "ags";
-import CreatePanel from "../helper/create-panel";
+import { CreatePanel } from "../helper";
 import SystemInfo from "../card/system-info";
 import NetworkInfo from "../card/network-info";
 import FilesystemInfo from "../card/filesystem-info";
