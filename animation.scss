@@ -1,0 +1,59 @@
+@mixin apply-start-animation($duration: 1.7s, $delay: 0s) { // you also can use... $delay: random(5) + s
+    animation-delay: $delay;
+    animation-name: start-animation; // The animation-name CSS property specifies the names of one or more @keyframes at-rules that describe the animation to apply to an element.
+    animation-duration: $duration; // The animation-duration CSS property sets the length of time that an animation takes to complete one cycle.
+    animation-direction: normal; // The animation-direction CSS property sets whether an animation should play forward, backward, or alternate back and forth between playing the sequence forward and backward.
+    animation-iteration-count: 1; // Defines the number of times an animation cycle is played.
+    animation-timing-function: linear; // Describes how the animation will progress over one cycle of its duration.
+}
+
+@mixin apply-blink-animation($duration: 0.8s, $delay: 0s) {
+    animation-delay: $delay;
+    animation-name: blink-animation; // The animation-name CSS property specifies the names of one or more @keyframes at-rules that describe the animation to apply to an element.
+    animation-duration: $duration; // The animation-duration CSS property sets the length of time that an animation takes to complete one cycle.
+    animation-direction: alternate-reverse; // The animation-direction CSS property sets whether an animation should play forward, backward, or alternate back and forth between playing the sequence forward and backward.
+    animation-iteration-count: infinite; // Defines the number of times an animation cycle is played.
+    animation-timing-function: linear; // Describes how the animation will progress over one cycle of its duration.
+}
+
+@mixin apply-stagger-animation($duration: 3.8s, $delay: 0s) {
+    animation-delay: $delay;
+    animation-name: stagger-animation; // The animation-name CSS property specifies the names of one or more @keyframes at-rules that describe the animation to apply to an element.
+    animation-duration: $duration; // The animation-duration CSS property sets the length of time that an animation takes to complete one cycle.
+    animation-direction: normal; // The animation-direction CSS property sets whether an animation should play forward, backward, or alternate back and forth between playing the sequence forward and backward.
+    animation-iteration-count: 1; // Defines the number of times an animation cycle is played.
+    animation-timing-function: linear; // Describes how the animation will progress over one cycle of its duration.
+}
+@keyframes stagger-animation {
+    0% { opacity: 0; }
+
+    8% { opacity: 0; }
+    9% { opacity: 1; }
+
+    13% { opacity: 1; }
+    14% { opacity: 0; }
+    
+    18% { opacity: 0; }
+    19% { opacity: 1; }
+    
+    22% { opacity: 0; }
+    23% { opacity: 1; }
+
+    24% { opacity: 1; }
+    25% { opacity: 0; }
+
+    26% { opacity: 0; }
+    27% { opacity: 1; }
+
+    100% { opacity: 1; }
+}
+@keyframes start-animation {
+    0% { opacity: 0; }
+    50% { opacity: 0; }
+    65% { opacity: 1; }
+}
+
+@keyframes blink-animation { 50% { opacity: 0.82; } }
+.start-animation { @include apply-start-animation; }
+.stagger-animation { @include apply-stagger-animation; }
+.stagger-animation-alt { @include apply-stagger-animation(3s); }
