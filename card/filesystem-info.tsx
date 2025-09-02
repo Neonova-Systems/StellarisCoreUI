@@ -17,7 +17,7 @@ export default function FilesystemInfo() {
 
     const [mountpointList, setmountpointList] = createState("");
     const [blockList, setblockList] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(true);
+    const [toggleContentState, settoggleContentState] = createState(false);
     const [dataGridImage, setdataGridImage] = createState(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`);
 
     playPanelSound(1600)
@@ -27,10 +27,16 @@ export default function FilesystemInfo() {
             (currentPath.includes("variant3") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
         )
     }
+    execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+
     function panelClicked() {
-        const currentState = toggleContentState.get();
-        settoggleContentState(!currentState);
-        (!currentState && playPanelSound(500))
+        execAsync('ags request "toggleFilesystemInfo"').then(out => {
+            const isVisible = out === 'true';
+            settoggleContentState(isVisible);
+            if (isVisible) {
+                playPanelSound(500);
+            }
+        }).catch(console.error);
     }
 
     interval(1000, () => { changedataGridImage() })

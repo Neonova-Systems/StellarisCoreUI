@@ -30,14 +30,18 @@ export default function BatteryInfo() {
     const [technology, setTechnology] = createState("");
     const [fullReport, setFullReport] = createState("Loading report...");
 
-    const [toggleContentState, setToggleContentState] = createState(false);
+    const [toggleContentState, settoggleContentState] = createState(false);
+
+    execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
 
     function panelClicked() {
-        const currentState = toggleContentState.get();
-        setToggleContentState(!currentState);
-        if (!currentState) {
-            playPanelSound(500);
-        }
+        execAsync('ags request "toggleBatteryInfo"').then(out => {
+            const isVisible = out === 'true';
+            settoggleContentState(isVisible);
+            if (isVisible) {
+                playPanelSound(500);
+            }
+        }).catch(console.error);
     }
 
     // --- Correctly assign output to the corresponding state variable ---

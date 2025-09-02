@@ -13,23 +13,27 @@ export default function HardwareInfo() {
     const [gpuDeviceName, setgpuDeviceName] = createState("");
     const [cpuScaling, setcpuScaling] = createState("");
     const [toggleContentState, settoggleContentState] = createState(false);
-    const [sockets, setsockets] = createState(""); // FIX: Added missing state
-    const [gpuVendorName, setgpuVendorName] = createState(""); // FIX: Added missing state
-
-    // NEW: Added states for the unfilled code
+    const [sockets, setsockets] = createState("");
+    const [gpuVendorName, setgpuVendorName] = createState("");
     const [cpuModes, setcpuModes] = createState("");
     const [cpuMaxMhz, setcpuMaxMhz] = createState("");
     const [cpuMinMhz, setcpuMinMhz] = createState("");
     const [virtualization, setvirtualization] = createState("");
     const [videoUnifiedMemory, setvideoUnifiedMemory] = createState("");
+    const [byteOrder, setbyteOrder] = createState("");
     const [motherboard, setMotherboard] = createState("");
     const [biosInfo, setbiosInfo] = createState("");
-    const [byteOrder, setbyteOrder] = createState("");
+
+    execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
 
     function panelClicked() {
-        const currentState = toggleContentState.get();
-        settoggleContentState(!currentState);
-        (!currentState && playPanelSound(500))
+        execAsync('ags request "toggleHardwareInfo"').then(out => {
+            const isVisible = out === 'true';
+            settoggleContentState(isVisible);
+            if (isVisible) {
+                playPanelSound(500);
+            }
+        }).catch(console.error);
     }
 
     // --- CPU Information ---

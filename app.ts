@@ -17,9 +17,12 @@ type DashboardState = {
     dataStreamVisible: boolean;
     systemInfoVisible: boolean;
     networkInfoVisible: boolean;
+    filesystemInfoVisible: boolean;
+    hardwareInfoVisible: boolean;
+    batteryInfoVisible: boolean;
 }
 const STATE_FILE = "dashboard-state.json";
-let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true });
+let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true });
 
 function applyCurrentDashboardState() {
     const visible = dashboardState.visible;
@@ -112,6 +115,30 @@ app.start({
             dashboardState.networkInfoVisible = !dashboardState.networkInfoVisible;
             writeJson(STATE_FILE, dashboardState);
             return res(String(dashboardState.networkInfoVisible));
+        }
+        if (request === "getFilesystemInfoState") {
+            return res(String(dashboardState.filesystemInfoVisible));
+        }
+        if (request === "toggleFilesystemInfo") {
+            dashboardState.filesystemInfoVisible = !dashboardState.filesystemInfoVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.filesystemInfoVisible));
+        }
+        if (request === "getHardwareInfoState") {
+            return res(String(dashboardState.hardwareInfoVisible));
+        }
+        if (request === "toggleHardwareInfo") {
+            dashboardState.hardwareInfoVisible = !dashboardState.hardwareInfoVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.hardwareInfoVisible));
+        }
+        if (request === "getBatteryInfoState") {
+            return res(String(dashboardState.batteryInfoVisible));
+        }
+        if (request === "toggleBatteryInfo") {
+            dashboardState.batteryInfoVisible = !dashboardState.batteryInfoVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.batteryInfoVisible));
         }
     },
 })
