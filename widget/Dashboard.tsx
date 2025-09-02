@@ -1,5 +1,5 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { With, Accessor } from "ags"
+import { With } from "ags"
 import { createState } from "ags";
 import { CreatePanel } from "../helper";
 import SystemInfo from "../card/system-info";
@@ -16,21 +16,20 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../modules/music-player";
 import BatteryFrame from "./BatteryFrame";
 import app from "ags/gtk4/app";
-// import app from "ags/gtk4/app"
 
 const HOME_DIR = GLib.get_home_dir();
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
     const [dataStreamState, setDataStreamState] = createState(true);
     const [currentDate, setCurrentDate] = createState("");
-    const hyprland = AstalHyprland.get_default()
+    const hyprland = AstalHyprland.get_default();
+
+    execAsync('ags request "getDataStreamState"').then(out => setDataStreamState(out === 'true')).catch(console.error);
 
     function toggleDataStream() {
-        const currentState = dataStreamState.get();
-        setDataStreamState(!currentState);
+        execAsync('ags request "toggleDataStream"').then(out => setDataStreamState(out === 'true')).catch(console.error);
     }
 
-    console.log()
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
     execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
     return ( <window visible
@@ -112,4 +111,3 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         </box>
     </window>)
 }
-

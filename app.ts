@@ -14,9 +14,12 @@ const HOME_DIR = GLib.get_home_dir();
 // State management
 type DashboardState = {
     visible: boolean;
+    dataStreamVisible: boolean;
+    systemInfoVisible: boolean;
+    networkInfoVisible: boolean;
 }
 const STATE_FILE = "dashboard-state.json";
-let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true });
+let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true });
 
 function applyCurrentDashboardState() {
     const visible = dashboardState.visible;
@@ -85,6 +88,30 @@ app.start({
             writeJson(STATE_FILE, dashboardState);
             applyCurrentDashboardState();
             return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
+        }
+        if (request === "getDataStreamState") {
+            return res(String(dashboardState.dataStreamVisible));
+        }
+        if (request === "toggleDataStream") {
+            dashboardState.dataStreamVisible = !dashboardState.dataStreamVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.dataStreamVisible));
+        }
+        if (request === "getSystemInfoState") {
+            return res(String(dashboardState.systemInfoVisible));
+        }
+        if (request === "toggleSystemInfo") {
+            dashboardState.systemInfoVisible = !dashboardState.systemInfoVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.systemInfoVisible));
+        }
+        if (request === "getNetworkInfoState") {
+            return res(String(dashboardState.networkInfoVisible));
+        }
+        if (request === "toggleNetworkInfo") {
+            dashboardState.networkInfoVisible = !dashboardState.networkInfoVisible;
+            writeJson(STATE_FILE, dashboardState);
+            return res(String(dashboardState.networkInfoVisible));
         }
     },
 })

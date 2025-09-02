@@ -31,15 +31,21 @@ export default function NetworkInfo() {
     const [toggleContentState, settoggleContentState] = createState(true);
     const [noiseGridImage, setnoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
+    execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+
     playPanelSound(1500)
     function changeNoiseGridImage() {
         const currentPath = noiseGridImage.get();
         (currentPath.includes("variant1") ? setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
     }
     function panelClicked() {
-        const currentState = toggleContentState.get();
-        settoggleContentState(!currentState);
-        (!currentState && playPanelSound(500))
+        execAsync('ags request "toggleNetworkInfo"').then(out => {
+            const isVisible = out === 'true';
+            settoggleContentState(isVisible);
+            if (isVisible) {
+                playPanelSound(500);
+            }
+        }).catch(console.error);
     }
 
     interval(500, () => { changeNoiseGridImage() })
