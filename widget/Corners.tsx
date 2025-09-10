@@ -1,7 +1,6 @@
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { exec, execAsync } from "ags/process";
-import Console from "console";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";

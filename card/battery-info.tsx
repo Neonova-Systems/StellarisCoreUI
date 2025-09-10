@@ -1,12 +1,13 @@
-import { createState, With } from "ags";
+import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
+import AstalBattery from "gi://AstalBattery?version=0.1";
 
 const HOME_DIR = GLib.get_home_dir();
 
-export default function BatteryInfo() {
+export function BatteryInfo() {
     // --- State for each piece of battery information ---
     const [nativePath, setNativePath] = createState("");
     const [hasHistory, setHasHistory] = createState("");
@@ -126,4 +127,24 @@ export default function BatteryInfo() {
             </With>
         </box>
     )
+}
+
+export function BatteryRibbon() {
+    const battery = AstalBattery.get_default()
+    const percentage = createBinding(battery, "percentage")
+    const status = createBinding(battery, "charging")((v) => v ? "CHARGING" : "DISCHARGING")
+    return ( <box cssClasses={["battery"]} spacing={10} homogeneous={false} visible={createBinding(battery, "isPresent")} hexpand={false}>
+        <box cssClasses={["special-entry"]} spacing={2}>
+            <label label="CURRENT BATTERY:" halign={Gtk.Align.START} />
+            <label cssClasses={["value"]} label={`${Math.floor(percentage.get() * 100)}%`} halign={Gtk.Align.START} />
+        </box>
+        <levelbar value={percentage} hexpand />
+        <box spacing={5}>
+            <box cssClasses={["special-entry"]} spacing={2} valign={Gtk.Align.END}>
+                <label label="BATTERY STATUS:" halign={Gtk.Align.START} />
+                <label cssClasses={["value"]} label={status} halign={Gtk.Align.START} />
+            </box>
+            <image iconName={createBinding(battery, "iconName")} pixelSize={13} valign={Gtk.Align.START}/>
+        </box>
+    </box>)
 }

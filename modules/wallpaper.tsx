@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio";
 
-export default function Screen() {
+export default function Wallpaper() {
     const [wallpaperPath, setWallpaperPath] = createState("");
     execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => setWallpaperPath(out))
     return (

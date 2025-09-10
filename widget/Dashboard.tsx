@@ -6,7 +6,7 @@ import SystemInfo from "../card/system-info";
 import NetworkInfo from "../card/network-info";
 import FilesystemInfo from "../card/filesystem-info";
 import HardwareInfo from "../card/hardware-info";
-import BatteryInfo from "../card/battery-info";
+import { BatteryInfo, BatteryRibbon } from "../card/battery-info";
 import { createPoll } from "ags/time";
 import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
@@ -14,10 +14,11 @@ import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../modules/music-player";
-import BatteryFrame from "./BatteryFrame";
 import app from "ags/gtk4/app";
 import Screen from "../modules/wallpaper";
 import LayerInformation from "./LayerInformation";
+import Wallpaper from "../modules/wallpaper";
+import Ornaments from "../decoration/Ornaments";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
@@ -68,11 +69,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                                 )}
                             </With>
                         </box>
-                        <box halign={Gtk.Align.FILL} homogeneous={false}>
-                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ProtocolAccessControl.svg`)} canShrink={false} halign={Gtk.Align.FILL} />
-                            <box halign={Gtk.Align.FILL} hexpand />
-                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament.svg`)} canShrink={true} contentFit={Gtk.ContentFit.SCALE_DOWN} valign={Gtk.Align.START} halign={Gtk.Align.END} />
-                        </box>
+                        <Ornaments />
                     </box>
                 </scrolledwindow>
                 <MusicPlayer />
@@ -94,11 +91,11 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 </box>
             </box>
             <box hexpand cssClasses={["side-right"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                <box cssClasses={["screen"]} hexpand={false} halign={Gtk.Align.FILL}>
-                    <Screen />
+                <box cssClasses={["screen"]} hexpand={false} halign={Gtk.Align.FILL} vexpand={true}>
+                    <Wallpaper />
                 </box>
                 <LayerInformation />
-                <BatteryFrame />
+                <BatteryRibbon />
             </box>
         </box>
     </window>)
