@@ -1,7 +1,7 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { With } from "ags"
 import { createState } from "ags";
-import { CreatePanel } from "../helper";
+import { CreatePanel, playPanelSound } from "../helper";
 import SystemInfo from "../card/system-info";
 import NetworkInfo from "../card/network-info";
 import FilesystemInfo from "../card/filesystem-info";
@@ -9,7 +9,7 @@ import HardwareInfo from "../card/hardware-info";
 import BatteryInfo from "../card/battery-info";
 import { createPoll } from "ags/time";
 import { execAsync } from "ags/process";
-import SystemTray from "../modules/Trayer";
+import SystemTray from "../modules/trayer";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
@@ -24,10 +24,16 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const [currentDate, setCurrentDate] = createState("");
     const hyprland = AstalHyprland.get_default();
 
-    execAsync('ags request "getDataStreamState"').then(out => setDataStreamState(out === 'true')).catch(console.error);
+    execAsync('ags request "getDataStreamState"').then((out) => { setDataStreamState(out === 'true'); }).catch(() => {});
 
-    function toggleDataStream() {
-        execAsync('ags request "toggleDataStream"').then(out => setDataStreamState(out === 'true')).catch(console.error);
+    function panelClicked() {
+        execAsync('ags request "toggleDataStream"').then(out => {
+            const isVisible = out === 'true';
+            setDataStreamState(isVisible);
+            if (isVisible) {
+                playPanelSound(500);
+            }
+        }).catch(() => {});
     }
 
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
@@ -45,25 +51,25 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         <box css="margin: 10px;" spacing={9} >
             <box cssClasses={["side-left"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                 <scrolledwindow vexpand={true}>
-                <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12}>
-                    <CreatePanel name={"DATA STREAM"} onClicked={toggleDataStream} />
-                    <With value={dataStreamState}>
-                        {(v) => ( 
-                            <box visible={v} orientation={Gtk.Orientation.VERTICAL} spacing={11.8}>
-                                <SystemInfo />
-                                <NetworkInfo />
-                                <FilesystemInfo />
-                                <HardwareInfo />
-                                <BatteryInfo />
-                                <box halign={Gtk.Align.FILL} homogeneous={false}>
+                    <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12}>
+                        <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} />
+                        <With value={dataStreamState}>
+                            {(v) => ( 
+                                <box visible={v} orientation={Gtk.Orientation.VERTICAL} spacing={11.8}>
+                                    <SystemInfo />
+                                    <NetworkInfo />
+                                    <FilesystemInfo />
+                                    <HardwareInfo />
+                                    <BatteryInfo />
+                                    <box halign={Gtk.Align.FILL} homogeneous={false}>
                                         <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ProtocolAccessControl.svg`)} canShrink={false} halign={Gtk.Align.FILL}/>
                                         <box halign={Gtk.Align.FILL} hexpand />
                                         <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament.svg`)} canShrink={true} contentFit={Gtk.ContentFit.SCALE_DOWN} valign={Gtk.Align.START} halign={Gtk.Align.END}/>
+                                    </box>
                                 </box>
-                            </box>
-                        )}
-                    </With>
-                </box>
+                            )}
+                        </With>
+                    </box>
                 </scrolledwindow>
                 <MusicPlayer />
                 <box homogeneous={true}>

@@ -23,7 +23,7 @@ export default function SystemInfo() {
     const [toggleContentState, settoggleContentState] = createState(false);
 
     playPanelSound(1400)
-    execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+    execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
 
     function panelClicked() {
         execAsync('ags request "toggleSystemInfo"').then(out => {
@@ -32,7 +32,7 @@ export default function SystemInfo() {
             if (isVisible) {
                 playPanelSound(500);
             }
-        }).catch(console.error);
+        }).catch(() => {});
     }
 
     execAsync('bash -c "{ whoami; hostname; } | paste -d "@" -s"').then((out) => setuserHostname(out.toUpperCase()))

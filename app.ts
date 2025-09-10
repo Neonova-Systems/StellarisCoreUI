@@ -85,7 +85,8 @@ app.start({
             return GLib.SOURCE_REMOVE;
         });
     },
-    requestHandler(request: string, res: (response: any) => void) {
+    requestHandler(argv: string[], res: (response: any) => void) {
+        const request = argv.join(" ");
         if (request == "toggleDashboard" || request == "toggle dashboard") {
             dashboardState.visible = !dashboardState.visible;
             writeJson(STATE_FILE, dashboardState);
@@ -93,7 +94,7 @@ app.start({
             return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
         }
         if (request === "getDataStreamState") {
-            return res(String(dashboardState.dataStreamVisible));
+            return res(dashboardState.dataStreamVisible);
         }
         if (request === "toggleDataStream") {
             dashboardState.dataStreamVisible = !dashboardState.dataStreamVisible;

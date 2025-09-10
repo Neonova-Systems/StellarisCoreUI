@@ -24,7 +24,7 @@ export default function HardwareInfo() {
     const [motherboard, setMotherboard] = createState("");
     const [biosInfo, setbiosInfo] = createState("");
 
-    execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+    execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
 
     function panelClicked() {
         execAsync('ags request "toggleHardwareInfo"').then(out => {
@@ -33,7 +33,7 @@ export default function HardwareInfo() {
             if (isVisible) {
                 playPanelSound(500);
             }
-        }).catch(console.error);
+        }).catch(() => {});
     }
 
     // --- CPU Information ---

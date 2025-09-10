@@ -27,7 +27,7 @@ export default function FilesystemInfo() {
             (currentPath.includes("variant3") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
         )
     }
-    execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+    execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
 
     function panelClicked() {
         execAsync('ags request "toggleFilesystemInfo"').then(out => {
@@ -36,7 +36,7 @@ export default function FilesystemInfo() {
             if (isVisible) {
                 playPanelSound(500);
             }
-        }).catch(console.error);
+        }).catch(() => {});
     }
 
     interval(1000, () => { changedataGridImage() })

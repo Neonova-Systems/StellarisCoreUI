@@ -31,7 +31,7 @@ export default function NetworkInfo() {
     const [toggleContentState, settoggleContentState] = createState(true);
     const [noiseGridImage, setnoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
-    execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')).catch(console.error);
+    execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
 
     playPanelSound(1500)
     function changeNoiseGridImage() {
@@ -45,7 +45,7 @@ export default function NetworkInfo() {
             if (isVisible) {
                 playPanelSound(500);
             }
-        }).catch(console.error);
+        }).catch(() => {});
     }
 
     interval(500, () => { changeNoiseGridImage() })
