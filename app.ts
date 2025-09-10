@@ -59,6 +59,7 @@ function applyCurrentDashboardState() {
         hyprland.get_monitors().forEach((monitor) => {
             const bottom_space = monitor.height / 4;
             const left_space = monitor.width / 4 - 10;
+            console.log(monitor.reservedBottom)
             writeFile(`${HOME_DIR}/.config/hypr/reserved-space.conf`, `monitor=${monitor.name}, addreserved, 10, ${bottom_space}, ${left_space}, 10`);
         });
     } else {

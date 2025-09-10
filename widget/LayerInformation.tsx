@@ -3,6 +3,7 @@ import { CreatePanel } from "../helper";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import Alert from "../decoration/Alert";
 
 const HOME_DIR = GLib.get_home_dir();
 
@@ -14,10 +15,7 @@ export default function LayerInformation() {
                 <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
                     <CreatePanel name={"LAYER INFORMATION"} />
                 </box>
-                <box halign={Gtk.Align.FILL} homogeneous={false}>
-                    <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/AlertNeuralSync.svg`)} canShrink={false} halign={Gtk.Align.FILL}/>
-                    <box halign={Gtk.Align.FILL} hexpand />
-                </box>
+                <Alert />
             </box>
             <box spacing={10} hexpand>
                 <box cssClasses={["decoration-card"]} css="min-width: 120px;">
