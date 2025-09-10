@@ -10,6 +10,7 @@ const HOME_DIR = GLib.get_home_dir();
 
 // State management
 export type DashboardState = {
+    [key: string]: boolean;
     visible: boolean;
     dataStreamVisible: boolean;
     systemInfoVisible: boolean;
@@ -20,6 +21,15 @@ export type DashboardState = {
 }
 const STATE_FILE = "dashboard-state.json";
 let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true });
+
+const stateMappings: { [key: string]: keyof DashboardState } = {
+    "DataStream": "dataStreamVisible",
+    "SystemInfo": "systemInfoVisible",
+    "NetworkInfo": "networkInfoVisible",
+    "FilesystemInfo": "filesystemInfoVisible",
+    "HardwareInfo": "hardwareInfoVisible",
+    "BatteryInfo": "batteryInfoVisible",
+};
 
 export function applyCurrentDashboardState() {
     const visible = dashboardState.visible;
@@ -54,7 +64,6 @@ export function applyCurrentDashboardState() {
         hyprland.get_monitors().forEach((monitor) => {
             const bottom_space = monitor.height / 4;
             const left_space = monitor.width / 4 - 10;
-            console.log(monitor.reservedBottom)
             writeFile(`${HOME_DIR}/.config/hypr/reserved-space.conf`, `monitor=${monitor.name}, addreserved, 10, ${bottom_space}, ${left_space}, 10`);
         });
     } else {
@@ -66,60 +75,29 @@ export function applyCurrentDashboardState() {
     }
 }
 
+function handleStateChange(key: keyof DashboardState, res: (response: any) => void, toggle = false) {
+    if (toggle) {
+        dashboardState[key] = !dashboardState[key];
+        writeJson(STATE_FILE, dashboardState);
+    }
+    return res(String(dashboardState[key]));
+}
+
 export function requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv.join(" ");
-    if (request == "toggleDashboard" || request == "toggle dashboard") {
+    if (request === "toggleDashboard" || request === "toggle dashboard") {
         dashboardState.visible = !dashboardState.visible;
         writeJson(STATE_FILE, dashboardState);
         applyCurrentDashboardState();
         return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
     }
-    if (request === "getDataStreamState") {
-        return res(dashboardState.dataStreamVisible);
-    }
-    if (request === "toggleDataStream") {
-        dashboardState.dataStreamVisible = !dashboardState.dataStreamVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.dataStreamVisible));
-    }
-    if (request === "getSystemInfoState") {
-        return res(String(dashboardState.systemInfoVisible));
-    }
-    if (request === "toggleSystemInfo") {
-        dashboardState.systemInfoVisible = !dashboardState.systemInfoVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.systemInfoVisible));
-    }
-    if (request === "getNetworkInfoState") {
-        return res(String(dashboardState.networkInfoVisible));
-    }
-    if (request === "toggleNetworkInfo") {
-        dashboardState.networkInfoVisible = !dashboardState.networkInfoVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.networkInfoVisible));
-    }
-    if (request === "getFilesystemInfoState") {
-        return res(String(dashboardState.filesystemInfoVisible));
-    }
-    if (request === "toggleFilesystemInfo") {
-        dashboardState.filesystemInfoVisible = !dashboardState.filesystemInfoVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.filesystemInfoVisible));
-    }
-    if (request === "getHardwareInfoState") {
-        return res(String(dashboardState.hardwareInfoVisible));
-    }
-    if (request === "toggleHardwareInfo") {
-        dashboardState.hardwareInfoVisible = !dashboardState.hardwareInfoVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.hardwareInfoVisible));
-    }
-    if (request === "getBatteryInfoState") {
-        return res(String(dashboardState.batteryInfoVisible));
-    }
-    if (request === "toggleBatteryInfo") {
-        dashboardState.batteryInfoVisible = !dashboardState.batteryInfoVisible;
-        writeJson(STATE_FILE, dashboardState);
-        return res(String(dashboardState.batteryInfoVisible));
+
+    for (const key in stateMappings) {
+        if (request === `get${key}State`) {
+            return handleStateChange(stateMappings[key], res);
+        }
+        if (request === `toggle${key}`) {
+            return handleStateChange(stateMappings[key], res, true);
+        }
     }
 }
