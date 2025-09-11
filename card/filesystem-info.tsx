@@ -4,7 +4,7 @@ import { execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
-import { interval } from "ags/time";
+import { interval, timeout } from "ags/time";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function FilesystemInfo() {
@@ -21,13 +21,14 @@ export default function FilesystemInfo() {
     const [dataGridImage, setdataGridImage] = createState(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`);
 
     playPanelSound(1600)
+    timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')) });
+
     function changedataGridImage() {
         const currentPath = dataGridImage.get();
         (currentPath.includes("variant1") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant2.svg`) : 
             (currentPath.includes("variant3") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
         )
     }
-    execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
 
     function panelClicked() {
         execAsync('ags request "toggleFilesystemInfo"').then(out => {

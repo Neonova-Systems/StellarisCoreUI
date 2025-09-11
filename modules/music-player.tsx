@@ -11,7 +11,7 @@ export default function MusicPlayer() {
     const mpris = AstalMpris.get_default()
     const players = createBinding(mpris, "players")
 
-    const [toggleContentState, settoggleContentState] = createState(true);
+    const [toggleContentState, settoggleContentState] = createState(false);
     const [trackPercentage, setTrackPercentage] = createState(0.0);
     function panelClicked() {
         const currentState = toggleContentState.get();

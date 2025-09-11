@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { interval } from "ags/time";
+import { interval, timeout } from "ags/time";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
@@ -28,12 +28,12 @@ export default function NetworkInfo() {
     const [journalNetwork, setJournalNetwork] = createState("");
     const [networkDevice, setNetworkDevice] = createState("");
     const [wifiList, setwifiList] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(true);
+    const [toggleContentState, settoggleContentState] = createState(false);
     const [noiseGridImage, setnoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
-    execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
-
     playPanelSound(1500)
+    timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')) });
+
     function changeNoiseGridImage() {
         const currentPath = noiseGridImage.get();
         (currentPath.includes("variant1") ? setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))

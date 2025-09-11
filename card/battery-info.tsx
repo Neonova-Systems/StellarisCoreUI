@@ -4,11 +4,11 @@ import { execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
+import { timeout } from "ags/time";
 
 const HOME_DIR = GLib.get_home_dir();
 
 export function BatteryInfo() {
-    // --- State for each piece of battery information ---
     const [nativePath, setNativePath] = createState("");
     const [hasHistory, setHasHistory] = createState("");
     const [state, setState] = createState("");
@@ -30,10 +30,8 @@ export function BatteryInfo() {
     const [voltage, setVoltage] = createState("");
     const [technology, setTechnology] = createState("");
     const [fullReport, setFullReport] = createState("Loading report...");
-
     const [toggleContentState, settoggleContentState] = createState(false);
-
-    execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
+    timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')) });
 
     function panelClicked() {
         execAsync('ags request "toggleBatteryInfo"').then(out => {

@@ -1,8 +1,9 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process";
+import { exec, execAsync } from "ags/process";
 import GLib from "gi://GLib?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
+import { timeout } from "ags/time";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function SystemInfo() {
@@ -23,7 +24,7 @@ export default function SystemInfo() {
     const [toggleContentState, settoggleContentState] = createState(false);
 
     playPanelSound(1400)
-    execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')).catch(() => {});
+    timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')) });
 
     function panelClicked() {
         execAsync('ags request "toggleSystemInfo"').then(out => {
