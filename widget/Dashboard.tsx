@@ -7,7 +7,7 @@ import NetworkInfo from "../card/network-info";
 import FilesystemInfo from "../card/filesystem-info";
 import HardwareInfo from "../card/hardware-info";
 import { BatteryInfo, BatteryRibbon } from "../card/battery-info";
-import { createPoll } from "ags/time";
+import { createPoll, timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
 import GLib from "gi://GLib?version=2.0";
@@ -15,19 +15,19 @@ import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../modules/music-player";
 import app from "ags/gtk4/app";
-import Screen from "../modules/wallpaper";
 import LayerInformation from "./LayerInformation";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
+import Notification from "../modules/notification";
+import ControlCenter from "../modules/control-center";
+import ExploitDeck from "../modules/exploit-deck";
 
-const HOME_DIR = GLib.get_home_dir();
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
     const [dataStreamState, setDataStreamState] = createState(true);
     const [currentDate, setCurrentDate] = createState("");
     const hyprland = AstalHyprland.get_default();
-
-    execAsync('ags request "getDataStreamState"').then((out) => { setDataStreamState(out === 'true'); }).catch(() => {});
+    timeout(500, () => { execAsync('ags request "getDataStreamState"').then((out) => { setDataStreamState(out === 'true'); }) });
 
     function panelClicked() {
         execAsync('ags request "toggleDataStream"').then(out => {
@@ -54,8 +54,8 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         <box css="margin: 10px;" spacing={9} >
             <box cssClasses={["side-left"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                 <scrolledwindow vexpand={true}>
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
-                        <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12}>
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                        <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12} css={'margin-bottom: 2px;'}>
                             <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} />
                             <With value={dataStreamState}>
                                 {(v) => (
@@ -70,6 +70,9 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             </With>
                         </box>
                         <Ornaments />
+                        <Notification />
+                        <ControlCenter />
+                        <ExploitDeck />
                     </box>
                 </scrolledwindow>
                 <MusicPlayer />

@@ -4,7 +4,6 @@ import { Gtk } from "ags/gtk4"
 import GLib from "gi://GLib?version=2.0";
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
-import { interval } from "ags/time";
 
 const HOME_DIR = GLib.get_home_dir();
 export default function MusicPlayer() {
@@ -74,7 +73,6 @@ export default function MusicPlayer() {
         setTrackPercentage(percentage)
         return percentage;
     }
-
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
