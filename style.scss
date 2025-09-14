@@ -18,6 +18,7 @@ window.Dashboard {
 .side-left { min-width: 450px }
 .side-right { min-width: 1441px }
 .screen { border: 2px solid #0A102E }
+.copyable { &:hover { text-decoration: underline;} }
 
 .panel {
   border-radius: 0;

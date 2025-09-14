@@ -31,7 +31,7 @@ export default function SystemInfo() {
             if (isVisible) {
                 playPanelSound(500);
             }
-        }).catch(() => {});
+        });
     }
 
     execAsync('bash -c "{ whoami; hostname; } | paste -d "@" -s"').then((out) => setuserHostname(out.toUpperCase()))
@@ -64,9 +64,9 @@ export default function SystemInfo() {
                             <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}/>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
-                                    <CreateEntryContent name="USER & HOSTNAME" value={userHostname} />
-                                    <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
-                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade} />
+                                    <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
+                                    <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} allowCopy={true} />
+                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade} allowCopy={true} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} />

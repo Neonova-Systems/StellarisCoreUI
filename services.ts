@@ -17,9 +17,10 @@ export type DashboardState = {
     filesystemInfoVisible: boolean;
     hardwareInfoVisible: boolean;
     batteryInfoVisible: boolean;
+    notificationVisible: boolean;
 }
 
-let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true });
+let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true, notificationVisible: false });
 
 const stateMappings: { [key: string]: keyof DashboardState } = {
     "DataStream": "dataStreamVisible",
@@ -28,6 +29,7 @@ const stateMappings: { [key: string]: keyof DashboardState } = {
     "FilesystemInfo": "filesystemInfoVisible",
     "HardwareInfo": "hardwareInfoVisible",
     "BatteryInfo": "batteryInfoVisible",
+    "Notification": "notificationVisible",
 };
 
 export function applyCurrentDashboardState() {

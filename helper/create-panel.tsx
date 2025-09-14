@@ -10,7 +10,7 @@ type PanelProps = {
 
 export default function CreatePanel({ name, onClicked, $, children }: PanelProps) {
     return (
-        <button $={$} cssClasses={["panel"]} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+        <button $={$} cssClasses={["panel"]} onMoveFocus={() => console.log("test")} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <box spacing={5}>
                 {children}
                 <label label={name} halign={Gtk.Align.START} />
