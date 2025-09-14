@@ -1,8 +1,7 @@
 import { Gtk } from "ags/gtk4";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-
-const HOME_DIR = GLib.get_home_dir();
+import { HOME_DIR } from "../helper";
 
 export default function Alert() {
     return (

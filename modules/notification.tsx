@@ -1,15 +1,12 @@
 import { createState, With } from "ags";
 import { CreatePanel } from "../helper";
 import { Gtk } from "ags/gtk4"
-import GLib from "gi://GLib?version=2.0";
 
-const HOME_DIR = GLib.get_home_dir();
 export default function Notification() {
     const [toggleContentState, settoggleContentState] = createState(false);
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="NOTIFICATION" onClicked={() => {}}>
-                <image pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
                 {(v) => (

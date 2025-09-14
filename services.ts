@@ -1,12 +1,11 @@
 import app from "ags/gtk4/app"
 import { Astal } from "gi://Astal?version=4.0"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import GLib from "gi://GLib?version=2.0"
 import { writeFile } from "ags/file"
 import { readJson, writeJson } from "./helper/json"
+import { WALLPAPER_JSON, DASHBOARD_STATE_JSON, HOME_DIR } from "./helper/constants";
 
 const hyprland = AstalHyprland.get_default();
-const HOME_DIR = GLib.get_home_dir();
 
 // State management
 export type DashboardState = {
@@ -19,8 +18,8 @@ export type DashboardState = {
     hardwareInfoVisible: boolean;
     batteryInfoVisible: boolean;
 }
-const STATE_FILE = "dashboard-state.json";
-let dashboardState = readJson<DashboardState>(STATE_FILE, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true });
+
+let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true });
 
 const stateMappings: { [key: string]: keyof DashboardState } = {
     "DataStream": "dataStreamVisible",
@@ -78,7 +77,7 @@ export function applyCurrentDashboardState() {
 function handleStateChange(key: keyof DashboardState, res: (response: any) => void, toggle = false) {
     if (toggle) {
         dashboardState[key] = !dashboardState[key];
-        writeJson(STATE_FILE, dashboardState);
+        writeJson(DASHBOARD_STATE_JSON, dashboardState);
     }
     return res(String(dashboardState[key]));
 }
@@ -87,9 +86,18 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv.join(" ");
     if (request === "toggleDashboard" || request === "toggle dashboard") {
         dashboardState.visible = !dashboardState.visible;
-        writeJson(STATE_FILE, dashboardState);
+        writeJson(DASHBOARD_STATE_JSON, dashboardState);
         applyCurrentDashboardState();
         return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
+    }
+
+    if (request.startsWith("updateWallpaper")) {
+
+        const path = request.substring("updateWallpaper".length).trim();
+        if (path) {
+            writeJson(WALLPAPER_JSON, { path });
+            return res(`Wallpaper path updated to: ${path}`);
+        }
     }
 
     for (const key in stateMappings) {

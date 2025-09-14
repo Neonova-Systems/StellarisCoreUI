@@ -1,8 +1,7 @@
 import { execAsync } from "ags/process";
 import { timeout } from "ags/time";
-import GLib from "gi://GLib?version=2.0";
+import { HOME_DIR } from "./constants";
 
-const HOME_DIR = GLib.get_home_dir();
 export function playPanelSound(timeoutSeconds: number = 500) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/panels.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
 }

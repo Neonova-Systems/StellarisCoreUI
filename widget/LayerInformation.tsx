@@ -1,11 +1,9 @@
 import { Gtk } from "ags/gtk4"
-import { CreatePanel } from "../helper";
+import { CreatePanel, HOME_DIR } from "../helper";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Alert from "../decoration/Alert";
-
-const HOME_DIR = GLib.get_home_dir();
 
 export default function LayerInformation() {
     const hyprland = AstalHyprland.get_default();

@@ -4,9 +4,8 @@ import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
 
-const HOME_DIR = GLib.get_home_dir();
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");
     const [interfaceMode, setinterfaceMode] = createState("");

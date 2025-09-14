@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'ags/file';
+import { CACHE_DIR } from './constants';
 import GLib from 'gi://GLib?version=2.0';
 
-const CACHE_DIR = `${GLib.get_user_cache_dir()}/ags`;
 /**
  * @brief Reads a JSON file and returns the parsed object.
  * @param filePath The path to the JSON file, relative to the AGS cache dir.

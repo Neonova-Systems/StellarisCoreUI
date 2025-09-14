@@ -1,11 +1,10 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound } from "../helper";
+import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_DIR } from "../helper";
 import { Gtk } from "ags/gtk4"
 import GLib from "gi://GLib?version=2.0";
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
 
-const HOME_DIR = GLib.get_home_dir();
 export default function MusicPlayer() {
     const mpris = AstalMpris.get_default()
     const players = createBinding(mpris, "players")

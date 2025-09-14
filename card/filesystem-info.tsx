@@ -1,12 +1,10 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound } from "../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
 import { interval, timeout } from "ags/time";
 
-const HOME_DIR = GLib.get_home_dir();
 export default function FilesystemInfo() {
     const [filesystemName, setfilesystemName] = createState("");
     const [totalSize, settotalSize] = createState("");

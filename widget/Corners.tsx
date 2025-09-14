@@ -2,13 +2,12 @@ import { Astal, Gdk, Gtk } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { exec, execAsync } from "ags/process";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
-import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
+import { HOME_DIR } from "../helper";
 
 const WIDTH = 23
 const HEIGHT = 23
 const hyprland = AstalHyprland.get_default();
-const HOME_DIR = GLib.get_home_dir();
 const { LEFT, RIGHT, TOP, BOTTOM } = Astal.WindowAnchor
 
 const marginBottom = hyprland.get_focused_monitor().height / 4
@@ -76,7 +75,10 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
 }
 
 export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
-    function onClick() { execAsync(`ags request "toggle dashboard"`) }
+    function onClick() { 
+        execAsync(`ags request "toggle dashboard"`) 
+        execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => execAsync(`ags request "updateWallpaper ${out}"`));
+    }
     return ( <window visible
         name="TopLeftCorner"
         layer={Astal.Layer.TOP}
