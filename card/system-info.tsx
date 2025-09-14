@@ -1,7 +1,6 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { exec, execAsync } from "ags/process";
-import GLib from "gi://GLib?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
 import { timeout } from "ags/time";
 

@@ -11,7 +11,6 @@ import { createPoll, timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
 import GLib from "gi://GLib?version=2.0";
-import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../modules/music-player";
 import app from "ags/gtk4/app";

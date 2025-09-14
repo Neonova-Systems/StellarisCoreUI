@@ -1,6 +1,5 @@
 import { Gtk } from "ags/gtk4"
 import { CreatePanel, HOME_DIR } from "../helper";
-import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Alert from "../decoration/Alert";
