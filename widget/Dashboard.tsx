@@ -1,6 +1,5 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { With } from "ags"
-import { createState } from "ags";
+import { createBinding, With, For, createState, onCleanup } from "ags"
 import { CreatePanel, playPanelSound } from "../helper";
 import SystemInfo from "../card/system-info";
 import NetworkInfo from "../card/network-info";
@@ -12,20 +11,26 @@ import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
 import GLib from "gi://GLib?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
-import MusicPlayer from "../modules/music-player";
+import MusicPlayer from "../card/music-player";
 import app from "ags/gtk4/app";
 import LayerInformation from "./LayerInformation";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
-import Notification from "../modules/notification";
-import ControlCenter from "../modules/control-center";
-import ExploitDeck from "../modules/exploit-deck";
+import ControlCenter from "../card/control-center";
+import ExploitDeck from "../card/exploit-deck";
+import { NotificationCard } from "../card/notification-card";
+
+import AstalNotifd from "gi://AstalNotifd"
+import Notification from "../modules/notifications";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
+    const notifd = AstalNotifd.get_default()
+    const hyprland = AstalHyprland.get_default();
     const [dataStreamState, setDataStreamState] = createState(true);
     const [currentDate, setCurrentDate] = createState("");
-    const hyprland = AstalHyprland.get_default();
+    const [notifications, setNotifications] = createState(new Array<AstalNotifd.Notification>(),)
+
     timeout(500, () => { execAsync('ags request "getDataStreamState"').then((out) => { setDataStreamState(out === 'true'); }) });
 
     function panelClicked() {
@@ -38,9 +43,28 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         }).catch(() => {});
     }
 
+    const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
+        const notification = notifd.get_notification(id)
+        if (replaced && notifications.get().some((n) => n.id === id)) {
+            setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
+        } else {
+            setNotifications((ns) => [notification, ...ns])
+        }
+    })
+
+    const resolvedHandler = notifd.connect("resolved", (_, id) => {
+        setNotifications((ns) => ns.filter((n) => n.id !== id))
+    })
+    
+    onCleanup(() => {
+        notifd.disconnect(notifiedHandler)
+        notifd.disconnect(resolvedHandler)
+    })
+
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
     execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
     return ( <window visible
+        $={(self) => onCleanup(() => self.destroy())}
         name="Dashboard"
         layer={Astal.Layer.BACKGROUND}
         cssClasses={["Dashboard"]}
@@ -69,7 +93,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             </With>
                         </box>
                         <Ornaments />
-                        <Notification />
+                        <NotificationCard notifications={notifications} />
                         <ControlCenter />
                         <ExploitDeck />
                     </box>
