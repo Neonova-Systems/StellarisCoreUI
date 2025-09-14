@@ -67,28 +67,28 @@ export default function HardwareInfo() {
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU NAME" value={cpuName} />
-                                    <CreateEntryContent name="VENDOR NAME" value={vendorName} />
+                                    <CreateEntryContent name="CPU NAME" value={cpuName} allowCopy/>
+                                    <CreateEntryContent name="VENDOR NAME" value={vendorName} allowCopy/>
                                     <CreateEntryContent name="THREAD[S]/CORE & CORE[S]/SOCKET" value={threadsCore} />
-                                    <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} />
+                                    <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} />
+                                    <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} allowCopy/>
                                     <CreateEntryContent name="CPU SCALING [MHZ]" value={cpuScaling} />
                                     <CreateEntryContent name="SOCKET[S]" value={sockets} />
-                                    <CreateEntryContent name="GPU VENDOR NAME" value={gpuVendorName} />
+                                    <CreateEntryContent name="GPU VENDOR NAME" value={gpuVendorName} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU MODES" value={cpuModes} />
-                                    <CreateEntryContent name="CPU MAX MHZ" value={cpuMaxMhz} />
-                                    <CreateEntryContent name="VIRTUALIZATION" value={virtualization} />
-                                    <CreateEntryContent name="VIDEO & UNIFIED MEMORY" value={videoUnifiedMemory} />
+                                    <CreateEntryContent name="CPU MODES" value={cpuModes} allowCopy/>
+                                    <CreateEntryContent name="CPU MAX MHZ" value={cpuMaxMhz} allowCopy/>
+                                    <CreateEntryContent name="VIRTUALIZATION" value={virtualization} allowCopy/>
+                                    <CreateEntryContent name="VIDEO & UNIFIED MEMORY" value={videoUnifiedMemory} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
-                                    <CreateEntryContent name="BYTE ORDER" value={byteOrder} />
+                                    <CreateEntryContent name="BYTE ORDER" value={byteOrder} allowCopy/>
                                     <CreateEntryContent name="CPU MIN MHZ" value={cpuMinMhz} />
-                                    <CreateEntryContent name="BIOS/UEFI" value={biosInfo} />
-                                    <CreateEntryContent name="MOTHERBOARD" value={motherboard} />
+                                    <CreateEntryContent name="BIOS/UEFI" value={biosInfo} allowCopy/>
+                                    <CreateEntryContent name="MOTHERBOARD" value={motherboard} allowCopy/>
                                 </box>
                             </box>
                         </box>

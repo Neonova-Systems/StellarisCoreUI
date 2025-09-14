@@ -89,15 +89,15 @@ export default function MusicPlayer() {
                                             <label cssClasses={["track-title"]} label={createBinding(item, "title")} halign={Gtk.Align.START} ellipsize={3} />
                                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                                    <CreateEntryContent name="ARTIST NAME" value={createBinding(item, "artist").get().toUpperCase()} hexpand/>
-                                                    <CreateEntryContent name="PLAYER NAME" value={createBinding(item, "identity").get().toUpperCase()} hexpand/>
+                                                    <CreateEntryContent name="ARTIST NAME" value={createBinding(item, "artist").get().toUpperCase()} hexpand allowCopy/>
+                                                    <CreateEntryContent name="PLAYER NAME" value={createBinding(item, "identity").get().toUpperCase()} hexpand allowCopy/>
                                                 </box>
                                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
                                                     <CreateEntryContent name="SHUFFLE STATUS" value={getShuffleStatus(item.shuffleStatus)} hexpand/>
                                                     <CreateEntryContent name="LOOP STATUS" value={getLoopStatus(item.loopStatus)} hexpand/>
                                                 </box>
                                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                                    <CreateEntryContent name="TRACK LENGTH" value={formatDuration(createBinding(item, "length").get())} hexpand/>
+                                                    <CreateEntryContent name="TRACK LENGTH" value={formatDuration(createBinding(item, "length").get())} hexpand allowCopy/>
                                                     <CreateEntryContent name="SPEED RATE" value={createBinding(item, "rate").get().toString()} hexpand/>
                                                 </box>
                                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>

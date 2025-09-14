@@ -61,15 +61,15 @@ export default function FilesystemInfo() {
                             <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
                                 <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>
                                     <CreateEntryContent name="FILESYSTEM NAME" value={filesystemName} />
-                                    <CreateEntryContent name="TOTAL SIZE & FREE SPACE" value={totalSize} />
-                                    <CreateEntryContent name="USED SPACE & PERCENTAGE" value={usedSpace} />
-                                    <CreateEntryContent name="MOUNTPOINT" value={mountpoint} />
+                                    <CreateEntryContent name="TOTAL SIZE & FREE SPACE" value={totalSize} allowCopy/>
+                                    <CreateEntryContent name="USED SPACE & PERCENTAGE" value={usedSpace} allowCopy/>
+                                    <CreateEntryContent name="MOUNTPOINT" value={mountpoint} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} vexpand>
-                                    <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;'/>
+                                    <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
-                                    <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;'/>
+                                    <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' allowCopy/>
                                 </box>
                             </box>
                             <box>

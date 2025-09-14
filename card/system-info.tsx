@@ -65,17 +65,17 @@ export default function SystemInfo() {
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
-                                    <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} allowCopy={true} />
-                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade} allowCopy={true} />
+                                    <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
+                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
-                                    <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} />
+                                    <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} allowCopy={true} />
                                     <CreateEntryContent name="UNNEEDED PACKAGE" value={unneededPackage} />
                                     <CreateEntryContent name="TOTAL BOOT TIME" value={totalBootTime} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
-                                    <CreateEntryContent name="CURRENT USER ID" value={userId} />
-                                    <CreateEntryContent name="UPTIME" value={uptime} />
+                                    <CreateEntryContent name="CURRENT USER ID" value={userId} allowCopy/>
+                                    <CreateEntryContent name="UPTIME" value={uptime} allowCopy/>
                                     <CreateEntryContent name="BOOT TIME LOADER" value={bootTimeLoader} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>

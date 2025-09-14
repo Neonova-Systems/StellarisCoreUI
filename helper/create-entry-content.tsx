@@ -1,5 +1,6 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor } from "ags"
+import { playGrantedSound } from "./utility";
 
 type EntryContentProps = {
     name?: string | Accessor<string> | undefined;
@@ -15,6 +16,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
         const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
         if (clipboard && text) {
             clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
+            playGrantedSound();
         }
     }
     return (

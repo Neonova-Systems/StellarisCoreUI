@@ -82,17 +82,17 @@ export function BatteryInfo() {
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 {/* --- Corrected state variables for each value --- */}
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="NATIVE PATH" value={nativePath} />
+                                    <CreateEntryContent name="NATIVE PATH" value={nativePath} allowCopy/>
                                     <CreateEntryContent name="HAS HISTORY" value={hasHistory} />
                                     <CreateEntryContent name="STATE" value={state} />
                                     <CreateEntryContent name="ENERGY-FULL" value={energyFull} />
                                     <CreateEntryContent name="TIME-TO-EMPTY" value={timeToEmpty} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="VENDOR" value={vendor} />
+                                    <CreateEntryContent name="VENDOR" value={vendor} allowCopy/>
                                     <CreateEntryContent name="HAS STATISTICS" value={hasStatistics} />
                                     <CreateEntryContent name="WARNING LEVEL" value={warningLevel} />
-                                    <CreateEntryContent name="ENERGY-FULL-DESIGN" value={energyFullDesign} />
+                                    <CreateEntryContent name="ENERGY-FULL-DESIGN" value={energyFullDesign} allowCopy/>
                                     <CreateEntryContent name="PERCENTAGE" value={percentage} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
@@ -103,11 +103,11 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="CAPACITY" value={capacity} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
-                                    <CreateEntryContent name="UPDATED" value={updated} />
+                                    <CreateEntryContent name="UPDATED" value={updated} allowCopy/>
                                     <CreateEntryContent name="RECHARGEABLE" value={rechargeable} />
                                     <CreateEntryContent name="ENERGY-EMPTY" value={energyEmpty} />
-                                    <CreateEntryContent name="VOLTAGE" value={voltage} />
-                                    <CreateEntryContent name="TECHNOLOGY" value={technology} />
+                                    <CreateEntryContent name="VOLTAGE" value={voltage} allowCopy/>
+                                    <CreateEntryContent name="TECHNOLOGY" value={technology} allowCopy/>
                                 </box>
                             </box>
                         </box>
