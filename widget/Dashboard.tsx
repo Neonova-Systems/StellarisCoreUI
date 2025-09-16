@@ -1,11 +1,11 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createBinding, With, For, createState, onCleanup } from "ags"
-import { CreatePanel, playPanelSound, moveToFirst, moveToLast } from "../helper";
-import SystemInfo from "../card/system-info";
-import NetworkInfo from "../card/network-info";
-import FilesystemInfo from "../card/filesystem-info";
-import HardwareInfo from "../card/hardware-info";
-import { BatteryInfo, BatteryRibbon } from "../card/battery-info";
+import { CreatePanel, playPanelSound, createDashboardCards } from "../helper";
+import SystemInfo from "../card/data-stream/system-info";
+import NetworkInfo from "../card/data-stream/network-info";
+import FilesystemInfo from "../card/data-stream/filesystem-info";
+import HardwareInfo from "../card/data-stream/hardware-info";
+import { BatteryInfo, BatteryRibbon } from "../card/data-stream/battery-info";
 import { createPoll, timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
@@ -16,10 +16,6 @@ import app from "ags/gtk4/app";
 import LayerInformation from "./LayerInformation";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
-import ControlCenter from "../card/control-center";
-import ExploitDeck from "../card/exploit-deck";
-import { NotificationCard } from "../card/notification-card";
-
 import AstalNotifd from "gi://AstalNotifd"
 import Notification from "../modules/notifications";
 
@@ -64,12 +60,8 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
     execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
     
-    // Array of cards to render with reordering functionality
-    const [dashboardCards, setDashboardCards] = createState([
-        { id: 'notification', component: () => <NotificationCard notifications={notifications} onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'notification'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'notification'))} /> }, 
-        { id: 'control-center', component: () => <ControlCenter onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'control-center'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'control-center'))} /> }, 
-        { id: 'exploit-deck', component: () => <ExploitDeck onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'exploit-deck'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'exploit-deck'))} /> }
-    ]);
+    // Initialize dashboard cards with persistence
+    const { dashboardCards } = createDashboardCards(notifications);
 
     return ( <window visible
         $={(self) => onCleanup(() => self.destroy())}

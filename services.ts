@@ -94,7 +94,6 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
     }
 
     if (request.startsWith("updateWallpaper")) {
-
         const path = request.substring("updateWallpaper".length).trim();
         if (path) {
             writeJson(WALLPAPER_JSON, { path });

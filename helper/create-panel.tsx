@@ -16,7 +16,7 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
     let lastY: number | null = null;
     let dragDirection: 'up' | 'down' | null = null;
     let lastOutputY: number | null = null;
-    const DRAG_THRESHOLD = 20; // px
+    const DRAG_THRESHOLD = 25; // px
 
     function handleDragBegin(self: Gtk.GestureDrag) {
         lastY = null;
