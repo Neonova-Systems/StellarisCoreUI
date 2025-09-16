@@ -1,6 +1,6 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createBinding, With, For, createState, onCleanup } from "ags"
-import { CreatePanel, playPanelSound } from "../helper";
+import { CreatePanel, playPanelSound, moveToFirst, moveToLast } from "../helper";
 import SystemInfo from "../card/system-info";
 import NetworkInfo from "../card/network-info";
 import FilesystemInfo from "../card/filesystem-info";
@@ -66,34 +66,10 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     
     // Array of cards to render with reordering functionality
     const [dashboardCards, setDashboardCards] = createState([
-        { id: 'notification', component: () => <NotificationCard notifications={notifications} onDragUp={() => moveToFirst('notification')} onDragDown={() => moveToLast('notification')} /> }, 
-        { id: 'control-center', component: () => <ControlCenter onDragUp={() => moveToFirst('control-center')} onDragDown={() => moveToLast('control-center')} /> }, 
-        { id: 'exploit-deck', component: () => <ExploitDeck onDragUp={() => moveToFirst('exploit-deck')} onDragDown={() => moveToLast('exploit-deck')} /> }
+        { id: 'notification', component: () => <NotificationCard notifications={notifications} onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'notification'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'notification'))} /> }, 
+        { id: 'control-center', component: () => <ControlCenter onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'control-center'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'control-center'))} /> }, 
+        { id: 'exploit-deck', component: () => <ExploitDeck onDragUp={() => setDashboardCards(cards => moveToFirst(cards, 'exploit-deck'))} onDragDown={() => setDashboardCards(cards => moveToLast(cards, 'exploit-deck'))} /> }
     ]);
-
-    function moveToFirst(cardId: string) {
-        setDashboardCards(cards => {
-            const cardIndex = cards.findIndex(card => card.id === cardId);
-            if (cardIndex > 0) {
-                const cardToMove = cards[cardIndex];
-                const newCards = [cardToMove, ...cards.slice(0, cardIndex), ...cards.slice(cardIndex + 1)];
-                return newCards;
-            }
-            return cards;
-        });
-    }
-
-    function moveToLast(cardId: string) {
-        setDashboardCards(cards => {
-            const cardIndex = cards.findIndex(card => card.id === cardId);
-            if (cardIndex >= 0 && cardIndex < cards.length - 1) {
-                const cardToMove = cards[cardIndex];
-                const newCards = [...cards.slice(0, cardIndex), ...cards.slice(cardIndex + 1), cardToMove];
-                return newCards;
-            }
-            return cards;
-        });
-    }
 
     return ( <window visible
         $={(self) => onCleanup(() => self.destroy())}
