@@ -63,6 +63,38 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
 
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
     execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
+    
+    // Array of cards to render with reordering functionality
+    const [dashboardCards, setDashboardCards] = createState([
+        { id: 'notification', component: () => <NotificationCard notifications={notifications} onDragUp={() => moveToFirst('notification')} onDragDown={() => moveToLast('notification')} /> }, 
+        { id: 'control-center', component: () => <ControlCenter onDragUp={() => moveToFirst('control-center')} onDragDown={() => moveToLast('control-center')} /> }, 
+        { id: 'exploit-deck', component: () => <ExploitDeck onDragUp={() => moveToFirst('exploit-deck')} onDragDown={() => moveToLast('exploit-deck')} /> }
+    ]);
+
+    function moveToFirst(cardId: string) {
+        setDashboardCards(cards => {
+            const cardIndex = cards.findIndex(card => card.id === cardId);
+            if (cardIndex > 0) {
+                const cardToMove = cards[cardIndex];
+                const newCards = [cardToMove, ...cards.slice(0, cardIndex), ...cards.slice(cardIndex + 1)];
+                return newCards;
+            }
+            return cards;
+        });
+    }
+
+    function moveToLast(cardId: string) {
+        setDashboardCards(cards => {
+            const cardIndex = cards.findIndex(card => card.id === cardId);
+            if (cardIndex >= 0 && cardIndex < cards.length - 1) {
+                const cardToMove = cards[cardIndex];
+                const newCards = [...cards.slice(0, cardIndex), ...cards.slice(cardIndex + 1), cardToMove];
+                return newCards;
+            }
+            return cards;
+        });
+    }
+
     return ( <window visible
         $={(self) => onCleanup(() => self.destroy())}
         name="Dashboard"
@@ -93,9 +125,9 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             </With>
                         </box>
                         <Ornaments />
-                        <NotificationCard notifications={notifications} />
-                        <ControlCenter />
-                        <ExploitDeck />
+                        <For each={dashboardCards}>
+                            {(card) => <card.component />}
+                        </For>
                     </box>
                 </scrolledwindow>
                 <MusicPlayer />
