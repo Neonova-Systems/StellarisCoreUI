@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");

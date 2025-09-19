@@ -17,9 +17,7 @@ export type CardId = 'notification' | 'control-center' | 'exploit-deck';
  */
 export function createDashboardCards(notifications: Accessor<AstalNotifd.Notification[]>) {
     const DEFAULT_ORDER: CardId[] = ['notification', 'control-center', 'exploit-deck'];
-    
-    // Load saved card order from JSON file
-    const savedCardOrder = readJson<CardId[]>(DASHBOARD_CARDS_ORDER_JSON, DEFAULT_ORDER);
+    const savedCardOrder = readJson<CardId[]>(DASHBOARD_CARDS_ORDER_JSON, DEFAULT_ORDER); // Load saved card order from JSON file
     
     // Create component map for easy lookup
     const componentMap = {

@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 

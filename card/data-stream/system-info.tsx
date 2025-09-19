@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 import { timeout } from "ags/time";
 
 export default function SystemInfo() {

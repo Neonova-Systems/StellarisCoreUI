@@ -17,7 +17,6 @@ import LayerInformation from "./LayerInformation";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
-import Notification from "../modules/notifications";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
