@@ -4,6 +4,7 @@ import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
+import { CreateEntryContent, HOME_DIR } from "../helper"
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -37,80 +38,65 @@ interface NotificationProps {
 
 export default function Notification({ notification: n }: NotificationProps) {
   return (
-    <Adw.Clamp maximumSize={400}>
-      <box
-        widthRequest={400}
-        class={`Notification ${urgency(n)}`}
-        orientation={Gtk.Orientation.VERTICAL}
-      >
-        <box class="header">
-          {(n.appIcon || isIcon(n.desktopEntry)) && (
-            <image
-              class="app-icon"
-              visible={Boolean(n.appIcon || n.desktopEntry)}
-              iconName={n.appIcon || n.desktopEntry}
-            />
-          )}
-          <label
-            class="app-name"
-            halign={Gtk.Align.START}
-            ellipsize={Pango.EllipsizeMode.END}
-            label={n.appName || "Unknown"}
-          />
-          <label
-            class="time"
-            hexpand
-            halign={Gtk.Align.END}
-            label={time(n.time)}
-          />
-          <button onClicked={() => n.dismiss()}>
-            <image iconName="window-close-symbolic" />
+    <Adw.Clamp maximumSize={1000}>
+      <box spacing={5} cssClasses={["notification", `${urgency(n)}`]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
+        <box class="header" valign={Gtk.Align.CENTER} spacing={5} halign={Gtk.Align.FILL} hexpand>
+          {(isIcon(n.appIcon) || isIcon(n.desktopEntry)) && (
+            <image visible={Boolean(n.appIcon || n.desktopEntry)} iconName={n.appIcon || n.desktopEntry} pixelSize={14}/>
+            )}
+          <label cssClasses={["title"]} label={n.summary || "NO SUMMARY"} ellipsize={3} />
+          <box hexpand />
+          <button onClicked={() => n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Gtk.Align.END} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+              <image file={`${HOME_DIR}/.config/ags/assets/icon/vaadin--close-small.svg`} pixelSize={15}/>
           </button>
         </box>
-        <Gtk.Separator visible />
-        <box class="content">
+        <Gtk.Separator visible/>
+        <box spacing={7} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
           {n.image && fileExists(n.image) && (
-            <image valign={Gtk.Align.START} class="image" file={n.image} />
+            <image valign={Gtk.Align.START} pixelSize={40} file={n.image} />
           )}
           {n.image && isIcon(n.image) && (
-            <box valign={Gtk.Align.START} class="icon-image">
-              <image
-                iconName={n.image}
-                halign={Gtk.Align.CENTER}
-                valign={Gtk.Align.CENTER}
-              />
+            <box valign={Gtk.Align.START}>
+              <image iconName={n.image} halign={Gtk.Align.START} valign={Gtk.Align.START} />
             </box>
           )}
-          <box orientation={Gtk.Orientation.VERTICAL}>
-            <label
-              class="summary"
-              halign={Gtk.Align.START}
-              xalign={0}
-              label={n.summary}
-              ellipsize={Pango.EllipsizeMode.END}
-            />
-            {n.body && (
-              <label
-                class="body"
-                wrap
-                useMarkup
-                halign={Gtk.Align.START}
-                xalign={0}
-                justify={Gtk.Justification.FILL}
-                label={n.body}
-              />
+          <box spacing={5} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true} orientation={Gtk.Orientation.VERTICAL}>
+            <box spacing={5} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
+              <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                <CreateEntryContent name="NOTIFICATION ID" value={String(n.id)?.toUpperCase() || "UNKNOWN"} hexpand />
+                <CreateEntryContent name="APPLICATION NAME" value={n.appName.toUpperCase() || "UNKNOWN"} allowCopy hexpand />
+              </box>
+              <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                <CreateEntryContent name="CATEGORY" value={n.category?.toUpperCase() || "UNKNOWN"} hexpand />
+                <CreateEntryContent name="SUPPRESS SOUND" value={String(n.suppressSound)?.toUpperCase() || "UNKNOWN"} hexpand />
+              </box>
+              <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                <CreateEntryContent name="DESKTOP ENTRY" value={n.desktopEntry?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} />
+                <CreateEntryContent name="TRANSIENT" value={String(n.transient)?.toUpperCase() || "UNKNOWN"} hexpand />
+              </box>
+              <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
+                <CreateEntryContent name="EXPIRE TIMEOUT" value={String(n.expireTimeout)?.toUpperCase() || "UNKNOWN"} hexpand />
+                <CreateEntryContent name="RESIDENT" value={String(n.resident)?.toUpperCase() || "UNKNOWN"} hexpand />
+              </box>
+              <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
+                <CreateEntryContent name="URGENCY" value={urgency(n)?.toUpperCase() || "UNKNOWN"} hexpand />
+                <CreateEntryContent name="TIME" value={time(n.time)?.toUpperCase() || "UNKNOWN"} hexpand />
+              </box>
+            </box>
+            <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>
+              <CreateEntryContent name="BODY" value={n.body.toUpperCase() || "NO BODY"} allowCopy />
+            </box>
+            {n.actions.length > 0 && (
+              <box>
+                {n.actions.map(({ label, id }) => (
+                  <button hexpand cssClasses={["action-button"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+                    <label label={label} halign={Gtk.Align.CENTER} hexpand />
+                  </button>
+                ))}
+              </box>
             )}
           </box>
         </box>
-        {n.actions.length > 0 && (
-          <box class="actions">
-            {n.actions.map(({ label, id }) => (
-              <button hexpand onClicked={() => n.invoke(id)}>
-                <label label={label} halign={Gtk.Align.CENTER} hexpand />
-              </button>
-            ))}
-          </box>
-        )}
       </box>
     </Adw.Clamp>
   )

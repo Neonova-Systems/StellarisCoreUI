@@ -1,6 +1,7 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor } from "ags"
 import { playGrantedSound } from "./utility";
+import Pango from "gi://Pango";
 
 type EntryContentProps = {
     name?: string | Accessor<string> | undefined;
@@ -8,9 +9,11 @@ type EntryContentProps = {
     css?: string | Accessor<string> | undefined;
     hexpand?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     allowCopy?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    useMarkup?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    ellipsize?: Pango.EllipsizeMode | Accessor<NonNullable<Pango.EllipsizeMode | undefined>> | undefined
 };
 
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false }: EntryContentProps) {
+export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, ellipsize }: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : value?.get() || "";
     function copyToClipboard(text: string) {
         const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
@@ -25,7 +28,16 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
             )}
             <label label={`${name}:`} css={css} halign={Gtk.Align.START} />
-            <label cssClasses={["value", "start-animation", allowCopy ? "copyable" : ""]} css={css} label={valueStr} halign={Gtk.Align.START} wrap wrapMode={Gtk.WrapMode.CHAR} cursor={allowCopy ? Gdk.Cursor.new_from_name("pointer", null) : undefined} />
+            <label 
+                useMarkup={useMarkup} 
+                cssClasses={["value", "start-animation", allowCopy ? "copyable" : ""]} 
+                css={css} 
+                label={valueStr} 
+                halign={Gtk.Align.START} 
+                wrap 
+                wrapMode={Gtk.WrapMode.CHAR} 
+                ellipsize={ellipsize}
+                cursor={allowCopy ? Gdk.Cursor.new_from_name("pointer", null) : undefined} />
         </box>
     )
 }

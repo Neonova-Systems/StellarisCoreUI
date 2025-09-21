@@ -1,26 +1,22 @@
+@use "sass:string";
 @import './animation.scss';
+
+@function gtkalpha($color, $alpha) {
+  @return string.unquote("alpha(#{$color},#{$alpha})");
+}
+
 * { all: unset; } // Unsets everything so you can style everything from scratch
-
-.debug {
-  background-color: red;
-  .debug {
-    background-color: blue;
-    .debug {
-      background-color: green;
-    }
-  }
-}
-
-window.Dashboard {
-  background: linear-gradient(to bottom, #070B1F, #040714);
-}
-
 .side-left { min-width: 450px }
 .side-right { min-width: 1441px }
 .screen { border: 2px solid #0A102E }
 .copyable { &:hover { text-decoration: underline;} }
+.debug { background-color: red; .debug { background-color: blue; .debug { background-color: green; } } }
+
+window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
+
 
 .panel {
+  @include apply-start-animation(200ms);
   border-radius: 0;
   background-color: #0A102E;
   border-left: 5px solid #3353F3;
@@ -38,6 +34,38 @@ window.Dashboard {
   &:active { background-color: #0D143B; }
 }
 
+.notification {
+  @include apply-start-animation(500ms);
+  background: gtkalpha(#040714, 0.5);
+  border: 1.5px solid #0B1233;
+  padding: 10px;
+  .title {
+    font-family: Chakra Petch;
+    font-size: 13px;
+    color: #9EA6CC;
+    font-weight: 600;
+  }
+  .close-button {
+    background-color: #9EA6CC;
+    &:hover { background-color: gtkalpha(#9EA6CC, 0.5); }
+  }
+}
+
+.action-button {
+  background-color: #9EA6CC;
+  border: 1px solid #0B1233;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-family: Chakra Petch;
+  color: #0A102E;
+  font-size: 10px;
+  font-weight: 600;
+  label { text-transform: uppercase;}
+  &:hover { background-color: gtkalpha(#9EA6CC, 0.5); }
+}
+
 .card-component {
   background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
   .card-content {
@@ -45,15 +73,6 @@ window.Dashboard {
     border-left: 1.5px solid #0A102E;
     border-right: 1.5px solid #0A102E;
     border-bottom: 1.5px solid #0A102E;
-    .entry {
-      font-family: Rajdhani;
-      font-size: 9px;
-      font-weight: 600;
-      color: #6E78A7;
-      .value {
-        color: #9EA6CC;
-      }
-    }
     levelbar {
       trough {
         block.filled { background-color: #213AB4; }
@@ -84,6 +103,17 @@ window.Dashboard {
       margin-top: 0px;
       min-height: 45px;
     }
+  }
+}
+
+.entry {
+  font-family: Rajdhani;
+  font-size: 9px;
+  font-weight: 600;
+  color: #6E78A7;
+
+  .value {
+    color: #9EA6CC;
   }
 }
 
