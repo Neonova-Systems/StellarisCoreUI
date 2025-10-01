@@ -11,6 +11,7 @@
 .screen { border: 2px solid #0A102E }
 .copyable { &:hover { text-decoration: underline;} }
 .debug { background-color: red; .debug { background-color: blue; .debug { background-color: green; } } }
+.layer-image { border: 0.7px solid #3253F6; box-shadow: 0px 0px 5px gtkalpha(#3253F6, 0.25); }
 
 window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 

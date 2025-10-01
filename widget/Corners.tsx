@@ -27,6 +27,7 @@ export function TopRightCorner(gdkmonitor: Gdk.Monitor) {
         margin-right={10}
         keymode={Astal.Keymode.NONE}
         application={app}
+        namespace={"top-right-corner"}
         anchor={ RIGHT | TOP }>
         <button onClicked={onClick}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-right-corner.svg`)} halign={Gtk.Align.FILL}/>
@@ -47,6 +48,7 @@ export function BottomRightCorner(gdkmonitor: Gdk.Monitor) {
         margin-right={10}
         keymode={Astal.Keymode.NONE}
         application={app}
+        namespace={"bottom-right-corner"}
         anchor={ RIGHT | BOTTOM}>
         <button onClicked={onClick}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-right-corner.svg`)} halign={Gtk.Align.FILL}/>
@@ -67,6 +69,7 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
         margin-left={marginLeft}
         keymode={Astal.Keymode.NONE}
         application={app}
+        namespace={"bottom-left-corner"}
         anchor={ LEFT | BOTTOM}>
         <button onClicked={onClick}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-left-corner.svg`)} halign={Gtk.Align.FILL}/>
@@ -90,6 +93,7 @@ export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
         margin-left={marginLeft}
         keymode={Astal.Keymode.NONE}
         application={app}
+        namespace={"top-left-corner"}
         anchor={ LEFT | TOP}>
         <button onClicked={onClick}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-left-corner.svg`)} halign={Gtk.Align.FILL}/>

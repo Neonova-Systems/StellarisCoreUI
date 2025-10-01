@@ -3,15 +3,14 @@ import { CreatePanel, HOME_DIR } from "../helper";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Alert from "../decoration/Alert";
+import LayerInformation from "../card/layer-information";
 
-export default function LayerInformation() {
+export default function ExtraPane() {
     const hyprland = AstalHyprland.get_default();
     return (
         <box spacing={10} css={`min-height: ${hyprland.focused_monitor.height / 4.5 - 15}px;`} homogeneous={false} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand={false}>
             <box orientation={Gtk.Orientation.VERTICAL} css="min-width: 390px;" spacing={10}>
-                <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-                    <CreatePanel name={"LAYER INFORMATION"} />
-                </box>
+                <LayerInformation />
                 <Alert />
             </box>
             <box spacing={10} hexpand>

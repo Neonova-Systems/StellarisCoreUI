@@ -13,10 +13,11 @@ import GLib from "gi://GLib?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../card/music-player";
 import app from "ags/gtk4/app";
-import LayerInformation from "./LayerInformation";
+import LayerInformation from "./ExtraPane";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
+import ExtraPane from "./ExtraPane";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -72,6 +73,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         default_width={hyprland.focused_monitor.width}
         defaultHeight={hyprland.focused_monitor.height}
         application={app}
+        namespace={"dashboard"}
         anchor={ LEFT | TOP }>
         <box css="margin: 10px;" spacing={9} >
             <box cssClasses={["side-left"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
@@ -119,7 +121,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 <box cssClasses={["screen"]} hexpand={false} halign={Gtk.Align.FILL} vexpand={true}>
                     <Wallpaper />
                 </box>
-                <LayerInformation />
+                <ExtraPane />
                 <BatteryRibbon />
             </box>
         </box>
