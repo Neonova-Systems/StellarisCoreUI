@@ -9,10 +9,12 @@ export default function ExtraPane() {
     const hyprland = AstalHyprland.get_default();
     return (
         <box spacing={10} css={`min-height: ${hyprland.focused_monitor.height / 4.5 - 15}px;`} homogeneous={false} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand={false}>
-            <box orientation={Gtk.Orientation.VERTICAL} css="min-width: 390px;" spacing={10}>
-                <LayerInformation />
-                <Alert />
-            </box>
+            <scrolledwindow vexpand={false} css={`min-width: 390px;`}>
+                <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                    <LayerInformation />
+                    <Alert />
+                </box>
+            </scrolledwindow>
             <box spacing={10} hexpand>
                 <box cssClasses={["decoration-card"]} css="min-width: 120px;">
                     <Gtk.Picture cssClasses={["stagger-animation"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/decoration-2.svg`)} canShrink={false} halign={Gtk.Align.FILL}/>
