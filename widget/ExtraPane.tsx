@@ -9,7 +9,7 @@ export default function ExtraPane() {
     const hyprland = AstalHyprland.get_default();
     return (
         <box spacing={10} css={`min-height: ${hyprland.focused_monitor.height / 4.5 - 15}px;`} homogeneous={false} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand={false}>
-            <scrolledwindow vexpand={false} css={`min-width: 390px;`}>
+            <scrolledwindow vexpand={false} hexpand={false} css={`min-width: 390px;`}>
                 <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                     <LayerInformation />
                     <Alert />

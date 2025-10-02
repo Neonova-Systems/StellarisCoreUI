@@ -2,7 +2,7 @@ import Gtk from "gi://Gtk?version=4.0"
 import { CreatePanel, HOME_DIR, playPanelSound } from "../helper";
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
-import { createState, For, With } from "ags";
+import { Accessor, createState, For, With } from "ags";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
@@ -17,6 +17,45 @@ interface Layer {
     h: number;
 }
 
+function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: { layers: Accessor<Array<Layer>>, layerNumber: string, layerTitle: string, maximumSize: number }) {
+    return (
+        <box spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
+            <Adw.Clamp maximumSize={maximumSize}>
+                <box css="min-width: 245px;" halign={Gtk.Align.FILL} homogeneous={false} hexpand={false}>
+                    <overlay>
+                        <Gtk.Picture 
+                            $type="overlay" 
+                            cssClasses={["layer-image"]} 
+                            file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer${layerNumber}.svg`)} 
+                            canShrink={false} 
+                            contentFit={Gtk.ContentFit.FILL} 
+                        />
+                    </overlay>
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={3} halign={Gtk.Align.FILL} valign={Gtk.Align.CENTER} css={'padding-top: 12px; padding-bottom: 11px;'} hexpand>
+                        <label cssClasses={["layer-title"]} label={layerTitle} />
+                        <label cssClasses={["layer-number"]} label={`LAYER ${layerNumber.padStart(2, '0')}`} />
+                        <label cssClasses={["layer-title"]} label={layerTitle} />
+                    </box>
+                </box>
+            </Adw.Clamp>
+            <With value={layers}>
+                {(_) => (
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={true} valign={Gtk.Align.CENTER} halign={Gtk.Align.FILL}>
+                        <For each={layers}>
+                            {(item) => (
+                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
+                                    <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
+                                    <label cssClasses={["entry"]} css={'font-size: 7px'} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
+                                </box>
+                            )}
+                        </For>
+                    </box>
+                )}
+            </With>
+        </box>
+    );
+}
+
 export default function LayerInformation() {
     const hyprland = AstalHyprland.get_default();
     const currentMonitorName = hyprland.focused_monitor.name;
@@ -26,6 +65,7 @@ export default function LayerInformation() {
     const [topLayerJson, setTopLayerJson] = createState<Array<Layer>>([]);
     const [overlayLayerJson, setOverlayLayerJson] = createState<Array<Layer>>([]);
     const [toggleContentState, settoggleContentState] = createState(false);
+
     timeout(500, () => { execAsync('ags request "getLayerInformationState"').then((out) => { settoggleContentState(out === 'true'); }) });
     function panelClicked() {
         execAsync('ags request "toggleLayerInformation"').then(out => {
@@ -36,6 +76,7 @@ export default function LayerInformation() {
             }
         });
     }
+
     timeout(500, () => { execAsync('hyprctl layers -j').then((out) => {
             const layerData = JSON.parse(out);
             const currentMonitorLayers = layerData[currentMonitorName] || [];
@@ -48,97 +89,40 @@ export default function LayerInformation() {
             } else {
                 console.log(`No layer information available for monitor ${currentMonitorName}.`);
             }
-        })});
-
-    // console.log(topLayerJson.get());
-    timeout(800, () => {
-        console.log(backgroundLayerJson.get()); 
-        for (const item of backgroundLayerJson.get()) {
-            console.log(item.namespace);
-        }
+        })
     });
+
+    const masximumSize = hyprland.focused_monitor.height / 4.5;
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false} hexpand={false}>
             <CreatePanel name={"LAYER INFORMATION"} onClicked={panelClicked} />
             <With value={toggleContentState}>
                 {(v) => (
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <Adw.Clamp maximumSize={hyprland.focused_monitor.height / 4.5} >
-                                <Gtk.Picture cssClasses={["layer-image"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer0.svg`)} canShrink={false} contentFit={Gtk.ContentFit.FILL} />
-                            </Adw.Clamp>
-                            <With value={backgroundLayerJson}>
-                                {(_) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={false} valign={Gtk.Align.START} halign={Gtk.Align.FILL}>
-                                        <For each={backgroundLayerJson}>
-                                            {(item) => (
-                                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                                    <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
-                                                    <label cssClasses={["entry"]} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
-                                                </box>
-                                            )}
-                                        </For>
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <box cssClasses={["content"]} spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <Adw.Clamp maximumSize={hyprland.focused_monitor.height / 4.5} >
-                                <Gtk.Picture cssClasses={["layer-image"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer1.svg`)} canShrink={false} contentFit={Gtk.ContentFit.FILL} />
-                            </Adw.Clamp>
-                            <With value={bottomLayerJson}>
-                                {(v) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                                        <For each={bottomLayerJson}>
-                                            {(item) => (
-                                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                                    <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
-                                                    <label cssClasses={["entry"]} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
-                                                </box>
-                                            )}
-                                        </For>
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <box cssClasses={["content"]} spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <Adw.Clamp maximumSize={hyprland.focused_monitor.height / 4.5} >
-                                <Gtk.Picture cssClasses={["layer-image"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer2.svg`)} canShrink={false} contentFit={Gtk.ContentFit.FILL} />
-                            </Adw.Clamp>
-                            <With value={topLayerJson}>
-                                {(v) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                                        <For each={topLayerJson}>
-                                            {(item) => (
-                                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                                    <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
-                                                    <label cssClasses={["entry"]} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
-                                                </box>
-                                            )}
-                                        </For>
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <box cssClasses={["content"]} spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <Adw.Clamp maximumSize={hyprland.focused_monitor.height / 4.5} >
-                                <Gtk.Picture cssClasses={["layer-image"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer3.svg`)} canShrink={false} contentFit={Gtk.ContentFit.FILL} />
-                            </Adw.Clamp>
-                            <With value={overlayLayerJson}>
-                                {(v) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                                        <For each={overlayLayerJson}>
-                                            {(item) => (
-                                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                                    <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
-                                                    <label cssClasses={["entry"]} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
-                                                </box>
-                                            )}
-                                        </For>
-                                    </box>
-                                )}
-                            </With>
-                        </box>
+                    <box visible={v} cssClasses={["card-content"]} css={`padding: 14px;`} spacing={15} orientation={Gtk.Orientation.VERTICAL}>
+                        <LayerContentFragment 
+                            layers={backgroundLayerJson}
+                            layerNumber="0"
+                            layerTitle="BACKGROUND"
+                            maximumSize={masximumSize}
+                        />
+                        <LayerContentFragment 
+                            layers={bottomLayerJson}
+                            layerNumber="1"
+                            layerTitle="BOTTOM"
+                            maximumSize={masximumSize}
+                        />
+                        <LayerContentFragment 
+                            layers={topLayerJson}
+                            layerNumber="2"
+                            layerTitle="TOP"
+                            maximumSize={masximumSize}
+                        />
+                        <LayerContentFragment
+                            layers={overlayLayerJson}
+                            layerNumber="3"
+                            layerTitle="OVERLAY"
+                            maximumSize={masximumSize}
+                        />
                     </box>
                 )}
             </With>
