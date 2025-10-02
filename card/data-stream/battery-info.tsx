@@ -140,7 +140,8 @@ export function BatteryRibbon() {
                 <label label="BATTERY STATUS:" halign={Gtk.Align.START} />
                 <label cssClasses={["value"]} label={status} halign={Gtk.Align.START} />
             </box>
-            <image iconName={createBinding(battery, "iconName")} pixelSize={13} valign={Gtk.Align.START}/>
+            <box css={'min-width: 3px;'} />
+            <box cssClasses={["blinking-square"]} />
         </box>
     </box>)
 }

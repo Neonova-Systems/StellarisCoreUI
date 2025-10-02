@@ -45,7 +45,7 @@ function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: 
                             {(item) => (
                                 <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
                                     <label cssClasses={["layer-namespace"]} label={`${item.namespace.toUpperCase()}`} halign={Gtk.Align.START} />
-                                    <label cssClasses={["entry"]} css={'font-size: 7px'} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
+                                    <label cssClasses={["entry"]} css={'font-size: 7px;'} label={`${item.address.toUpperCase()} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
                                 </box>
                             )}
                         </For>

@@ -74,9 +74,7 @@ export default function MusicPlayer() {
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} >
-                <image file={`${HOME_DIR}/.config/ags/assets/icon/mdi--music.svg`} pixelSize={14} />
-            </CreatePanel>
+            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} />
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} valign={Gtk.Align.START}>

@@ -17,6 +17,14 @@
 
 window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 
+.blinking-square {
+  @include apply-blink-animation(700ms);
+  box-shadow: 0px 0px 10px gtkalpha(#00AD1D, 0.5);
+  background-color: #00AD1D;
+  min-width: 5px;
+  margin-top: 3.5px;
+  margin-bottom: 3.5px;
+}
 
 .panel {
   @include apply-start-animation(200ms);
