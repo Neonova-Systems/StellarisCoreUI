@@ -51,11 +51,6 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const resolvedHandler = notifd.connect("resolved", (_, id) => {
         setNotifications((ns) => ns.filter((n) => n.id !== id))
     })
-    
-    onCleanup(() => {
-        notifd.disconnect(notifiedHandler)
-        notifd.disconnect(resolvedHandler)
-    })
 
     const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
     execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
@@ -64,14 +59,18 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { dashboardCards } = createDashboardCards(notifications);
 
     return ( <window visible
-        $={(self) => onCleanup(() => self.destroy())}
+        $={(self) => onCleanup(() => {
+            notifd.disconnect(notifiedHandler)
+            notifd.disconnect(resolvedHandler)
+            self.destroy()
+        })}
         name="Dashboard"
         layer={Astal.Layer.BACKGROUND}
         cssClasses={["Dashboard"]}
         gdkmonitor={gdkmonitor}
         exclusivity={Astal.Exclusivity.NORMAL}
         default_width={hyprland.focused_monitor.width}
-        defaultHeight={hyprland.focused_monitor.height}
+        default_height={hyprland.focused_monitor.height}
         application={app}
         namespace={"dashboard"}
         anchor={ LEFT | TOP }>

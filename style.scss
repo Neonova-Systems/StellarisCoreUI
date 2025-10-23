@@ -206,7 +206,7 @@ calendar {
     label.week-number{ color: #1C2552; }
     label.day-name { text-transform: uppercase;}
     label { padding: 3px; padding-left: 0px; padding-right: 0px; margin: 2px;}
-    label.other-month { color: transparentize($color: #9EA6CC, $amount: 0.5);}
+    label.other-month { color: gtkalpha(#9EA6CC, 0.5);}
     label.today{ color: #0A102E; background-color: #9EA6CC; border-radius: 99px; font-weight: bold; }
     padding: 5px;
   }
@@ -239,4 +239,17 @@ calendar {
   font-size: 10px;
   color: #9EA6CC;
   font-weight: 600;
+}
+
+.context-menu {
+  background: linear-gradient(to bottom, #070B1F, #040714);
+  border: 1.5px solid #0A102E;
+  font-family: Rajdhani;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6E78A7;
+}
+
+.shadow {
+  box-shadow: 0px 0px 10px gtkalpha(#00AD1D, 0.5);
 }

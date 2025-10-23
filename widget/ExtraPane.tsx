@@ -4,6 +4,7 @@ import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Alert from "../decoration/Alert";
 import LayerInformation from "../card/layer-information";
+import FavoritesItem from "../card/favorites-item";
 
 export default function ExtraPane() {
     const hyprland = AstalHyprland.get_default();
@@ -12,6 +13,7 @@ export default function ExtraPane() {
             <scrolledwindow vexpand={false} hexpand={false} css={`min-width: 390px;`}>
                 <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                     <LayerInformation />
+                    <FavoritesItem />
                     <Alert />
                 </box>
             </scrolledwindow>
