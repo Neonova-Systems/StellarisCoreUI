@@ -16,7 +16,6 @@
 .layer-number { font-family: Chakra Petch; font-size: 12px; color: #3253F6; font-weight: bold; letter-spacing: 1.5px; text-shadow: 0px 2px 4px gtkalpha(#3253F6, 0.25);}
 
 window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
-window.ContextMenu { }
 
 .blinking-square {
   @include apply-blink-animation(700ms);
@@ -133,7 +132,6 @@ window.ContextMenu { }
   font-size: 9px;
   font-weight: 600;
   color: #6E78A7;
-
   .value {
     color: #9EA6CC;
   }

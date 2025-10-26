@@ -28,7 +28,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
             {allowCopy && (
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
             )}
-            <label label={`${name}:`} css={css} halign={Gtk.Align.START} />
+            <label label={`${name}:`} css={css} halign={Gtk.Align.START} cssClasses={["alt-start-animation"]}/>
             <label 
                 useMarkup={useMarkup} 
                 cssClasses={["value", "start-animation", allowCopy ? "copyable" : ""]} 

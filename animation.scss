@@ -68,6 +68,7 @@
     20% { opacity: 1; }
     50% { opacity: 0.2; } 
 }
+.alt-start-animation { @include apply-start-animation(0.5s, 0s);}
 .start-animation { @include apply-start-animation; }
 .stagger-animation { @include apply-stagger-animation; }
 .stagger-animation-alt { @include apply-stagger-animation(3s); }
