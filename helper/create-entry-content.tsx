@@ -10,10 +10,11 @@ type EntryContentProps = {
     hexpand?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     allowCopy?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     useMarkup?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    orientation?: Gtk.Orientation | Accessor<NonNullable<Gtk.Orientation | undefined>> | undefined
     ellipsize?: Pango.EllipsizeMode | Accessor<NonNullable<Pango.EllipsizeMode | undefined>> | undefined
 };
 
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, ellipsize }: EntryContentProps) {
+export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize }: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : value?.get() || "";
     function copyToClipboard(text: string) {
         const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
@@ -23,7 +24,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
         }
     }
     return (
-        <box orientation={Gtk.Orientation.VERTICAL} spacing={1.5} hexpand={hexpand}>
+        <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
             {allowCopy && (
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
             )}

@@ -2,7 +2,10 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
 import style from "../style.scss"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { Accessor, createState, For } from "ags";
+import { Accessor, createState, For, With } from 'ags';
+import { CreateEntryContent } from "../helper";
+import { execAsync } from "ags/process";
+import { interval } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
 const pointerX = hyprland.cursorPosition.x;
@@ -14,20 +17,21 @@ const offset = 15;
 export default function ContextMenu() {
     const { LEFT, TOP } = Astal.WindowAnchor
     const [user_commands, setUserCommands] = createState([
-        { name: "Open terminal", target: "-", command: ""},
-        { name: "Resize", target: "current window", command: ""},
-        { name: "Move", target: "current-window", command: ""},
-        { name: "Close", target: "current-window", command: ""},
-        { name: "Toggle floating mode", target: "current-window", command: ""},
-        { name: "Move to the center", target: "current-window", command: ""},
-        { name: "Toggle Gaps", target: "global-settings", command: ""},
-        { name: "Increase Gap", target: "global-settings", command: ""},
-        { name: "Decrease Gap", target: "global-settings", command: ""},
+        { name: "Open terminal", target: "NULL", command: "spawn-terminal-relative", keybind: "enter", description: "Spawns a terminal at the current directory."},
+        { name: "Resize", target: "CURRENT-WINDOW", command: "resize-current-window", description: "Enter resize submap for the active window."},
+        { name: "Move", target: "CURRENT-WINDOW", command: "hyprctl dispatch submap manage-window", description: "Enter move submap for the active window."},
+        { name: "Close", target: "CURRENT-WINDOW", command: "hyprctl kill", keybind: "ctrl + x", description: "Closes the active window."},
+        { name: "Toggle floating", target: "CURRENT-WINDOW", command: "", keybind: "ctrl + f", description: "Toggles floating mode for the active window."},
+        { name: "Move to the center", target: "CURRENT-WINDOW", command: "", description: "Moves the active window to the center."},
+        { name: "Toggle Gaps", target: "GLOBAL-SETTINGS", command: "", description: "Toggles gaps between windows."},
+        { name: "Increase Gap", target: "GLOBAL-SETTINGS", command: "", description: "Increases the gap size."},
+        { name: "Decrease Gap", target: "GLOBAL-SETTINGS", command: "", description: "Decreases the gap size."},
     ])
+    const [displayMode, setDisplayMode] = createState<"target" | "description">("target");
+    interval(2000, () => { setDisplayMode(current => current === "target" ? "description" : "target") });
     return ( <window visible
         name="ContextMenu"
         layer={Astal.Layer.TOP}
-        cssClasses={["contextmenu"]}
         exclusivity={Astal.Exclusivity.NORMAL}
         default_width={menuWidth}
         default_height={menuHeight}
@@ -36,15 +40,28 @@ export default function ContextMenu() {
         marginLeft={pointerX}
         margin_top={pointerY}
         namespace={"context-menu"}>
-        <box cssClasses={["debug", "context-menu"]} orientation={Gtk.Orientation.VERTICAL}>
-            <For each={user_commands} >
-                {(command: any, index) => (
-                    <box cssClasses={["shadow"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <label label={command.name} />
-                        <label label={command.target} />
-                    </box>
-                )}
-            </For>
+        <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
+            <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
+                <For each={user_commands} >
+                    {(command: any, index) => (
+                        <box>
+                            <button onClicked={() => execAsync(`zsh -ic "${command.command}"`)}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={3}>
+                                    <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
+                                        <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand/>
+                                        {command.keybind && ( <label cssClasses={["keybind"]} label={command.keybind} halign={Gtk.Align.START} /> )}
+                                    </box>
+                                    <With value={displayMode}>
+                                        {(value) => value === "target" ? <CreateEntryContent name={"TARGET"} value={command.target} orientation={Gtk.Orientation.HORIZONTAL}/>
+                                        : <CreateEntryContent name={"DESC"} value={command.description} orientation={Gtk.Orientation.HORIZONTAL}/>
+                                        }
+                                    </With>
+                                </box>
+                            </button>
+                        </box>
+                    )}
+                </For>
+            </box>
         </box>
     </window>
     )
