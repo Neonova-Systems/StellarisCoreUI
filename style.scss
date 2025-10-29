@@ -73,18 +73,22 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 }
 
 .action-button {
-  background-color: #9EA6CC;
+  // background-color: #9EA6CC;
+  background-color: gtkalpha(#152052, 0.4);
+  color: #6E78A7;
   border: 1px solid #0B1233;
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 10px;
   padding-right: 10px;
   font-family: Chakra Petch;
-  color: #0A102E;
   font-size: 10px;
   font-weight: 600;
   label { text-transform: uppercase;}
-  &:hover { background-color: gtkalpha(#9EA6CC, 0.5); }
+  &:hover { 
+    background-color: gtkalpha(#192557, 0.5);
+    border: 1px solid gtkalpha(#141d3f, 0.7);
+  }
 }
 
 .card-component {
@@ -257,7 +261,7 @@ calendar {
   .entry:hover {
     background-color: hsla(230, 64%, 11%, 0.6);
     .title { color: #C6CFFF; }
-    .keybind { color: #C6CFFF}
+    .keybind { color: #C6CFFF; }
     border-left: 3px solid #3353F3;
     padding-top: 7px;
     padding-bottom: 7px;

@@ -4,6 +4,7 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { writeFile } from "ags/file"
 import { readJson, writeJson } from "./helper/json"
 import { WALLPAPER_JSON, DASHBOARD_STATE_JSON, HOME_DIR } from "./helper/constants";
+import ControlCenter from './card/control-center';
 
 const hyprland = AstalHyprland.get_default();
 
@@ -19,9 +20,21 @@ export type DashboardState = {
     batteryInfoVisible: boolean;
     notificationVisible: boolean;
     layerInformationVisible: boolean;
+    ControlCenterVisible: boolean;
 }
 
-let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { visible: true, dataStreamVisible: true, systemInfoVisible: true, networkInfoVisible: true, filesystemInfoVisible: true, hardwareInfoVisible: true, batteryInfoVisible: true, notificationVisible: false, layerInformationVisible: false });
+let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { 
+    visible: true, 
+    dataStreamVisible: true, 
+    systemInfoVisible: true, 
+    networkInfoVisible: true,
+    filesystemInfoVisible: true,
+    hardwareInfoVisible: true,
+    batteryInfoVisible: true,
+    notificationVisible: false,
+    layerInformationVisible: false,
+    ControlCenterVisible: true,
+});
 
 const stateMappings: { [key: string]: keyof DashboardState } = {
     "DataStream": "dataStreamVisible",
@@ -32,6 +45,7 @@ const stateMappings: { [key: string]: keyof DashboardState } = {
     "BatteryInfo": "batteryInfoVisible",
     "Notification": "notificationVisible",
     "LayerInformation": "layerInformationVisible",
+    "ControlCenter": "ControlCenterVisible",
 };
 
 export function applyCurrentDashboardState() {
