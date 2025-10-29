@@ -19,7 +19,7 @@ export default function SystemTray() {
       <For each={items}>
         {(item) => (
           <menubutton $={(self) => init(self, item)} tooltipMarkup={item.tooltipMarkup}>
-            <image gicon={createBinding(item, "gicon")} />
+            <image gicon={createBinding(item, "gicon")} pixelSize={13}/>
           </menubutton>
         )}
       </For>
