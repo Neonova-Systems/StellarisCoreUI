@@ -14,6 +14,9 @@
 .layer-image { border: 0.7px solid #3253F6; box-shadow: 0px 0px 5px gtkalpha(#3253F6, 0.25); min-width: 230px;}
 .layer-title { font-family: Chakra Petch; font-size: 6px; color: #20274d; font-weight: bold; letter-spacing: 1.1px;}
 .layer-number { font-family: Chakra Petch; font-size: 12px; color: #3253F6; font-weight: bold; letter-spacing: 1.5px; text-shadow: 0px 2px 4px gtkalpha(#3253F6, 0.25);}
+.border-default { border: 1.5px solid #0A102E; }
+.shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
+.uppercase { text-transform: uppercase; }
 
 window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 
@@ -154,6 +157,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 popover.menu label {
   text-transform: uppercase;
 }
+
 menubutton {
   popover {
     contents{
@@ -251,13 +255,6 @@ calendar {
     padding: 2px;
     background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
   }
-  .title {
-    text-transform: uppercase;
-    font-family: Rajdhani;
-    font-size: 11px;
-    color: #9EA6CC;
-    font-weight: 600;
-  }
   .entry:hover {
     background-color: hsla(230, 64%, 11%, 0.6);
     .title { color: #C6CFFF; }
@@ -285,6 +282,39 @@ calendar {
   }
 }
 
-.shadow {
-  box-shadow: 0px 0px 5px gtkalpha(black, 0.5);
+
+.control-collection {
+  min-width: 50px;
+  min-height: 80px;
+  font-size: 10px;
+  .title-content {
+    text-transform: uppercase;
+    font-family: Chakra Petch;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1.1px;
+  }
+  .alt-entry:hover,.entry:hover {
+    background-color: gtkalpha(#0f1849, 0.6);
+    color: #2043ff;
+  }
+  .alt-entry:active, .entry:active {
+    background-color: #6f9eff;
+    box-shadow: 0px 0px 5px gtkalpha(#6f9eff, 0.25);
+    color: black;
+  }
+  .alt-entry {
+    font-family: Rajdhani;
+    font-size: 9px;
+    font-weight: 600;
+    background-color: gtkalpha(#0f1849, 0.4);
+    color: #1832e7;
+    padding: 5px;
+  }
+  .entry {
+    box-shadow: 0px 0px 5px gtkalpha(#3253F6, 0.25);
+    background-color: gtkalpha(#1a39ed, 1.0);
+    color: black;
+    padding: 5px;
+  }
 }
