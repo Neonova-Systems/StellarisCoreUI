@@ -21,6 +21,9 @@ export function playNotificationsSound(timeoutSeconds: number = 100) {
 export function playEnterSound(timeoutSeconds: number = 100) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/enter.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
 }
+export function playKeySound(timeoutSeconds: number = 100) {
+    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/key.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
+}
 
 export function formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes';

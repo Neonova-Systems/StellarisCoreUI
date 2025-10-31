@@ -1,5 +1,5 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playEnterSound, playPanelSound } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound, playKeySound, playEnterSound } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
@@ -81,7 +81,8 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                                 const showAltLastOverlay = !randomNumber && isLastChunk;
                                                 return (
                                                     <button onClicked={() => EntryClicked(entry.command)}>
-                                                        <box cssClasses={["container"]}>
+                                                        <box cssClasses={["container", "border"]}>
+                                                            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
                                                             {showAltFirstOverlay && render('first', true)}
                                                             {showAltLastOverlay && render('last', true)}
                                                             {showFirstOverlay && render('first', false)}
