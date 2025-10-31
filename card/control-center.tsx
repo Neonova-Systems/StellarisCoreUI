@@ -1,5 +1,5 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playEnterSound, playPanelSound } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
@@ -42,6 +42,11 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
         )
     }
 
+    function EntryClicked(command : string)  {
+        command && execAsync(command);
+        playEnterSound();
+    }
+
     // Helper function to chunk array into groups of 4
     const chunkArray = (arr: any[], size: number) => {
         const chunks = [];
@@ -75,7 +80,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                                 const showAltFirstOverlay = !randomNumber && isFirstChunk;
                                                 const showAltLastOverlay = !randomNumber && isLastChunk;
                                                 return (
-                                                    <button onClicked={() => entry.command && execAsync(entry.command)}>
+                                                    <button onClicked={() => EntryClicked(entry.command)}>
                                                         <box cssClasses={["container"]}>
                                                             {showAltFirstOverlay && render('first', true)}
                                                             {showAltLastOverlay && render('last', true)}
