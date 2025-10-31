@@ -1,8 +1,9 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, playPanelSound } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
+import Gio from "gi://Gio?version=2.0";
 
 export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
@@ -31,6 +32,16 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     ].map((entry, idx) => ({ ...entry, index: idx + 1 }));
     const [tempArray, setTempArray] = createState<any[][]>([]);
 
+    const render = (type: string) => {
+        return (
+            <overlay>
+                <Gtk.Picture $type="overlay"
+                    file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/${type}-block.svg`)}
+                    canShrink={true} css={"min-width: 83px; min-height: 80px;"} contentFit={Gtk.ContentFit.FILL} />
+            </overlay>
+        )
+    }
+
     // Helper function to chunk array into groups of 4
     const chunkArray = (arr: any[], size: number) => {
         const chunks = [];
@@ -40,8 +51,6 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
         return chunks;
     };
 
-
-    // Initialize tempArray with chunked controlEntry
     setTempArray(chunkArray(controlEntry, 5));
 
     return (
@@ -52,26 +61,42 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand>
                             <For each={tempArray}>
-                                {(chunk: any[]) => (
-                                    <box cssClasses={['control-collection']} homogeneous={true} spacing={5}>
-                                        {chunk.map((entry: any) => {
-                                            const randomNumber = Math.random() > 0.5;
-                                            return (
-                                                <button onClicked={() => entry.command && execAsync(entry.command)}>
-                                                    <box cssClasses={[(randomNumber ? "entry" : "alt-entry")]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={5}>
-                                                        <box orientation={Gtk.Orientation.HORIZONTAL} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} vexpand>
-                                                            <label label={entry.index.toString() + "."} halign={Gtk.Align.START} />
-                                                            <box hexpand/>
-                                                            <label label={"0x" + createRandomString(4).toUpperCase()} halign={Gtk.Align.END} />
+                                {(chunk: any[], chunkIndex) => {
+                                    const currentIndex = chunkIndex.get();
+                                    const totalChunks = tempArray.get().length;
+                                    const isFirstChunk = currentIndex === 0;
+                                    const isLastChunk = currentIndex === totalChunks - 1;
+                                    return (
+                                        <box cssClasses={['control-collection']} homogeneous={true} spacing={5}>
+                                            {chunk.map((entry: any) => {
+                                                const randomNumber = Math.random() > 0.5;
+                                                const showFirstOverlay = randomNumber && isFirstChunk;
+                                                const showLastOverlay = randomNumber && isLastChunk;
+                                                const showAltFirstOverlay = !randomNumber && isFirstChunk;
+                                                const showAltLastOverlay = !randomNumber && isLastChunk;
+                                                return (
+                                                    <button onClicked={() => entry.command && execAsync(entry.command)}>
+                                                        <box>
+                                                            {showFirstOverlay && render('first')}
+                                                            {showAltFirstOverlay && render('alt-first')}
+                                                            {showAltLastOverlay && render('alt-last')}
+                                                            {showLastOverlay && render('last')}
+                                                            <box cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={5}>
+                                                                <box orientation={Gtk.Orientation.HORIZONTAL} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} vexpand>
+                                                                    <label label={entry.index.toString() + "."} halign={Gtk.Align.START} />
+                                                                    <box hexpand />
+                                                                    <label label={"0x" + createRandomString(4).toUpperCase()} halign={Gtk.Align.END} />
+                                                                </box>
+                                                                <label cssClasses={["title-content"]} label={entry.name} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vexpand wrap />
+                                                                <label label={createRandomString(15)} cssClasses={["uppercase"]} css={`font-size: 7px;`} halign={Gtk.Align.FILL} valign={Gtk.Align.END} vexpand wrap />
+                                                            </box>
                                                         </box>
-                                                        <label cssClasses={["title-content"]} label={entry.name} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vexpand wrap/>
-                                                        <label label={createRandomString(15)} cssClasses={["uppercase"]} css={`font-size: 7px;`} halign={Gtk.Align.FILL} valign={Gtk.Align.END} vexpand wrap/>
-                                                    </box>
-                                                </button>
-                                            );
-                                        })}
-                                    </box>
-                                )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </box>
+                                    );
+                                }}
                             </For>
                         </box>
                     </box>
