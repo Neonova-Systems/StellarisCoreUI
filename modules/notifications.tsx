@@ -56,7 +56,7 @@ export default function Notification({ notification: n }: NotificationProps) {
         <label cssClasses={["title"]} label={n.summary || "NO SUMMARY"} ellipsize={3} />
         <box hexpand />
         <button onClicked={() => n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Gtk.Align.END} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-          <image file={`${HOME_DIR}/.config/ags/assets/icon/vaadin--close-small.svg`} pixelSize={15} />
+          <image file={`${HOME_DIR}/.config/ags/assets/icon/vaadin--close-small.svg`} pixelSize={13} />
         </button>
       </box>
       <Gtk.Separator visible />

@@ -71,6 +71,8 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   }
   .close-button {
     background-color: #9EA6CC;
+    padding-left: 1px;
+    padding-right: 1px;
     &:hover { background-color: gtkalpha(#9EA6CC, 0.5); }
   }
 }
@@ -254,6 +256,12 @@ calendar {
   .contents {
     padding: 2px;
     background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+  }
+  .title {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #9EA6CC;
+    font-weight: 600;
   }
   .entry:hover {
     background-color: hsla(230, 64%, 11%, 0.6);
