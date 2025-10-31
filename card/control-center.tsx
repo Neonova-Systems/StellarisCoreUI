@@ -19,14 +19,14 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     }
 
     const controlEntry = [
-        { index: 1, name: "Open Powermenu", target: "", command: ``, description: "Show options to shutdown, restart, or log out."},
-        { index: 1, name: "Scan Text", target: "", command: ``, description: "Scan and copy text from an area of the screen (OCR)."},
+        { name: "Open Powermenu", target: "", command: ``, description: "Show options to shutdown, restart, or log out."},
+        { name: "Scan Text", target: "", command: ``, description: "Scan and copy text from an area of the screen (OCR)."},
         { name: "Scan QR", target: "", command: ``, description: "Scan a QR code from the screen or webcam."},
         { name: "Switch Window", target: "ALL-WORKSPACE", command: ``, description: "List and switch between all open windows."},
         { name: "Change Wallpaper", target: "", command: ``, description: "Open the wallpaper selector to change your background."},
-        { name: "Kill Application", target: "", command: ``, description: "Force-quit an unresponsive application by clicking on it."},
+        { name: "Kill Application", target: "", command: `hyprctl kill`, description: "Force-quit an unresponsive application by clicking on it."},
         { name: "Screen Record", target: "", command: ``, description: "Start recording a video of your screen."},
-        { name: "Color Picker", target: "", command: ``, description: "Select a color from anywhere on your screen."},
+        { name: "Color Picker", target: "", command: `zsh -ic 'autoload colorpicker && colorpicker | wl-copy'`, description: "Select a color from anywhere on your screen."},
         { name: "Cursor Zoom", target: "", command: ``, description: "Magnify the area around the cursor for visibility."},
         { name: "Cursor Zoom", target: "", command: ``, description: "Magnify the area around the cursor for visibility."},
     ].map((entry, idx) => ({ ...entry, index: idx + 1 }));
@@ -64,7 +64,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand>
+                        <box cssClasses={["contents", "border-default"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
                             <For each={tempArray}>
                                 {(chunk: any[], chunkIndex) => {
                                     const currentIndex = chunkIndex.get();

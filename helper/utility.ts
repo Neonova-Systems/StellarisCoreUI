@@ -1,6 +1,7 @@
 import { execAsync } from "ags/process";
 import { timeout } from "ags/time";
 import { HOME_DIR } from "./constants";
+import { Gdk } from "ags/gtk4";
 
 export function playPanelSound(timeoutSeconds: number = 500) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/panels.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
@@ -41,4 +42,12 @@ export function createRandomString(length: number): string {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return result;
+}
+
+export function copyToClipboard(text: string) {
+    const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
+    if (clipboard && text) {
+        clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
+        playGrantedSound();
+    }
 }
