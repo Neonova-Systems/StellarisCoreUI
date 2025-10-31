@@ -302,15 +302,20 @@ calendar {
     font-weight: bold;
     letter-spacing: 1.1px;
   }
-  .alt-entry:hover,.entry:hover {
+  .container:hover .overlay {
+    opacity: 0.17;
+  }
+  .container:hover .alt-overlay {
+    filter: brightness(1.5);
+  }
+  .alt-entry:hover, .entry:hover {
     // background-color: gtkalpha(#0f1849, 0.6);
     color: #2043ff;
   }
-  .alt-entry:active, .entry:active {
-    background-color: #6f9eff;
-    box-shadow: 0px 0px 5px gtkalpha(#6f9eff, 0.25);
-    color: black;
-  }
+  .container:active .overlay { filter: brightness(3); opacity: 1; }
+  .container:active .alt-overlay { filter: brightness(3); opacity: 0.8; }
+  .entry:active { color: black; }
+  .alt-entry:active { color: #2752ff; }
   .alt-entry {
     font-family: Rajdhani;
     font-size: 9px;

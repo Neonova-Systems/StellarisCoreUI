@@ -32,11 +32,11 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     ].map((entry, idx) => ({ ...entry, index: idx + 1 }));
     const [tempArray, setTempArray] = createState<any[][]>([]);
 
-    const render = (type: string) => {
+    const render = (type: string, alt: boolean) => {
         return (
             <overlay>
-                <Gtk.Picture $type="overlay"
-                    file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/${type}-block.svg`)}
+                <Gtk.Picture $type="overlay" cssClasses={[(alt ? "alt-overlay" : "overlay")]}
+                    file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/${alt ? "alt-" : ""}${type}-block.svg`)}
                     canShrink={true} css={"min-width: 83px; min-height: 80px;"} contentFit={Gtk.ContentFit.FILL} />
             </overlay>
         )
@@ -76,11 +76,11 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                                 const showAltLastOverlay = !randomNumber && isLastChunk;
                                                 return (
                                                     <button onClicked={() => entry.command && execAsync(entry.command)}>
-                                                        <box>
-                                                            {showFirstOverlay && render('first')}
-                                                            {showAltFirstOverlay && render('alt-first')}
-                                                            {showAltLastOverlay && render('alt-last')}
-                                                            {showLastOverlay && render('last')}
+                                                        <box cssClasses={["container"]}>
+                                                            {showAltFirstOverlay && render('first', true)}
+                                                            {showAltLastOverlay && render('last', true)}
+                                                            {showFirstOverlay && render('first', false)}
+                                                            {showLastOverlay && render('last', false)}
                                                             <box cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={5}>
                                                                 <box orientation={Gtk.Orientation.HORIZONTAL} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} vexpand>
                                                                     <label label={entry.index.toString() + "."} halign={Gtk.Align.START} />
