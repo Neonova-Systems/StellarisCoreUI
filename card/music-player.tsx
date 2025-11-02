@@ -16,14 +16,16 @@ export default function MusicPlayer() {
         settoggleContentState(!currentState);
         (!currentState && players.length > 0 ? playPanelSound() : playAlertSound())
     }
+
     function formatDuration(lengthInSeconds: number) {
         const totalSeconds = Math.floor(lengthInSeconds > 0 ? lengthInSeconds : 0);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         return `${minutes}:${seconds}`
     }
+    
     function onRightClicked() {
-        execAsync(`ags run $`)
+        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e))
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {

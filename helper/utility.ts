@@ -68,7 +68,7 @@ export function copyToClipboard(text: string) {
  * Side effects: May destroy the "ContextMenu" window, remove the poll source, and quit the app.
  */
 export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Position, windowName: string, anchorPointerX: number, anchorPointerY: number, poll: Timer, offset: number = 15) {
-    const windowWidth = app.get_window?.(windowName)?.get_width() || 500;
+    const windowWidth = app.get_window?.(windowName)?.get_width() || 300;
     const windowHeight = app.get_window?.(windowName)?.get_height() || 0;
     if (!currentCursorPos) return;
     if ( currentCursorPos.x < anchorPointerX - offset ||

@@ -22,22 +22,20 @@ interface CommandItem {
 }
 
 export function spawnContextMenu(commandList: CommandItem[]) {
-    const id = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`;
+    const id = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`; // unique id
     app.start({
         instanceName: id,
         css: style,
         main() {
-            ContextMenu()
+            SpawnContextMenu(commandList, id);
             const poll = interval(200, () => { DeleteWindowOnOutofBound(hyprland.cursorPosition, id, pointerX, pointerY, poll); })
         },
     })
 }
 
-export function SpawnContextMenu(commandsList: CommandItem[], windowName: string = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`) {
+export function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
     const { LEFT, TOP } = Astal.WindowAnchor;
     const [user_commands, setUserCommands] = createState(commandsList);
-    const [displayMode, setDisplayMode] = createState<"target" | "description">("target");
-    interval(6000, () => { setDisplayMode(current => current === "target" ? "description" : "target") });
 
     function execCommand(command: CommandItem) {
         execAsync(command.command);
@@ -84,9 +82,9 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
             margin_top={pointerY}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
-            <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
+            {/* <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
                 handleKeyPress(keyval, keycode, state)
-            } />
+            } /> */}
             <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
                 <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
                     <For each={user_commands}>
@@ -97,12 +95,7 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
                                         <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand />
                                         {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Gtk.Align.START} />)}
                                     </box>
-                                    <With value={displayMode}>
-                                        {(value) => value === "target" && command.target
-                                            ? <CreateEntryContent name={"TARGET"} value={command.target} orientation={Gtk.Orientation.HORIZONTAL} />
-                                            : command.description && <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
-                                        }
-                                    </With>
+                                    <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
                                 </box>
                             </button>
                         )}
