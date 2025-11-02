@@ -21,6 +21,9 @@ export default function MusicPlayer() {
         const seconds = totalSeconds % 60;
         return `${minutes}:${seconds}`
     }
+    function rightClicked() {
+        
+    }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {
         switch (status) {

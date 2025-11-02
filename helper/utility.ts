@@ -2,6 +2,9 @@ import { execAsync } from "ags/process";
 import { timeout } from "ags/time";
 import { HOME_DIR } from "./constants";
 import { Gdk } from "ags/gtk4";
+import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import app from "ags/gtk4/app";
+import GLib from "gi://GLib?version=2.0";
 
 export function playPanelSound(timeoutSeconds: number = 500) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/panels.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
@@ -49,5 +52,32 @@ export function copyToClipboard(text: string) {
     if (clipboard && text) {
         clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
         playGrantedSound();
+    }
+}
+
+/**
+ * Destroys the specified window and quits the app if the cursor moves outside the defined bounds.
+ * 
+ * @param currentCursorPos - The current cursor position (AstalHyprland.Position).
+ * @param windowName - The name of the window to check bounds for.
+ * @param anchorPointerX - The X coordinate of the anchor point.
+ * @param anchorPointerY - The Y coordinate of the anchor point.
+ * @param poll - The GLib.Source polling object to remove.
+ * @param offset - Optional offset for the bounds (default: 15).
+ * 
+ * Side effects: May destroy the "ContextMenu" window, remove the poll source, and quit the app.
+ */
+export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Position, windowName: string, anchorPointerX: number, anchorPointerY: number, poll: GLib.Source, offset: number = 15) {
+    const windowWidth = app.get_window?.(windowName)?.get_width() || 500;
+    const windowHeight = app.get_window?.(windowName)?.get_height() || 0;
+    if (!currentCursorPos) return
+    if ( currentCursorPos.x < anchorPointerX - offset ||
+        currentCursorPos.x > anchorPointerX + windowWidth + offset ||
+        currentCursorPos.y < anchorPointerY - offset ||
+        currentCursorPos.y > anchorPointerY + windowHeight + offset) {
+        const w = app.get_window?.("ContextMenu")
+        if (w) { w.destroy() }
+        GLib.Source.remove(poll.get_id())
+        app.quit()
     }
 }

@@ -3,7 +3,7 @@ import app from "ags/gtk4/app"
 import style from "../style.scss"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Accessor, createState, For, With } from 'ags';
-import { CreateEntryContent } from "../helper";
+import { CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
 import { execAsync } from "ags/process";
 import { interval } from "ags/time";
 
@@ -11,7 +11,7 @@ const hyprland = AstalHyprland.get_default();
 const pointerX = hyprland.cursorPosition.x;
 const pointerY = hyprland.cursorPosition.y;
 const menuWidth = 300;
-const menuHeight = 200;
+const menuHeight = 0;
 const offset = 15;
 
 export default function ContextMenu() {
@@ -100,27 +100,27 @@ export default function ContextMenu() {
 
 app.start({
     instanceName: "context-menu",
-    gtkTheme: "adw-gtk3-dark",
     css: style,
     main() {
        ContextMenu()
        const poll = setInterval(() => {
         try {
-            const pos = hyprland.cursorPosition;
-            const windowWIdth = app.get_window?.("ContextMenu")?.get_width() || menuWidth;
-            const windowHeight = app.get_window?.("ContextMenu")?.get_height() || menuHeight;
-            if(!pos) return
-            if (
-                pos.x < pointerX - offset ||
-                pos.x > pointerX + windowWIdth + offset ||
-                pos.y < pointerY - offset ||
-                pos.y > pointerY + windowHeight + offset
-            ) {
-                const w = app.get_window?.("ContextMenu")
-                if (w) { w.destroy() }
-                clearInterval(poll)
-                app.quit()
-            }
+            // const pos = hyprland.cursorPosition;
+            // const windowWIdth = app.get_window?.("ContextMenu")?.get_width() || menuWidth;
+            // const windowHeight = app.get_window?.("ContextMenu")?.get_height() || menuHeight;
+            // if(!pos) return
+            // if (
+            //     pos.x < pointerX - offset ||
+            //     pos.x > pointerX + windowWIdth + offset ||
+            //     pos.y < pointerY - offset ||
+            //     pos.y > pointerY + windowHeight + offset
+            // ) {
+            //     const w = app.get_window?.("ContextMenu")
+            //     if (w) { w.destroy() }
+            //     clearInterval(poll)
+            //     app.quit()
+            // }
+            DeleteWindowOnOutofBound(hyprland.cursorPosition, "ContextMenu", pointerX, pointerY, poll);
         } catch (e) {
             clearInterval(poll)
         }
