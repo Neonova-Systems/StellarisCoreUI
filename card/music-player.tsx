@@ -3,6 +3,7 @@ import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_D
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
+import { timeout } from "ags/time";
 
 
 export default function MusicPlayer() {
@@ -25,7 +26,7 @@ export default function MusicPlayer() {
     }
     
     function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e))
+        timeout(300, () => execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e)))
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {

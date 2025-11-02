@@ -82,9 +82,9 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
             margin_top={pointerY}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
-            {/* <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
+            <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
                 handleKeyPress(keyval, keycode, state)
-            } /> */}
+            } />
             <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
                 <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
                     <For each={user_commands}>
