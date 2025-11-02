@@ -21,6 +21,18 @@ interface CommandItem {
     target?: string;
 }
 
+export function spawnContextMenu(commandList: CommandItem[]) {
+    const id = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`;
+    app.start({
+        instanceName: id,
+        css: style,
+        main() {
+            ContextMenu()
+            const poll = interval(200, () => { DeleteWindowOnOutofBound(hyprland.cursorPosition, id, pointerX, pointerY, poll); })
+        },
+    })
+}
+
 export function SpawnContextMenu(commandsList: CommandItem[], windowName: string = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`) {
     const { LEFT, TOP } = Astal.WindowAnchor;
     const [user_commands, setUserCommands] = createState(commandsList);
