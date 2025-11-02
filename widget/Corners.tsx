@@ -29,7 +29,7 @@ export function TopRightCorner(gdkmonitor: Gdk.Monitor) {
         application={app}
         namespace={"top-right-corner"}
         anchor={ RIGHT | TOP }>
-        <button onClicked={onClick}>
+        <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-right-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -50,7 +50,7 @@ export function BottomRightCorner(gdkmonitor: Gdk.Monitor) {
         application={app}
         namespace={"bottom-right-corner"}
         anchor={ RIGHT | BOTTOM}>
-        <button onClicked={onClick}>
+        <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-right-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -71,7 +71,7 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
         application={app}
         namespace={"bottom-left-corner"}
         anchor={ LEFT | BOTTOM}>
-        <button onClicked={onClick}>
+        <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-left-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -95,7 +95,7 @@ export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
         application={app}
         namespace={"top-left-corner"}
         anchor={ LEFT | TOP}>
-        <button onClicked={onClick}>
+        <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-left-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
