@@ -26,7 +26,7 @@ export default function MusicPlayer() {
     }
     
     function onRightClicked() {
-        timeout(300, () => execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e)))
+        timeout(342, () => execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e)))
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {

@@ -53,9 +53,13 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
         }
 
         let key;
-        (keyval === Gdk.KEY_Return || keyval === Gdk.KEY_KP_Enter) 
-            ? key = "enter" 
-            : key = String.fromCharCode(Gdk.keyval_to_lower(keyval));
+        if (keyval === Gdk.KEY_Return || keyval === Gdk.KEY_KP_Enter) {
+            key = "enter";
+        } else if (keyval === Gdk.KEY_space) {
+            key = "space";
+        } else {
+            key = String.fromCharCode(Gdk.keyval_to_lower(keyval));
+        }
         if (!key) return;
 
         const modifiers = [];
