@@ -7,7 +7,6 @@ import { applyCurrentDashboardState, requestHandler } from "./services"
 
 app.start({
     css: style,
-    gtkTheme: "adw-gtk3-dark",
     main() {
         app.get_monitors().map(Dashboard)
         app.get_monitors().map(TopRightCorner)
