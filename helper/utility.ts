@@ -1,5 +1,5 @@
 import { execAsync } from "ags/process";
-import { timeout } from "ags/time";
+import { timeout, Timer } from "ags/time";
 import { HOME_DIR } from "./constants";
 import { Gdk } from "ags/gtk4";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
@@ -67,17 +67,17 @@ export function copyToClipboard(text: string) {
  * 
  * Side effects: May destroy the "ContextMenu" window, remove the poll source, and quit the app.
  */
-export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Position, windowName: string, anchorPointerX: number, anchorPointerY: number, poll: GLib.Source, offset: number = 15) {
+export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Position, windowName: string, anchorPointerX: number, anchorPointerY: number, poll: Timer, offset: number = 15) {
     const windowWidth = app.get_window?.(windowName)?.get_width() || 500;
     const windowHeight = app.get_window?.(windowName)?.get_height() || 0;
-    if (!currentCursorPos) return
+    if (!currentCursorPos) return;
     if ( currentCursorPos.x < anchorPointerX - offset ||
         currentCursorPos.x > anchorPointerX + windowWidth + offset ||
         currentCursorPos.y < anchorPointerY - offset ||
         currentCursorPos.y > anchorPointerY + windowHeight + offset) {
-        const w = app.get_window?.("ContextMenu")
+        const w = app.get_window?.("ContextMenu");
         if (w) { w.destroy() }
-        GLib.Source.remove(poll.get_id())
-        app.quit()
+        poll.cancel();
+        app.quit();
     }
 }

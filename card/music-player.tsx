@@ -1,8 +1,24 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_DIR } from "../helper";
+import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_DIR, DeleteWindowOnOutofBound } from "../helper";
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
+import style from "../style.scss"
+import app from "ags/gtk4/app";
+import { SpawnContextMenu } from "../window/ContextMenu";
+import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import { interval } from "ags/time";
+
+const commandsList = [
+    { name: "Play", description: "", command: "", keybind: ""},
+    { name: "Pause", description: "", command: "", keybind: ""},
+    { name: "Next", description: "", command: "", keybind: ""},
+    { name: "Previous", description: "", command: "", keybind: ""},
+    { name: "Stop", description: "", command: "", keybind: ""},
+]
+const hyprland = AstalHyprland.get_default();
+const pointerX = hyprland.cursorPosition.x;
+const pointerY = hyprland.cursorPosition.y;
 
 export default function MusicPlayer() {
     const mpris = AstalMpris.get_default()
@@ -21,8 +37,8 @@ export default function MusicPlayer() {
         const seconds = totalSeconds % 60;
         return `${minutes}:${seconds}`
     }
-    function rightClicked() {
-        
+    function onRightClicked() {
+        // implement later
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {
@@ -77,6 +93,7 @@ export default function MusicPlayer() {
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+            <Gtk.GestureClick button={3} onPressed={() => onRightClicked()} />
             <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} />
             <With value={toggleContentState}>
                 {(v) => ( 

@@ -5,14 +5,101 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Accessor, createState, For, With } from 'ags';
 import { CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
 import { execAsync } from "ags/process";
-import { interval } from "ags/time";
+import { interval, Timer } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
 const pointerX = hyprland.cursorPosition.x;
 const pointerY = hyprland.cursorPosition.y;
 const menuWidth = 300;
 const menuHeight = 0;
-const offset = 15;
+
+interface CommandItem {
+    name: string;
+    description?: string;
+    command: string;
+    keybind?: string;
+    target?: string;
+}
+
+export function SpawnContextMenu(commandsList: CommandItem[], windowName: string = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`) {
+    const { LEFT, TOP } = Astal.WindowAnchor;
+    const [user_commands, setUserCommands] = createState(commandsList);
+    const [displayMode, setDisplayMode] = createState<"target" | "description">("target");
+    interval(6000, () => { setDisplayMode(current => current === "target" ? "description" : "target") });
+
+    function execCommand(command: CommandItem) {
+        execAsync(command.command);
+        const w = app.get_window?.(windowName)
+        if (w) { w.destroy() }
+        app.quit()
+    }
+
+    function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
+        if (keyval === Gdk.KEY_Escape) {
+            const w = app.get_window?.(windowName)
+            if (w) { w.destroy() }
+            app.quit()
+            return;
+        }
+
+        let key;
+        (keyval === Gdk.KEY_Return || keyval === Gdk.KEY_KP_Enter) 
+            ? key = "enter" 
+            : key = String.fromCharCode(Gdk.keyval_to_lower(keyval));
+        if (!key) return;
+
+        const modifiers = [];
+        if (state & Gdk.ModifierType.CONTROL_MASK) modifiers.push("ctrl");
+        if (state & Gdk.ModifierType.SHIFT_MASK) modifiers.push("shift");
+        if (state & Gdk.ModifierType.ALT_MASK) modifiers.push("alt");
+
+        const pressedKeybind = [...modifiers, key].join(" + ");
+
+        const command = user_commands.get().find(c => c.keybind?.toLowerCase() === pressedKeybind);
+        if (command && command.command) execCommand(command)
+    }
+
+    return (
+        <window visible
+            name={windowName}
+            layer={Astal.Layer.TOP}
+            exclusivity={Astal.Exclusivity.NORMAL}
+            default_width={menuWidth}
+            default_height={menuHeight}
+            application={app}
+            anchor={LEFT | TOP}
+            marginLeft={pointerX}
+            margin_top={pointerY}
+            keymode={Astal.Keymode.ON_DEMAND}
+            namespace={"context-menu"}>
+            <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
+                handleKeyPress(keyval, keycode, state)
+            } />
+            <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
+                <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
+                    <For each={user_commands}>
+                        {(command: CommandItem, index) => (
+                            <button onClicked={() => { execCommand(command) }}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={3}>
+                                    <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
+                                        <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand />
+                                        {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Gtk.Align.START} />)}
+                                    </box>
+                                    <With value={displayMode}>
+                                        {(value) => value === "target" && command.target
+                                            ? <CreateEntryContent name={"TARGET"} value={command.target} orientation={Gtk.Orientation.HORIZONTAL} />
+                                            : command.description && <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
+                                        }
+                                    </With>
+                                </box>
+                            </button>
+                        )}
+                    </For>
+                </box>
+            </box>
+        </window>
+    )
+}
 
 export default function ContextMenu() {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -103,27 +190,6 @@ app.start({
     css: style,
     main() {
        ContextMenu()
-       const poll = setInterval(() => {
-        try {
-            // const pos = hyprland.cursorPosition;
-            // const windowWIdth = app.get_window?.("ContextMenu")?.get_width() || menuWidth;
-            // const windowHeight = app.get_window?.("ContextMenu")?.get_height() || menuHeight;
-            // if(!pos) return
-            // if (
-            //     pos.x < pointerX - offset ||
-            //     pos.x > pointerX + windowWIdth + offset ||
-            //     pos.y < pointerY - offset ||
-            //     pos.y > pointerY + windowHeight + offset
-            // ) {
-            //     const w = app.get_window?.("ContextMenu")
-            //     if (w) { w.destroy() }
-            //     clearInterval(poll)
-            //     app.quit()
-            // }
-            DeleteWindowOnOutofBound(hyprland.cursorPosition, "ContextMenu", pointerX, pointerY, poll);
-        } catch (e) {
-            clearInterval(poll)
-        }
-       }, 200)
+       const poll = interval(200, () => { try { DeleteWindowOnOutofBound(hyprland.cursorPosition, "ContextMenu", pointerX, pointerY, poll); } catch (e) { poll.cancel() } })
     },
 })
