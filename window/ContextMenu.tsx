@@ -1,6 +1,6 @@
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
-import style from "../style.scss"
+import style from "./context-menu/style.scss";
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Accessor, createState, For, With } from 'ags';
 import { CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
