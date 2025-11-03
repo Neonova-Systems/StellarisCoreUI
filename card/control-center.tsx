@@ -1,12 +1,13 @@
 import { createState, For, With } from "ags";
 import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound, playKeySound, playEnterSound } from "../helper";
 import { Gtk } from "ags/gtk4"
-import { timeout } from "ags/time";
+import { interval, timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 
 export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
+    const [decorationImage, setDecorationImage] = createState(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant1.svg`);
     timeout(500, () => { execAsync('ags request "getControlCenterState"').then(out => settoggleContentState(out === 'true')) });
     function panelClicked() {
         execAsync('ags request "toggleControlCenter"').then(out => {
@@ -18,6 +19,8 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
         }).catch(() => {});
     }
 
+    function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1 + 1}.svg`) }
+    interval(1396, () => cycleDecorationImage())
     const controlEntry = [
         { name: "Open Powermenu", target: "", command: ``, description: "Show options to shutdown, restart, or log out."},
         { name: "Scan Text", target: "", command: ``, description: "Scan and copy text from an area of the screen (OCR)."},
@@ -64,7 +67,13 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["contents", "border-default"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
+                        <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
+                            <box>
+                                <With value={decorationImage}> 
+                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.COVER} halign={Gtk.Align.FILL} hexpand/> )} 
+                                </With>
+                            </box>
+                            <box css={"min-height: 5px;"} />
                             <For each={tempArray}>
                                 {(chunk: any[], chunkIndex) => {
                                     const currentIndex = chunkIndex.get();
