@@ -81,8 +81,7 @@ export default function MusicPlayer() {
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <Gtk.GestureClick button={3} onPressed={() => onRightClicked()} />
-            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} />
+            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} onRightClick={onRightClicked} />
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} valign={Gtk.Align.START}>
