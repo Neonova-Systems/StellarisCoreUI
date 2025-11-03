@@ -19,7 +19,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
         }).catch(() => {});
     }
 
-    function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1 + 1}.svg`) }
+    function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1}.svg`) }
     interval(1396, () => cycleDecorationImage())
     const controlEntry = [
         { name: "Open Powermenu", target: "", command: ``, description: "Show options to shutdown, restart, or log out."},
@@ -70,7 +70,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                         <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
                             <box>
                                 <With value={decorationImage}> 
-                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.COVER} halign={Gtk.Align.FILL} hexpand/> )} 
+                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Gtk.Align.FILL} hexpand/> )} 
                                 </With>
                             </box>
                             <box css={"min-height: 5px;"} />

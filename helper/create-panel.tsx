@@ -1,6 +1,7 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor, createState } from "ags"
 import { HOME_DIR } from "./constants";
+import { playHoverSound } from "./utility";
 
 type PanelProps = {
     name?: string | Accessor<string> | undefined;
@@ -58,6 +59,7 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
     return (
         <button $={$} cssClasses={["panel"]} onMoveFocus={() => console.log("test")} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <box spacing={5}>
+                <Gtk.EventControllerMotion onEnter={() => playHoverSound()} />
                 {draggable && (<Gtk.GestureDrag onDragBegin={handleDragBegin} onDragEnd={handleDragEnd} onDragUpdate={handleDragUpdate} />)}
                 {children}
                 <label label={name} halign={Gtk.Align.START} />
