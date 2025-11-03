@@ -12,9 +12,10 @@ type PanelProps = {
     onDragUp?: (() => void) | undefined;
     onDragDown?: (() => void) | undefined;
     onRightClick?: (() => void) | undefined;
+    tooltipText?: string | Accessor<string> | undefined
 };
 
-export default function CreatePanel({ name, onClicked, $, children, draggable = false, onDragUp, onDragDown, onRightClick }: PanelProps) {
+export default function CreatePanel({ name, onClicked, $, children, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
     let lastY: number | null = null;
     let dragDirection: 'up' | 'down' | null = null;
     let lastOutputY: number | null = null;
@@ -58,7 +59,7 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
     }
 
     return (
-        <button $={$} cssClasses={["panel"]} onMoveFocus={() => console.log("test")} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+        <button $={$} cssClasses={["panel"]} onMoveFocus={() => console.log("test")} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
             <box spacing={5}>
                 <Gtk.EventControllerMotion onEnter={() => playHoverSound()} />
                 {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
