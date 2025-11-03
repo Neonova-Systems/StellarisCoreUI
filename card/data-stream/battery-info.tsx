@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 
@@ -40,6 +40,10 @@ export function BatteryInfo() {
             }
         }).catch(() => {});
     }
+    function onRightClicked() {
+        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/battery-info.tsx --gtk 4`).catch((e) => print(e))
+        playGrantedSound();
+    }
 
     // --- Correctly assign output to the corresponding state variable ---
     const batteryPath = "upower -i $(upower -e | grep BAT)";
@@ -72,7 +76,7 @@ export function BatteryInfo() {
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
-            <CreatePanel name="BATTERY" onClicked={panelClicked}>
+            <CreatePanel name="BATTERY" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

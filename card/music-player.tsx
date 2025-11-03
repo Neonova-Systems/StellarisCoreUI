@@ -1,5 +1,5 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
+import { CreatePanel, CreateEntryContent, playAlertSound, playPanelSound, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../helper";
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
@@ -27,6 +27,7 @@ export default function MusicPlayer() {
     
     function onRightClicked() {
         timeout(342, () => execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e)))
+        playGrantedSound();
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {
