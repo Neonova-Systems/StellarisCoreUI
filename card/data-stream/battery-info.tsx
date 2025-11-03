@@ -4,9 +4,15 @@ import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
+import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
 
 
 export function BatteryInfo() {
+    const powerprofiles = AstalPowerProfiles.get_default();
+    const activeProfiles = createBinding(powerprofiles, "activeProfile")((value) => value.toUpperCase());
+    const powerprofilesVersion = createBinding(powerprofiles, "version")((value) => value.toUpperCase());
+    const performanceDegraded = createBinding(powerprofiles, "performanceDegraded")((value) => value.toUpperCase());
+
     const [nativePath, setNativePath] = createState("");
     const [hasHistory, setHasHistory] = createState("");
     const [state, setState] = createState("");
@@ -27,6 +33,7 @@ export function BatteryInfo() {
     const [energyEmpty, setEnergyEmpty] = createState("");
     const [voltage, setVoltage] = createState("");
     const [technology, setTechnology] = createState("");
+    const [batteryAware, setBatteryAware] = createState("");
     const [fullReport, setFullReport] = createState("Loading report...");
     const [toggleContentState, settoggleContentState] = createState(false);
     timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')) });
@@ -71,6 +78,7 @@ export function BatteryInfo() {
     execAsync(`dash -c "${batteryPath} | grep 'energy-empty:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergyEmpty(out.toUpperCase()));
     execAsync(`dash -c "${batteryPath} | grep 'voltage:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setVoltage(out.toUpperCase()));
     execAsync(`dash -c "${batteryPath} | grep 'technology:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setTechnology(out.toUpperCase()));
+    execAsync(`dash -c "powerprofilesctl query-battery-aware | cut -d: -f2 | tr -d ' '"`).then(out => setBatteryAware(out.toUpperCase()));
 
     execAsync(`dash -c "${batteryPath}"`).then(out => setFullReport(out));
     return (
@@ -91,6 +99,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="STATE" value={state} />
                                     <CreateEntryContent name="ENERGY-FULL" value={energyFull} />
                                     <CreateEntryContent name="TIME-TO-EMPTY" value={timeToEmpty} />
+                                    <CreateEntryContent name="ACTIVE PROFILE" value={activeProfiles} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="VENDOR" value={vendor} allowCopy/>
@@ -98,6 +107,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="WARNING LEVEL" value={warningLevel} />
                                     <CreateEntryContent name="ENERGY-FULL-DESIGN" value={energyFullDesign} allowCopy/>
                                     <CreateEntryContent name="PERCENTAGE" value={percentage} />
+                                    <CreateEntryContent name="PERFORMANCE DEGRADED" value={performanceDegraded} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="POWER SUPPLY" value={powerSupply} />
@@ -105,6 +115,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="ENERGY" value={energy} />
                                     <CreateEntryContent name="ENERGY-RATE" value={energyRate} />
                                     <CreateEntryContent name="CAPACITY" value={capacity} />
+                                    <CreateEntryContent name="POWERPROFILE VERSION" value={powerprofilesVersion} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
                                     <CreateEntryContent name="UPDATED" value={updated} allowCopy/>
@@ -112,6 +123,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="ENERGY-EMPTY" value={energyEmpty} />
                                     <CreateEntryContent name="VOLTAGE" value={voltage} allowCopy/>
                                     <CreateEntryContent name="TECHNOLOGY" value={technology} allowCopy/>
+                                    <CreateEntryContent name="BATTERY AWARE" value={batteryAware} />
                                 </box>
                             </box>
                         </box>
@@ -130,7 +142,7 @@ export function BatteryInfo() {
 }
 
 export function BatteryRibbon() {
-    const battery = AstalBattery.get_default()
+    const battery = AstalBattery.get_default();
     const percentage = createBinding(battery, "percentage")
     const status = createBinding(battery, "charging")((v) => v ? "CHARGING" : "DISCHARGING")
     return ( <box cssClasses={["battery"]} spacing={10} homogeneous={false} visible={createBinding(battery, "isPresent")} hexpand={false}>
