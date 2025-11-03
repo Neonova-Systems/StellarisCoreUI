@@ -64,6 +64,12 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+                            <drawingarea halign={Gtk.Align.FILL} hexpand $={(self) => {
+                                // Set explicit size request to ensure the drawing area is visible
+                                self.set_size_request(50, 50);
+                                self.set_draw_func((area, cr, width, height) => {
+                                });
+                            }} />
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
