@@ -141,9 +141,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   font-size: 9px;
   font-weight: 600;
   color: #6E78A7;
-  .value {
-    color: #9EA6CC;
-  }
+  .value { color: #9EA6CC; }
 }
 
 .special-entry {
@@ -151,9 +149,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   font-size: 9px;
   font-weight: 600;
   color: #1C2552;
-  .value {
-    color: #515EA0;
-  }
+  .value { color: #515EA0; }
 }
 
 popover.menu label {
@@ -274,6 +270,10 @@ calendar {
     padding-right: 8px;
   }
   .entry {
+    font-family: Rajdhani;
+    font-size: 9px;
+    font-weight: 600;
+    color: #6E78A7;
     padding-top: 7px;
     padding-bottom: 7px;
     padding-left: 8px;
@@ -339,4 +339,19 @@ calendar {
   .focused-item {
     background-color: #1832e7;
   }
+}
+
+tooltip {
+  label { 
+    padding: 7px;
+    background-color: gtkalpha(#152052, 0.1);
+    text-transform: uppercase; 
+  }
+  background: linear-gradient(to bottom, #070B1F, #040714);
+  box-shadow: 0px 0px 5px gtkalpha(black, 0.5);
+  border: 1.5px solid #0A102E;
+  font-family: Rajdhani;
+  font-size: 9px;
+  color: #9EA6CC;
+  font-weight: 600;
 }
