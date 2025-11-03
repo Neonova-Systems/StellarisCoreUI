@@ -1,8 +1,8 @@
 import { spawnContextMenu } from "../ContextMenu"
 
 const commandsList = [
-    { name: "Performance", description: "", command: "", keybind: ""},
-    { name: "Balanced", description: "", command: "", keybind: ""},
-    { name: "Next", description: "", command: "", keybind: ""},
+    { name: "Performance", description: "Maximum performance", command: "powerprofilesctl set performance", keybind: ""},
+    { name: "Balanced", description: "Balanced power and performance", command: "powerprofilesctl set balanced", keybind: ""},
+    { name: "Power Saver", description: "Maximize battery life", command: "powerprofilesctl set power-saver", keybind: ""},
 ]
 spawnContextMenu(commandsList);
