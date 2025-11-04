@@ -1,11 +1,13 @@
-import { Accessor, createState, With } from "ags";
+import { Accessor, createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process";
+import { exec, execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
-import { timeout } from "ags/time";
+import { createPoll, timeout, interval } from 'ags/time';
 
 export default function HardwareInfo() {
     const [cpuName, setcpuName] = createState("");
+    const [avgCpuUsage, setAvgCpuUsage] = createState(0.0);
+
     const [cpuArchitecture, setcpuArchitecture] = createState("");
     const [vendorName, setvendorName] = createState("");
     const [threadsCore, setthreadsCore] = createState("");
@@ -24,7 +26,6 @@ export default function HardwareInfo() {
     const [biosInfo, setbiosInfo] = createState("");
 
     timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')) });
-
     function panelClicked() {
         execAsync('ags request "toggleHardwareInfo"').then(out => {
             const isVisible = out === 'true';
@@ -34,6 +35,7 @@ export default function HardwareInfo() {
             }
         }).catch(() => {});
     }
+    interval(1000, () => execAsync(`dash -c "mpstat 1 1 | grep 'Average:' | awk '{print (100 - $NF) / 100}'"`).then((out) => setAvgCpuUsage(parseFloat(out))))
 
     // --- CPU Information ---
     execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
@@ -64,38 +66,50 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                            <drawingarea marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL} hexpand $={(self) => {
-                                self.set_size_request(50, 50); // Set explicit size request to ensure the drawing area is visible
-                                self.set_draw_func((area, cr, width, height) => {
-                                    
-                                    // Sample data points for the chart
-                                    const dataPoints = [0.3, 0.5, 0.7, 0.6, 0.8, 0.9, 0.7, 0.5, 0.6, 0.8];
-                                    const padding = 10;
-                                    const chartWidth = width - (padding * 2);
-                                    const chartHeight = height - (padding * 2);
-                                    const segmentWidth = chartWidth / (dataPoints.length - 1);
-                                    
-                                    
-                                    // Draw blue chart line
-                                    cr.setSourceRGBA(0.3, 0.6, 1.0, 1.0); // Blue
-                                    cr.setLineWidth(2);
-                                    cr.moveTo(padding, padding + chartHeight * (1 - dataPoints[0]));
-                                    
-                                    for (let i = 1; i < dataPoints.length; i++) {
-                                        const x = padding + segmentWidth * i;
-                                        const y = padding + chartHeight * (1 - dataPoints[i]);
-                                        cr.lineTo(x, y);
-                                    }
-                                    cr.stroke();
-                                    
-                                    // Fill area under the chart with gradient effect
-                                    cr.setSourceRGBA(0.3, 0.6, 1.0, 1);
-                                    cr.lineTo(width - padding, height - padding);
-                                    cr.lineTo(padding, height - padding);
-                                    cr.closePath();
-                                    cr.fill();
-                                });
-                            }} />
+                        <With value={avgCpuUsage}>
+                            {(v) => {
+                                let dataPoints: number[] = [];
+                                return (
+                                    <drawingarea marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL} hexpand $={(self) => {
+                                        self.set_size_request(50, 50); // Set explicit size request to ensure the drawing area is visible
+                                        self.set_draw_func((area, cr, width, height) => {
+                                            
+                                            // Sample data points for the chart
+                                            const padding = 5;
+                                            const chartWidth = width - (padding * 2);
+                                            const chartHeight = height - (padding * 2);
+                                            const segmentWidth = chartWidth / (dataPoints.length - 1);
+                                            
+                                            // Fill area under the chart with solid red
+                                            cr.setSourceRGBA(1.0, 0.0, 0.0, 1.0); // Solid red
+                                            cr.moveTo(padding, height - padding);
+                                            cr.lineTo(padding, padding + chartHeight * (1 - dataPoints[0]));
+                                            
+                                            for (let i = 1; i < dataPoints.length; i++) {
+                                                const x = padding + segmentWidth * i;
+                                                const y = padding + chartHeight * (1 - dataPoints[i]);
+                                                cr.lineTo(x, y);
+                                            }
+                                            cr.lineTo(width - padding, height - padding);
+                                            cr.closePath();
+                                            cr.fill();
+                                            
+                                            // Draw blue chart line on top
+                                            cr.setSourceRGBA(0.3, 0.6, 1.0, 1.0); // Blue
+                                            cr.setLineWidth(2);
+                                            cr.moveTo(padding, padding + chartHeight * (1 - dataPoints[0]));
+                                            
+                                            for (let i = 1; i < dataPoints.length; i++) {
+                                                const x = padding + segmentWidth * i;
+                                                const y = padding + chartHeight * (1 - dataPoints[i]);
+                                                cr.lineTo(x, y);
+                                            }
+                                            cr.stroke();
+                                        });
+                                    }} />
+                                )
+                            }}
+                        </With>
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
