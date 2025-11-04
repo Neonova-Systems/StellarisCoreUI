@@ -64,10 +64,36 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                            <drawingarea halign={Gtk.Align.FILL} hexpand $={(self) => {
-                                // Set explicit size request to ensure the drawing area is visible
-                                self.set_size_request(50, 50);
+                            <drawingarea marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL} hexpand $={(self) => {
+                                self.set_size_request(50, 50); // Set explicit size request to ensure the drawing area is visible
                                 self.set_draw_func((area, cr, width, height) => {
+                                    
+                                    // Sample data points for the chart
+                                    const dataPoints = [0.3, 0.5, 0.7, 0.6, 0.8, 0.9, 0.7, 0.5, 0.6, 0.8];
+                                    const padding = 10;
+                                    const chartWidth = width - (padding * 2);
+                                    const chartHeight = height - (padding * 2);
+                                    const segmentWidth = chartWidth / (dataPoints.length - 1);
+                                    
+                                    
+                                    // Draw blue chart line
+                                    cr.setSourceRGBA(0.3, 0.6, 1.0, 1.0); // Blue
+                                    cr.setLineWidth(2);
+                                    cr.moveTo(padding, padding + chartHeight * (1 - dataPoints[0]));
+                                    
+                                    for (let i = 1; i < dataPoints.length; i++) {
+                                        const x = padding + segmentWidth * i;
+                                        const y = padding + chartHeight * (1 - dataPoints[i]);
+                                        cr.lineTo(x, y);
+                                    }
+                                    cr.stroke();
+                                    
+                                    // Fill area under the chart with gradient effect
+                                    cr.setSourceRGBA(0.3, 0.6, 1.0, 1);
+                                    cr.lineTo(width - padding, height - padding);
+                                    cr.lineTo(padding, height - padding);
+                                    cr.closePath();
+                                    cr.fill();
                                 });
                             }} />
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
