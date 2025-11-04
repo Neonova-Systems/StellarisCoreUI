@@ -4,6 +4,7 @@ import { exec, execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 import { createPoll, timeout, interval } from 'ags/time';
 import giCairo from "cairo";
+import CreateGraph from "../../helper/create-graph";
 
 export default function HardwareInfo() {
     const [cpuName, setcpuName] = createState("");
@@ -104,7 +105,7 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["graph-container"]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL}>
+                        {/* <box cssClasses={["graph-container"]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL}>
                             <label label={"AVERAGE LOAD CPU USAGE"} />
                             <With value={avgCpuUsage}>
                                 {(dataPoints) => (
@@ -113,7 +114,8 @@ export default function HardwareInfo() {
                                     }} />
                                 )}
                             </With>
-                        </box>
+                        </box> */}
+                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} />
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>

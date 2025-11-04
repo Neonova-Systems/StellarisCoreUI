@@ -5,14 +5,14 @@ import { playHoverSound } from "./utility";
 
 type PanelProps = {
     name?: string | Accessor<string> | undefined;
-    onClicked?: ((source: Gtk.Button) => void) | undefined
+    onClicked?: ((source: Gtk.Button) => void) | undefined;
     $?: ((self: Gtk.Button) => void) | undefined;
-    children?: JSX.Element | Array<JSX.Element>
-    draggable?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    children?: JSX.Element | Array<JSX.Element>;
+    draggable?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined;
     onDragUp?: (() => void) | undefined;
     onDragDown?: (() => void) | undefined;
     onRightClick?: (() => void) | undefined;
-    tooltipText?: string | Accessor<string> | undefined
+    tooltipText?: string | Accessor<string> | undefined;
 };
 
 export default function CreatePanel({ name, onClicked, $, children, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
