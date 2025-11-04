@@ -1,9 +1,8 @@
 import { Accessor, createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
-import { exec, execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
-import { createPoll, timeout, interval } from 'ags/time';
-import giCairo from "cairo";
+import { execAsync } from "ags/process";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR} from "../../helper";
+import { timeout, interval } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 
 export default function HardwareInfo() {
@@ -45,37 +44,6 @@ export default function HardwareInfo() {
         });
     }))
 
-    function renderChart(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, dataPoints: number[]) {
-        const padding = 1;
-        const chartWidth = width - (padding * 2);
-        const chartHeight = height - (padding * 2);
-        const segmentWidth = chartWidth / (dataPoints.length - 1);
-
-        cr.setSourceRGBA(0.102, 0.224, 0.929, 0.17) // Background
-        cr.moveTo(padding, height - padding);
-        cr.lineTo(padding, padding + chartHeight * (1 - dataPoints[0]));
-
-        for (let i = 1; i < dataPoints.length; i++) {
-            const x = padding + segmentWidth * i;
-            const y = padding + chartHeight * (1 - dataPoints[i]);
-            cr.lineTo(x, y);
-        }
-        cr.lineTo(width - padding, height - padding);
-        cr.closePath();
-        cr.fill();
-
-        cr.setSourceRGBA(0.102, 0.224, 0.929, 1.0) // Line
-        cr.setLineWidth(2);
-        cr.moveTo(padding, padding + chartHeight * (1 - dataPoints[0]));
-
-        for (let i = 1; i < dataPoints.length; i++) {
-            const x = padding + segmentWidth * i;
-            const y = padding + chartHeight * (1 - dataPoints[i]);
-            cr.lineTo(x, y);
-        }
-        cr.stroke();
-    }
-
     // --- CPU Information ---
     execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
     execAsync(`dash -c "lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuArchitecture(out.toUpperCase()))
@@ -105,17 +73,7 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        {/* <box cssClasses={["graph-container"]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL}>
-                            <label label={"AVERAGE LOAD CPU USAGE"} />
-                            <With value={avgCpuUsage}>
-                                {(dataPoints) => (
-                                    <drawingarea cssClasses={["graph"]} hexpand $={(self) => {
-                                        self.set_draw_func((area, cr, width, height) => renderChart(area, cr, width, height, dataPoints));
-                                    }} />
-                                )}
-                            </With>
-                        </box> */}
-                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} />
+                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} critical={true}/>
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>

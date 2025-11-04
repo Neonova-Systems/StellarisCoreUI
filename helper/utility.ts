@@ -5,6 +5,7 @@ import { Gdk } from "ags/gtk4";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import app from "ags/gtk4/app";
 import GLib from "gi://GLib?version=2.0";
+import giCairo from "cairo";
 
 export function playPanelSound(timeoutSeconds: number = 500) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/panels.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
@@ -83,4 +84,38 @@ export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Positio
         poll.cancel();
         app.quit();
     }
+}
+
+/**
+ * Converts a hex color string to Cairo RGBA values
+ * @param hex - Hex color string (e.g., "#1a39ed" or "1a39ed")
+ * @param alpha - Optional alpha value between 0 and 1 (default: 1.0)
+ * @returns Object with r, g, b, a values normalized to 0-1 range
+ * @example
+ * const { r, g, b, a } = hexToRGBA("#1a39ed", 0.5);
+ * cr.setSourceRGBA(r, g, b, a);
+ */
+export function hexToRGBA(hex: string, alpha: number = 1.0): { r: number; g: number; b: number; a: number } {
+    // Remove # if present
+    const cleanHex = hex.replace(/^#/, '');
+    
+    // Parse RGB values
+    const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+    const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+    const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+    
+    return { r, g, b, a: Math.max(0, Math.min(1, alpha)) };
+}
+
+/**
+ * Converts hex color and applies it directly to a Cairo context
+ * @param cr - Cairo context
+ * @param hex - Hex color string
+ * @param alpha - Optional alpha value (default: 1.0)
+ * @example
+ * setSourceRGBAFromHex(cr, "#1a39ed", 0.17);
+ */
+export function setSourceRGBAFromHex(cr: giCairo.Context, hex: string, alpha: number = 1.0): void {
+    const { r, g, b, a } = hexToRGBA(hex, alpha);
+    cr.setSourceRGBA(r, g, b, a);
 }

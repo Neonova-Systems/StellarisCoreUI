@@ -332,7 +332,7 @@ tooltip {
     border-left-width: 2px;
     border-left-style: solid;
     border-left-color: list.nth($color, 1);
-    .critical-graph { // Critical on the graph
+    &.critical-graph { // Critical on the graph
       @include apply-blink-animation(1s);
       color: list.nth($color, 2); 
       background-color: rgba(list.nth($color, 2), 0.19); 
@@ -352,6 +352,6 @@ tooltip {
       text-shadow: 2px 1px 5px list.nth($color, 2); border-left-color: list.nth($color, 2);
     }
   }
-  .critical { border-color: rgba(list.nth($color, 2), .3); box-shadow: inset 0px 0px 5px 2px rgba(list.nth($color, 2), .2), 0px 0px 2px rgba(list.nth($color, 2), .2) } // Critical on container
+  &.critical { border-color: rgba(list.nth($color, 2), .3); box-shadow: inset 0px 0px 5px 2px rgba(list.nth($color, 2), .2), 0px 0px 2px rgba(list.nth($color, 2), .2) } // Critical on container
   .critical-graph { border-left-color: list.nth($color, 2); } // Critical on graph-container
 }
