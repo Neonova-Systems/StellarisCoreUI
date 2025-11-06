@@ -1,6 +1,6 @@
-import { Accessor, createBinding, createState, With } from "ags";
+import { Accessor, createBinding, createState, For, With } from "ags";
 import { Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process";
+import { exec, execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR} from "../../helper";
 import { timeout, interval } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
@@ -8,6 +8,7 @@ import CreateGraph from "../../helper/create-graph";
 export default function HardwareInfo() {
     const [cpuName, setcpuName] = createState("");
     const [avgCpuUsage, setAvgCpuUsage] = createState([0]);
+    const [perCpuUsage, setPerCpuUsage] = createState<{ [key: number]: number[] }>({});
 
     const [cpuArchitecture, setcpuArchitecture] = createState("");
     const [vendorName, setvendorName] = createState("");
@@ -43,7 +44,30 @@ export default function HardwareInfo() {
             return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
         });
     }))
-
+    interval(3000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}'"`).then((out) => {
+        const lines = out.trim().split('\n');
+        print(lines)
+        setPerCpuUsage((prev) => {
+            const updated = { ...prev };
+            lines.forEach(line => {
+                const [cpuNum, usage] = line.trim().split(/\s+/);
+                if (cpuNum && usage) {
+                    const coreIndex = parseInt(cpuNum);
+                    const usageValue = parseFloat(usage);
+                    
+                    // Initialize array if this is a new core
+                    if (!updated[coreIndex]) {
+                        updated[coreIndex] = [];
+                    }
+                    
+                    // Append new value and keep last 20 points
+                    const newPoints = [...updated[coreIndex], usageValue];
+                    updated[coreIndex] = newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
+                }
+            });
+            return updated;
+        });
+    }))
     // --- CPU Information ---
     execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
     execAsync(`dash -c "lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuArchitecture(out.toUpperCase()))
@@ -73,7 +97,22 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage}/>
+                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7}/>
+                        <box>
+                            <With value={perCpuUsage}>
+                                {(cpuData) => (
+                                    <box orientation={Gtk.Orientation.VERTICAL}>
+                                        {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
+                                            const coreIndex = parseInt(coreNum);
+                                            const coreDataAccessor = cpuData[coreIndex] || [0];
+                                            return (
+                                                <CreateGraph title={`CPU CORE ${coreNum} USAGE`} valueToWatch={coreDataAccessor} threshold={0.7} />
+                                            );
+                                        })}
+                                    </box>
+                                )}
+                            </With>
+                        </box>
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>

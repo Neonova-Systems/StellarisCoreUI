@@ -6,7 +6,7 @@ import { setSourceRGBAFromHex } from "./utility";
 const criticalHex = "#F32626"
 type GraphProps = {
     title: string | Accessor<string> | undefined;
-    valueToWatch: Accessor<number[]>;
+    valueToWatch: number[] | Accessor<number[]>;
     threshold?: number;
     critical?: boolean;
 }
@@ -44,24 +44,43 @@ export default function CreateGraph({title, valueToWatch, threshold = 1}: GraphP
     }
 
     return (
-        <box cssClasses={["start-animation"]}>
-            <With value={valueToWatch}>
-                {(dataPoints) => {
+        <box cssClasses={[typeof valueToWatch == 'function' ? "apply-start-animation" : ""]}>
+            {typeof valueToWatch === 'function' ? (
+                <With value={valueToWatch}>
+                    {(dataPoints) => {
+                        const latestValue = dataPoints[dataPoints.length - 1] || 0;
+                        const isCritical = (latestValue >= threshold);
+                        return (
+                            <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL}>
+                                <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
+                                <box orientation={Gtk.Orientation.VERTICAL}>
+                                    <label label={title} cssClasses={[isCritical ? "critical" : ""]} />
+                                    <drawingarea cssClasses={["graph", (isCritical ? "critical-graph" : "")]} hexpand $={(self) => {
+                                        self.set_draw_func((area, cr, width, height) => renderChart(area, cr, width, height, dataPoints, isCritical));
+                                    }} />
+                                </box>
+                            </box>
+                        )
+                    }}
+                </With>
+            ) : (
+                (() => {
+                    const dataPoints = valueToWatch;
                     const latestValue = dataPoints[dataPoints.length - 1] || 0;
                     const isCritical = (latestValue >= threshold);
                     return (
-                    <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL}>
-                        <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
-                        <box orientation={Gtk.Orientation.VERTICAL}>
-                            <label label={title} cssClasses={[isCritical ? "critical" : ""]} />
-                            <drawingarea cssClasses={["graph", (isCritical ? "critical-graph" : "")]} hexpand $={(self) => {
-                                self.set_draw_func((area, cr, width, height) => renderChart(area, cr, width, height, dataPoints, isCritical));
-                            }} />
+                        <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL}>
+                            <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
+                            <box orientation={Gtk.Orientation.VERTICAL}>
+                                <label label={title} cssClasses={[isCritical ? "critical" : ""]} />
+                                <drawingarea cssClasses={["graph", (isCritical ? "critical-graph" : "")]} hexpand $={(self) => {
+                                    self.set_draw_func((area, cr, width, height) => renderChart(area, cr, width, height, dataPoints, isCritical));
+                                }} />
+                            </box>
                         </box>
-                    </box>
                     )
-                }}
-            </With>
+                })()
+            )}
         </box>
     )
 }
