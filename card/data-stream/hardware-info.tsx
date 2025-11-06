@@ -44,7 +44,7 @@ export default function HardwareInfo() {
             return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
         });
     }))
-    interval(4000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
+    interval(3000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
         const cpuData = JSON.parse(out);
         setPerCpuUsage((prev) => {
             const updated = { ...prev };
@@ -57,9 +57,9 @@ export default function HardwareInfo() {
                     updated[coreIndex] = [];
                 }
                 
-                // Append new value and keep last 20 points
+                // Append new value and keep last 10 points
                 const newPoints = [...updated[coreIndex], usageValue];
-                updated[coreIndex] = newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
+                updated[coreIndex] = newPoints.length > 10 ? newPoints.slice(-10) : newPoints;
             });
             return updated;
         });
@@ -94,18 +94,16 @@ export default function HardwareInfo() {
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7}/>
-                        <box orientation={Gtk.Orientation.HORIZONTAL}>
+                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
                             <With value={perCpuUsage}>
-                                {(cpuData) => (
-                                    <>
+                                {(cpuData) =>
+                                    <box halign={Gtk.Align.FILL}>
                                         {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
                                             const coreDataAccessor = cpuData[coreNum] || [0];
-                                            return (
-                                                <CreateGraph title={`CPU CORE ${coreNum} USAGE`} valueToWatch={coreDataAccessor} threshold={0.7} />
-                                            );
+                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={6} lineWidth={1}/>);
                                         })}
-                                    </>
-                                )}
+                                    </box>
+                                }
                             </With>
                         </box>
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
