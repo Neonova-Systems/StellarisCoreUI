@@ -314,7 +314,6 @@ tooltip {
 }
 
 .graph-container {
-  @include apply-start-animation(2s);
   $color: (#1A39ED, #F32626);
   margin: 3px;
   padding: 3px;

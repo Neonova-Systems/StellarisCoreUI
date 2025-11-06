@@ -77,7 +77,7 @@
     50% { opacity: 0.2; } 
 }
 
-@keyframes alt-blink-animation { 50% { opacity: 0.82; } }
+@keyframes alt-blink-animation { 50% { opacity: 0.72; } }
 
 .alt-start-animation { @include apply-start-animation(0.5s, 0s);}
 .start-animation { @include apply-start-animation; }
