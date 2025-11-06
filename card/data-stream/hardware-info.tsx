@@ -8,7 +8,7 @@ import CreateGraph from "../../helper/create-graph";
 export default function HardwareInfo() {
     const [cpuName, setcpuName] = createState("");
     const [avgCpuUsage, setAvgCpuUsage] = createState([0]);
-    const [perCpuUsage, setPerCpuUsage] = createState<{ [key: number]: number[] }>({});
+    const [perCpuUsage, setPerCpuUsage] = createState<{ [key: string]: number[] }>({});
 
     const [cpuArchitecture, setcpuArchitecture] = createState("");
     const [vendorName, setvendorName] = createState("");
@@ -44,26 +44,22 @@ export default function HardwareInfo() {
             return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
         });
     }))
-    interval(3000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}'"`).then((out) => {
-        const lines = out.trim().split('\n');
-        print(lines)
+    interval(4000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
+        const cpuData = JSON.parse(out);
         setPerCpuUsage((prev) => {
             const updated = { ...prev };
-            lines.forEach(line => {
-                const [cpuNum, usage] = line.trim().split(/\s+/);
-                if (cpuNum && usage) {
-                    const coreIndex = parseInt(cpuNum);
-                    const usageValue = parseFloat(usage);
-                    
-                    // Initialize array if this is a new core
-                    if (!updated[coreIndex]) {
-                        updated[coreIndex] = [];
-                    }
-                    
-                    // Append new value and keep last 20 points
-                    const newPoints = [...updated[coreIndex], usageValue];
-                    updated[coreIndex] = newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
+            Object.entries(cpuData).forEach(([cpuNum, usage]) => {
+                const coreIndex = parseInt(cpuNum);
+                const usageValue = usage as number;
+                
+                // Initialize array if this is a new core
+                if (!updated[coreIndex]) {
+                    updated[coreIndex] = [];
                 }
+                
+                // Append new value and keep last 20 points
+                const newPoints = [...updated[coreIndex], usageValue];
+                updated[coreIndex] = newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
             });
             return updated;
         });
@@ -98,18 +94,17 @@ export default function HardwareInfo() {
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7}/>
-                        <box>
+                        <box orientation={Gtk.Orientation.HORIZONTAL}>
                             <With value={perCpuUsage}>
                                 {(cpuData) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL}>
+                                    <>
                                         {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
-                                            const coreIndex = parseInt(coreNum);
-                                            const coreDataAccessor = cpuData[coreIndex] || [0];
+                                            const coreDataAccessor = cpuData[coreNum] || [0];
                                             return (
                                                 <CreateGraph title={`CPU CORE ${coreNum} USAGE`} valueToWatch={coreDataAccessor} threshold={0.7} />
                                             );
                                         })}
-                                    </box>
+                                    </>
                                 )}
                             </With>
                         </box>
