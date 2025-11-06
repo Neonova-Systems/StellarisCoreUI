@@ -32,6 +32,14 @@
     animation-iteration-count: infinite; // Defines the number of times an animation cycle is played.
     animation-timing-function: linear; // Describes how the animation will progress over one cycle of its duration.
 }
+@mixin apply-alt-blink-animation($duration: 0.8s) {
+    animation-name: alt-blink-animation; // The animation-name CSS property specifies the names of one or more @keyframes at-rules that describe the animation to apply to an element.
+    animation-duration: $duration; // The animation-duration CSS property sets the length of time that an animation takes to complete one cycle.
+    animation-direction: alternate-reverse; // The animation-direction CSS property sets whether an animation should play forward, backward, or alternate back and forth between playing the sequence forward and backward.
+    animation-iteration-count: infinite; // Defines the number of times an animation cycle is played.
+    animation-timing-function: linear; // Describes how the animation will progress over one cycle of its duration.
+}
+
 
 @keyframes stagger-animation {
     0% { opacity: 0; }
@@ -68,6 +76,9 @@
     20% { opacity: 1; }
     50% { opacity: 0.2; } 
 }
+
+@keyframes alt-blink-animation { 50% { opacity: 0.82; } }
+
 .alt-start-animation { @include apply-start-animation(0.5s, 0s);}
 .start-animation { @include apply-start-animation; }
 .stagger-animation { @include apply-stagger-animation; }
