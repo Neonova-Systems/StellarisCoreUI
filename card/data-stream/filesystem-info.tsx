@@ -2,12 +2,13 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow } from "../../helper";
 import { interval, timeout } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
+    const [readDiskOperation, setReadDiskOperation] = createState([0])
 
     const [filesystemName, setfilesystemName] = createState("");
     const [totalSize, settotalSize] = createState("");
@@ -42,10 +43,7 @@ export default function FilesystemInfo() {
     }
     interval(1000, () => execAsync(` awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
         const usage = parseFloat(out);
-        setAvgMemUsage((prev) => {
-            const newPoints = [...prev, usage];
-            return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
-        });
+        setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
     }))
 
     interval(1000, () => { changedataGridImage() })

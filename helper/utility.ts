@@ -119,3 +119,25 @@ export function setSourceRGBAFromHex(cr: giCairo.Context, hex: string, alpha: nu
     const { r, g, b, a } = hexToRGBA(hex, alpha);
     cr.setSourceRGBA(r, g, b, a);
 }
+
+/**
+ * Updates a rolling window of data points by adding a new value and
+ * truncating the array from the beginning if it exceeds the maximum size.
+ *
+ * @param prev The existing array of numbers representing the current window.
+ * @param newValue The new number to add to the end of the window.
+ * @param maxPoints The maximum number of points to keep in the window. Defaults to 20.
+ * @returns A new array representing the updated rolling window.
+ * @example
+ * // When the window is not full
+ * const window1 = [1, 2, 3];
+ * updateRollingWindow(window1, 4, 5); // Returns [1, 2, 3, 4]
+ *
+ * // When the window is full and needs truncation
+ * const window2 = [1, 2, 3, 4, 5];
+ * updateRollingWindow(window2, 6, 5); // Returns [2, 3, 4, 5, 6]
+ */
+export function updateRollingWindow(prev: number[], newValue: number, maxPoints: number = 20): number[] {
+    const newPoints = [...prev, newValue];
+    return newPoints.length > maxPoints ? newPoints.slice(-maxPoints) : newPoints;
+}
