@@ -4,8 +4,11 @@ import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 import { interval, timeout } from "ags/time";
+import CreateGraph from "../../helper/create-graph";
 
 export default function FilesystemInfo() {
+    const [avgMemUsage, setAvgMemUsage] = createState([0]);
+
     const [filesystemName, setfilesystemName] = createState("");
     const [totalSize, settotalSize] = createState("");
     const [usedSpace, setusedSpace] = createState("");
@@ -37,6 +40,13 @@ export default function FilesystemInfo() {
             }
         }).catch(() => {});
     }
+    interval(1000, () => execAsync(` awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
+        const usage = parseFloat(out);
+        setAvgMemUsage((prev) => {
+            const newPoints = [...prev, usage];
+            return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
+        });
+    }))
 
     interval(1000, () => { changedataGridImage() })
     execAsync(`dash -c "lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2"`).then((out) => setfilesystemName(out.toUpperCase()))
@@ -57,6 +67,7 @@ export default function FilesystemInfo() {
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
+                        <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7}/>
                         <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
                             <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
                                 <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>
