@@ -9,6 +9,7 @@ import CreateGraph from "../../helper/create-graph";
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
     const [readDiskOperation, setReadDiskOperation] = createState([0])
+    const [writeDiskOperation, setWriteDiskOperation] = createState([0])
 
     const [filesystemName, setfilesystemName] = createState("");
     const [totalSize, settotalSize] = createState("");
@@ -41,9 +42,17 @@ export default function FilesystemInfo() {
             }
         }).catch(() => {});
     }
-    interval(1000, () => execAsync(` awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
+    interval(1000, () => execAsync(`awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
         const usage = parseFloat(out);
         setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
+    }))
+    interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
+        const usage = parseFloat(out);
+        setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 20));
+    }))
+    interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
+        const usage = parseFloat(out);
+        setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 20));
     }))
 
     interval(1000, () => { changedataGridImage() })
@@ -65,7 +74,13 @@ export default function FilesystemInfo() {
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
-                        <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7}/>
+                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                            <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7}/>
+                        </box>
+                        <box marginStart={10} marginEnd={10} marginBottom={5} >
+                            <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} />
+                            <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} />
+                        </box>
                         <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
                             <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
                                 <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>

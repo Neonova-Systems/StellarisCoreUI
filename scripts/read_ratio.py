@@ -4,7 +4,7 @@ import sys
 
 # --- Configuration ---
 DEVICE = "nvme0n1" # <--- CHANGE THIS to your device (e.g., "sda")
-INTERVAL = 0.5    # How long to sample (in seconds)
+INTERVAL = 0.7    # How long to sample (in seconds)
 # ---------------------
 
 # Get initial snapshot
