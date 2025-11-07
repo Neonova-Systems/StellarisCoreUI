@@ -52,7 +52,7 @@ export default function CreateGraph({title, valueToWatch, threshold = 1, fontSiz
                         const latestValue = dataPoints[dataPoints.length - 1] || 0;
                         const isCritical = (latestValue >= threshold);
                         return (
-                            <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5} halign={Gtk.Align.FILL}>
+                            <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} halign={Gtk.Align.FILL}>
                                 <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
                                 <box orientation={Gtk.Orientation.VERTICAL}>
                                     <label label={title} css={`font-size: ${fontSize}px;`} cssClasses={[isCritical ? "critical" : ""]} />
