@@ -1,7 +1,7 @@
 import { Accessor, createBinding, createState, For, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow} from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR} from "../../helper";
 import { timeout, interval } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 
@@ -39,7 +39,10 @@ export default function HardwareInfo() {
     }
     interval(1000, () => execAsync(`dash -c "mpstat 1 1 | grep 'Average:' | awk '{print (100 - $NF) / 100}'"`).then((out) => {
         const usage = parseFloat(out);
-        setAvgCpuUsage((prev) => updateRollingWindow(prev, usage, 20));
+        setAvgCpuUsage((prev) => {
+            const newPoints = [...prev, usage];
+            return newPoints.length > 20 ? newPoints.slice(-20) : newPoints;
+        });
     }))
     interval(3000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
         const cpuData = JSON.parse(out);
@@ -49,11 +52,14 @@ export default function HardwareInfo() {
                 const coreIndex = parseInt(cpuNum);
                 const usageValue = usage as number;
                 
+                // Initialize array if this is a new core
                 if (!updated[coreIndex]) {
                     updated[coreIndex] = [];
                 }
                 
-                updated[coreIndex] = updateRollingWindow(updated[coreIndex], usageValue, 10);
+                // Append new value and keep last 10 points
+                const newPoints = [...updated[coreIndex], usageValue];
+                updated[coreIndex] = newPoints.length > 10 ? newPoints.slice(-10) : newPoints;
             });
             return updated;
         });
@@ -87,7 +93,9 @@ export default function HardwareInfo() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7}/>
+                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7}/>
+                        </box>
                         <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
                             <With value={perCpuUsage}>
                                 {(cpuData) =>
