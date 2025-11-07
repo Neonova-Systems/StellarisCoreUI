@@ -5,4 +5,3 @@ export * from "./constants";
 export * from "./array-reorder";
 export * from "./json";
 export * from "./dashboard-cards";
-export { hexToRGBA, setSourceRGBAFromHex } from './utility';
