@@ -74,7 +74,7 @@ export default function FilesystemInfo() {
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
-                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                        <box marginStart={10} marginEnd={10} marginTop={10}>
                             <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7}/>
                         </box>
                         <box marginStart={10} marginEnd={10} marginBottom={5} >

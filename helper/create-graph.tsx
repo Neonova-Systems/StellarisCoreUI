@@ -1,4 +1,4 @@
-import { Accessor, createBinding, With } from "ags";
+import { Accessor, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import giCairo from "cairo";
 import { setSourceRGBAFromHex } from "./utility";
@@ -14,31 +14,31 @@ type GraphProps = {
 
 export default function CreateGraph({title, valueToWatch, threshold = 1, fontSize = 7, lineWidth = 1.3}: GraphProps) {
     function renderChart(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, dataPoints: number[], isCritical?: boolean) {
-        const padding = 1;
-        const chartWidth = width - (padding * 2);
-        const chartHeight = height - (padding * 2);
-        const segmentWidth = chartWidth / (dataPoints.length - 1);
+        const chartWidth = width;
+        const chartHeight = height;
+        const points = dataPoints.length ? dataPoints : [0];
+        const segmentWidth = points.length > 1 ? chartWidth / (points.length - 1) : 0;
 
         setSourceRGBAFromHex(cr, isCritical ? criticalHex : "#1a39ed", 0.17); // Background
-        cr.moveTo(padding, height - padding);
-        cr.lineTo(padding, padding + chartHeight * (1 - dataPoints[0]));
+        cr.moveTo(0, height);
+        cr.lineTo(0, chartHeight * (1 - points[0]));
 
-        for (let i = 1; i < dataPoints.length; i++) {
-            const x = padding + segmentWidth * i;
-            const y = padding + chartHeight * (1 - dataPoints[i]);
+        for (let i = 1; i < points.length; i++) {
+            const x = segmentWidth * i;
+            const y = chartHeight * (1 - points[i]);
             cr.lineTo(x, y);
         }
-        cr.lineTo(width - padding, height - padding);
+        cr.lineTo(width, height);
         cr.closePath();
         cr.fill();
 
         setSourceRGBAFromHex(cr, isCritical ? criticalHex : "#1a39ed", 1.0); // Line
         cr.setLineWidth(lineWidth);
-        cr.moveTo(padding, padding + chartHeight * (1 - dataPoints[0]));
+        cr.moveTo(0, chartHeight * (1 - points[0]));
 
-        for (let i = 1; i < dataPoints.length; i++) {
-            const x = padding + segmentWidth * i;
-            const y = padding + chartHeight * (1 - dataPoints[i]);
+        for (let i = 1; i < points.length; i++) {
+            const x = segmentWidth * i;
+            const y = chartHeight * (1 - points[i]);
             cr.lineTo(x, y);
         }
         cr.stroke();
