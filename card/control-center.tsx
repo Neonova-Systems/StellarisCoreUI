@@ -22,7 +22,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1}.svg`) }
     interval(1396, () => cycleDecorationImage())
     const controlEntry = [
-        { name: "Open Powermenu", target: "", command: ``, description: "Show options to shutdown, restart, or log out."},
+        { name: "Open Powermenu", target: "", command: `ags run ${HOME_DIR}/.config/ags/window/context-menu/power-menu.tsx --gtk 4`, description: "Show options to shutdown, restart, or log out."},
         { name: "Scan Text", target: "", command: ``, description: "Scan and copy text from an area of the screen (OCR)."},
         { name: "Scan QR", target: "", command: ``, description: "Scan a QR code from the screen or webcam."},
         { name: "Switch Window", target: "ALL-WORKSPACE", command: ``, description: "List and switch between all open windows."},
@@ -46,7 +46,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     }
 
     function EntryClicked(command : string)  {
-        command && execAsync(command);
+        command && execAsync(command).catch((e) => print(e));
         playEnterSound();
     }
 

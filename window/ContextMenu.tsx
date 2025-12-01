@@ -4,7 +4,7 @@ import style from "./context-menu/style.scss";
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Accessor, createState, For, With } from 'ags';
 import { CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
-import { execAsync } from "ags/process";
+import { exec, execAsync } from "ags/process";
 import { interval, Timer } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
@@ -19,6 +19,7 @@ interface CommandItem {
     command: string;
     keybind?: string;
     target?: string;
+    dontAsync?: boolean;
 }
 
 export function spawnContextMenu(commandList: CommandItem[]) {
@@ -38,7 +39,7 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
     const [user_commands, setUserCommands] = createState(commandsList);
 
     function execCommand(command: CommandItem) {
-        execAsync(command.command);
+        (command.dontAsync) ? exec(command.command) : execAsync(command.command);
         const w = app.get_window?.(windowName)
         if (w) { w.destroy() }
         app.quit()
