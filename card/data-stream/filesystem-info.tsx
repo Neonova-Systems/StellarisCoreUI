@@ -48,11 +48,11 @@ export default function FilesystemInfo() {
     }))
     interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
         const usage = parseFloat(out);
-        setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 20));
+        setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
     }))
     interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
         const usage = parseFloat(out);
-        setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 20));
+        setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
     }))
 
     interval(1000, () => { changedataGridImage() })
@@ -75,11 +75,11 @@ export default function FilesystemInfo() {
                 {(v) => ( 
                     <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
                         <box marginStart={10} marginEnd={10} marginTop={10}>
-                            <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7}/>
+                            <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={17}/>
                         </box>
                         <box marginStart={10} marginEnd={10} marginBottom={5} >
-                            <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} />
-                            <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} />
+                            <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={15} lineWidth={0.8}/>
+                            <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={15} lineWidth={0.8}/>
                         </box>
                         <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
                             <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>

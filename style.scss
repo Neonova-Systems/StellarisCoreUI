@@ -332,19 +332,19 @@ tooltip {
   .graph {
     min-width: 85px;
     min-height: 30px;
-    padding-top: 5px;
     padding-left: 3px;
     &.critical-graph { @include apply-alt-blink-animation(1s); } // Critical on the graph
   }
   label { 
     box-shadow: unset;
     color: list.nth($color, 1); 
+    padding-bottom: 5px;
     text-shadow: 2px 1px 4px rgba(list.nth($color, 1), 0.5);
-    font-family: Chakra Petch; font-weight: bold; letter-spacing: 1.1px;
+    font-family: Chakra Petch; font-weight: bold; letter-spacing: 1px;
     &.critical {  // Critical on label
       box-shadow: unset;
       color: list.nth($color, 2); 
-      text-shadow: 2px 1px 5px rgba(list.nth($color, 2), 0.5);
+      text-shadow: 2px 1px 4px rgba(list.nth($color, 2), 0.5);
     }
   }
   &.critical { border-color: rgba(list.nth($color, 2), .3); box-shadow: inset 0px 0px 5px 2px rgba(list.nth($color, 2), .2), 0px 0px 2px rgba(list.nth($color, 2), .2) } // Critical on container
