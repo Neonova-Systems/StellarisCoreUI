@@ -1,4 +1,4 @@
-import { Accessor, createBinding, createState, For, With } from "ags";
+import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow} from "../../helper";
@@ -98,7 +98,7 @@ export default function HardwareInfo() {
                                     <box halign={Gtk.Align.FILL}>
                                         {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
                                             const coreDataAccessor = cpuData[coreNum] || [0];
-                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={6} lineWidth={1} height={17}/>);
+                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={1} height={18}/>);
                                         })}
                                     </box>
                                 }

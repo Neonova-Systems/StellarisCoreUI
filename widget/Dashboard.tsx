@@ -1,5 +1,5 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { createBinding, With, For, createState, onCleanup } from "ags"
+import { With, For, createState, onCleanup } from "ags"
 import { CreatePanel, playPanelSound, createDashboardCards } from "../helper";
 import SystemInfo from "../card/data-stream/system-info";
 import NetworkInfo from "../card/data-stream/network-info";
@@ -13,7 +13,6 @@ import GLib from "gi://GLib?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../card/music-player";
 import app from "ags/gtk4/app";
-import LayerInformation from "./ExtraPane";
 import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"

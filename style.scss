@@ -340,7 +340,7 @@ tooltip {
     color: list.nth($color, 1); 
     padding-bottom: 5px;
     text-shadow: 2px 1px 4px rgba(list.nth($color, 1), 0.5);
-    font-family: Chakra Petch; font-weight: bold; letter-spacing: 1px;
+    font-family: CozetteVector; font-weight: bold; letter-spacing: 0.7px;
     &.critical {  // Critical on label
       box-shadow: unset;
       color: list.nth($color, 2); 

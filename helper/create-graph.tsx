@@ -13,7 +13,7 @@ type GraphProps = {
     height?: number;
 }
 
-export default function CreateGraph({title, valueToWatch, threshold = 1, fontSize = 6, lineWidth = 1.3, height = 30}: GraphProps) {
+export default function CreateGraph({title, valueToWatch, threshold = 1, fontSize = 8.3, lineWidth = 1.3, height = 30}: GraphProps) {
     function renderChart(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, dataPoints: number[], isCritical?: boolean) {
         const chartWidth = width;
         const chartHeight = height;
