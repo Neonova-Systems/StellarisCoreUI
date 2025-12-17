@@ -15,7 +15,7 @@ export default function Wallpaper({ $type } : Props) {
         execAsync(`ags request "updateWallpaper ${out}"`);
         setWallpaperPath(out)
     })
-    interval(600, () => { execAsync('ags request "get wallpaper path"').then(out => { setWallpaperPath(out) })});
+    interval(1000, () => { execAsync('ags request "get wallpaper path"').then(out => { setWallpaperPath(out) })});
 
     return (
         <With value={wallpaperPath}>
