@@ -17,6 +17,7 @@ import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
 import ExtraPane from "./ExtraPane";
+import Screen from "./Screen";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -116,9 +117,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 </box>
             </box>
             <box hexpand cssClasses={["side-right"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                <box cssClasses={["screen"]} hexpand={false} halign={Gtk.Align.FILL} vexpand={true}>
-                    <Wallpaper />
-                </box>
+                <Screen />
                 <ExtraPane />
                 <BatteryRibbon />
             </box>
