@@ -4,7 +4,7 @@ import { spawnContextMenu } from "../ContextMenu"
 const commandsList = [
     { name: "Toggle", description: "Toggle desktop icons visibility", command: "ags request 'toggleDesktopIcons'", keybind: "v"},
     { name: "Change Wallpaper", description: "Open wallpaper selector", command: "ags request 'openWallpaperSelector'", keybind: ""},
-    { name: "Refresh", description: "Reload desktop icons and layout", command: "ags request 'refreshDesktop'", keybind: "r"},
+    { name: "Refresh", description: "Reload desktop icons and layout", command: "ags request 'refresh desktop'", keybind: "r"},
     { name: "Terminal", description: "Open terminal in desktop directory", command: "/usr/bin/kitty --directory ~/Desktop", keybind: "t"},
     { name: "File Manager", description: "Open file manager in desktop directory", command: `/usr/bin/nautilus ${HOME_DIR}/Desktop`, keybind: "e"},
     { name: "Create New Folder", description: "Create a new folder on desktop", command: "mkdir ~/Desktop/NewFolder && notify-send 'Folder Created'", keybind: ""},

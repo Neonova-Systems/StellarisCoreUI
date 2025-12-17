@@ -75,6 +75,7 @@ export default function Screen() {
         const signalObj = readJson(SIGNAL_JSON, {})
         if (signalObj !== null && "refreshAppIcon" in signalObj && signalObj.refreshAppIcon === true) {
             setListApps(parseDesktopFiles(desktopDir));
+            print(listApps)
             signalObj.refreshAppIcon = false;
             writeJson(SIGNAL_JSON, signalObj);
         }
@@ -91,28 +92,34 @@ export default function Screen() {
                 <box $type="overlay">
                     <With value={toggleDesktopIconState}>
                         {(v) => (
-                            <Gtk.Grid visible={v} css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Gtk.Align.START} valign={Gtk.Align.START}
-                                $={(grid) => {
-                                    const rows = 10;
-                                    listApps.get().forEach((app, i) => {
-                                        const col = Math.floor(i / rows);
-                                        const row = i % rows;
+                            <box visible={v}>
+                                <With value={listApps}>
+                                    {(apps) => (
+                                        <Gtk.Grid css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Gtk.Align.START} valign={Gtk.Align.START}
+                                            $={(grid) => {
+                                                const rows = 10;
+                                                apps.forEach((app, i) => {
+                                                    const col = Math.floor(i / rows);
+                                                    const row = i % rows;
 
-                                        const btn = new Gtk.Button() as any;
-                                        btn.set_child(
-                                            <box cssClasses={["app-icon"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-                                                {app.icon && (<Gtk.Image iconName={app.icon} pixelSize={48} />)}
-                                                <label label={app.name} cssClasses={["app-name"]} />
-                                            </box>
-                                        );
-                                        btn.connect('clicked', () => {
-                                            GLib.spawn_command_line_async(app.exec);
-                                        });
+                                                    const btn = new Gtk.Button() as any;
+                                                    btn.set_child(
+                                                        <box cssClasses={["app-icon"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+                                                            {app.icon && (<Gtk.Image iconName={app.icon} pixelSize={48} />)}
+                                                            <label label={app.name} cssClasses={["app-name"]} />
+                                                        </box>
+                                                    );
+                                                    btn.connect('clicked', () => {
+                                                        GLib.spawn_command_line_async(app.exec);
+                                                    });
 
-                                        grid.attach(btn, col, row, 1, 1);
-                                    });
-                                }}
-                            />
+                                                    grid.attach(btn, col, row, 1, 1);
+                                                });
+                                            }}
+                                        />
+                                    )}
+                                </With>
+                            </box>
                         )}
                     </With>
                 </box>
