@@ -143,6 +143,10 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
         return res("Desktop Refreshed");
     }
 
+    if (request === "open wallpaper selector") {
+        execAsync(`zsh -ic "cd ~/Pictures && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
+    }
+
     for (const key in stateMappings) {
         if (request === `get${key}State`) {
             return handleStateChange(stateMappings[key], res);
