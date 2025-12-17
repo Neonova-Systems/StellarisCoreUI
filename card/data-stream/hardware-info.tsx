@@ -2,8 +2,9 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow} from "../../helper";
-import { timeout, interval } from 'ags/time';
+import { timeout, interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
+import GLib from "gi://GLib";
 
 export default function HardwareInfo() {
     const [cpuName, setcpuName] = createState("");
@@ -27,9 +28,60 @@ export default function HardwareInfo() {
     const [motherboard, setMotherboard] = createState("");
     const [biosInfo, setbiosInfo] = createState("");
     const [toggleGraphState, settoggleGraphState] = createState(false);
+    
+    let avgCpuInterval: Timer | null = null;
+    let perCpuInterval: Timer | null = null;
 
     timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')) });
-    timeout(500, () => { execAsync('ags request "getHardwareGraphState"').then(out => settoggleGraphState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getHardwareGraphState"').then(out => {
+            const enabled = out === 'true';
+            settoggleGraphState(enabled);
+            if (enabled) {
+                startIntervals();
+            }
+        });
+    });
+    
+    function startIntervals() {
+        if (avgCpuInterval !== null) return; // Already running
+        
+        avgCpuInterval = interval(1000, () => execAsync(`dash -c "mpstat 1 1 | grep 'Average:' | awk '{print (100 - $NF) / 100}'"`).then((out) => {
+            const usage = parseFloat(out);
+            setAvgCpuUsage((prev) => updateRollingWindow(prev, usage, 30));
+        }));
+        
+        perCpuInterval = interval(2000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
+            const cpuData = JSON.parse(out);
+            setPerCpuUsage((prev) => {
+                const updated = { ...prev };
+                Object.entries(cpuData).forEach(([cpuNum, usage]) => {
+                    const coreIndex = parseInt(cpuNum);
+                    const usageValue = usage as number;
+                    
+                    // Initialize array if this is a new core
+                    if (!updated[coreIndex]) {
+                        updated[coreIndex] = [];
+                    }
+                    
+                    // Append new value and keep last 20 points
+                    updated[coreIndex] = updateRollingWindow(updated[coreIndex], usageValue, 20);
+                });
+                return updated;
+            });
+        }));
+    }
+    
+    function stopIntervals() {
+        if (avgCpuInterval !== null) {
+            avgCpuInterval.cancel();
+            avgCpuInterval = null;
+        }
+        if (perCpuInterval !== null) {
+            perCpuInterval.cancel();
+            perCpuInterval = null;
+        }
+    }
+    
     function panelClicked() {
         execAsync('ags request "toggleHardwareInfo"').then(out => {
             const isVisible = out === 'true';
@@ -41,32 +93,17 @@ export default function HardwareInfo() {
     }
 
     function onRightClicked() {
-        execAsync(`ags request 'toggleHardwareGraph'`).then(out => settoggleGraphState(out === 'true'))
-    }
-
-    interval(1000, () => execAsync(`dash -c "mpstat 1 1 | grep 'Average:' | awk '{print (100 - $NF) / 100}'"`).then((out) => {
-        const usage = parseFloat(out);
-        setAvgCpuUsage((prev) => updateRollingWindow(prev, usage, 30));
-    }))
-    interval(2000, () => execAsync(`dash -c "mpstat -P ALL 1 1 | awk '$2 ~ /^[0-9]+$/ {print $2, (100 - $NF) / 100}' | jq -R '. | split(\\" \\") | { (.[0]): (.[1] | tonumber) }' | jq -s 'add'"`).then((out) => {
-        const cpuData = JSON.parse(out);
-        setPerCpuUsage((prev) => {
-            const updated = { ...prev };
-            Object.entries(cpuData).forEach(([cpuNum, usage]) => {
-                const coreIndex = parseInt(cpuNum);
-                const usageValue = usage as number;
-                
-                // Initialize array if this is a new core
-                if (!updated[coreIndex]) {
-                    updated[coreIndex] = [];
-                }
-                
-                // Append new value and keep last 20 points
-                updated[coreIndex] = updateRollingWindow(updated[coreIndex], usageValue, 20);
-            });
-            return updated;
+        execAsync(`ags request 'toggleHardwareGraph'`).then(out => {
+            const enabled = out === 'true';
+            settoggleGraphState(enabled);
+            
+            if (enabled) {
+                startIntervals();
+            } else {
+                stopIntervals();
+            }
         });
-    }))
+    }
     // --- CPU Information ---
     execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
     execAsync(`dash -c "lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuArchitecture(out.toUpperCase()))
