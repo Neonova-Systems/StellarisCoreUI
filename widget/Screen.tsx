@@ -2,10 +2,11 @@ import { Gdk, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import Wallpaper from "../modules/wallpaper"
-import { HOME_DIR } from "../helper"
+import { HOME_DIR, SIGNAL_JSON } from "../helper"
 import { execAsync } from "ags/process"
-import { createState, With } from 'ags';
+import { createState, For, With } from 'ags';
 import { interval } from "ags/time"
+import { readJson, writeJson } from '../helper/json';
 
 type DesktopEntry = {
     name: string;
@@ -62,13 +63,22 @@ function parseDesktopFiles(dir: string): DesktopEntry[] {
 export default function Screen() {
     const desktopDir = GLib.build_filenamev([GLib.get_home_dir(), "Desktop"]);
     const [toggleDesktopIconState, setToggleDesktopIconState] = createState(false);
-    const apps = parseDesktopFiles(desktopDir);
+    const [listApps, setListApps] = createState<DesktopEntry[]>([]);
 
+    setListApps(parseDesktopFiles(desktopDir));
     interval(800, () => { execAsync('ags request "getDesktopIconsState"').then(out => {
             const enabled = out === 'true';
             setToggleDesktopIconState(enabled);
         });
     });
+    interval(1000, () => { 
+        const signalObj = readJson(SIGNAL_JSON, {})
+        if (signalObj !== null && "refreshAppIcon" in signalObj && signalObj.refreshAppIcon === true) {
+            setListApps(parseDesktopFiles(desktopDir));
+            signalObj.refreshAppIcon = false;
+            writeJson(SIGNAL_JSON, signalObj);
+        }
+    })
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/desktop-menu.tsx --gtk 4`).catch((e) => print(e))
     }
@@ -81,10 +91,10 @@ export default function Screen() {
                 <box $type="overlay">
                     <With value={toggleDesktopIconState}>
                         {(v) => (
-                            <Gtk.Grid $type="overlay" visible={v} css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Gtk.Align.START} valign={Gtk.Align.START}
+                            <Gtk.Grid visible={v} css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Gtk.Align.START} valign={Gtk.Align.START}
                                 $={(grid) => {
                                     const rows = 10;
-                                    apps.forEach((app, i) => {
+                                    listApps.get().forEach((app, i) => {
                                         const col = Math.floor(i / rows);
                                         const row = i % rows;
 

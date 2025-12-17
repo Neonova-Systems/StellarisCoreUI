@@ -4,6 +4,7 @@ import { execAsync } from "ags/process";
 import Gio from "gi://Gio";
 import { readJson } from "../helper/json";
 import { WALLPAPER_JSON } from "../helper/constants";
+import { interval } from "ags/time";
 
 type Props = {
     $type: string | undefined;
@@ -14,6 +15,8 @@ export default function Wallpaper({ $type } : Props) {
         execAsync(`ags request "updateWallpaper ${out}"`);
         setWallpaperPath(out)
     })
+    interval(600, () => { execAsync('ags request "get wallpaper path"').then(out => { setWallpaperPath(out) })});
+
     return (
         <With value={wallpaperPath}>
             {(v) => v ? (

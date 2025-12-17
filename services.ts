@@ -3,9 +3,13 @@ import { Astal } from "gi://Astal?version=4.0"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { writeFile } from "ags/file"
 import { readJson, writeJson } from "./helper/json"
-import { WALLPAPER_JSON, DASHBOARD_STATE_JSON, HOME_DIR } from "./helper/constants";
+import { WALLPAPER_JSON, SIGNAL_JSON, DASHBOARD_STATE_JSON, HOME_DIR } from "./helper/constants";
+import { execAsync } from "ags/process"
 
 const hyprland = AstalHyprland.get_default();
+let signal = readJson(SIGNAL_JSON, {
+    refreshAppIcon: false,
+})
 
 // State management
 export type DashboardState = {
@@ -123,6 +127,20 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
             writeJson(WALLPAPER_JSON, { path });
             return res(`Wallpaper path updated to: ${path}`);
         }
+    }
+
+    if (request === "getWallpaperPath" || request === "get wallpaper path") {
+        const wallpaperObj = readJson(WALLPAPER_JSON, {});
+        return res(typeof wallpaperObj === "object" && wallpaperObj !== null && "path" in wallpaperObj ? String(wallpaperObj.path) : "");
+    }
+
+    if (request === "refresh desktop") {
+        execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
+            execAsync(`ags request "updateWallpaper ${out}"`);
+        })
+        signal.refreshAppIcon = true;
+        writeJson(SIGNAL_JSON, signal);
+        return res("Desktop Refreshed");
     }
 
     for (const key in stateMappings) {
