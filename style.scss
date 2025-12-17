@@ -314,9 +314,8 @@ tooltip {
 }
 
 .app-icon {
-  image { 
-    -gtk-icon-shadow: 0px 0px 4px rgba(black, 0.5);
-  }
+  &:active { opacity: 50%; }
+  image { -gtk-icon-shadow: 0px 0px 4px rgba(black, 0.5); }
   .app-name {
     color: white;
     text-shadow: 
