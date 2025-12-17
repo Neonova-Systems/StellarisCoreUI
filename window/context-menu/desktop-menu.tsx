@@ -8,7 +8,7 @@ const commandsList = [
     { name: "Terminal", description: "Open terminal in desktop directory", command: "/usr/bin/kitty --directory ~/Desktop", keybind: "t"},
     { name: "File Manager", description: "Open file manager in desktop directory", command: `/usr/bin/nautilus ${HOME_DIR}/Desktop`, keybind: "e"},
     // { name: "Create New Folder", description: "Create a new folder on desktop", command: "mkdir ~/Desktop/NewFolder && notify-send 'Folder Created'", keybind: ""},
-    { name: "Display Settings", description: "Open display configuration", command: "nwg-displays", keybind: ""},
+    { name: "Display Settings", description: "Open display configuration", command: "/usr/bin/nwg-displays", keybind: "", dontAsync: true},
     // { name: "Sort Icons by Name", description: "Arrange desktop icons alphabetically", command: "ags request 'sortDesktopByName'", keybind: ""},
     // { name: "Sort Icons by Type", description: "Group desktop icons by file type", command: "ags request 'sortDesktopByType'", keybind: ""},
     // { name: "Clean Up Desktop", description: "Auto-arrange desktop icons in grid", command: "ags request 'cleanupDesktop'", keybind: ""},
