@@ -21,6 +21,7 @@ export type DashboardState = {
     layerInformationVisible: boolean;
     ControlCenterVisible: boolean;
     hardwareGraphState: boolean;
+    filesystemGraphState: boolean;
 }
 
 let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { 
@@ -35,6 +36,7 @@ let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, {
     layerInformationVisible: false,
     ControlCenterVisible: true,
     hardwareGraphState: true,
+    filesystemGraphState: true,
 });
 
 const stateMappings: { [key: string]: keyof DashboardState } = {
@@ -47,7 +49,8 @@ const stateMappings: { [key: string]: keyof DashboardState } = {
     "Notification": "notificationVisible",
     "LayerInformation": "layerInformationVisible",
     "ControlCenter": "ControlCenterVisible",
-    "HardwareGraph": "ControlCenterVisible",
+    "HardwareGraph": "hardwareGraphState",
+    "FilesystemGraph": "filesystemGraphState"
 };
 
 export function applyCurrentDashboardState() {

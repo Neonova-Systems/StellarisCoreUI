@@ -33,7 +33,7 @@ export default function HardwareInfo() {
     let perCpuInterval: Timer | null = null;
 
     timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')) });
-    interval(700, () => { execAsync('ags request "getHardwareGraphState"').then(out => {
+    interval(800, () => { execAsync('ags request "getHardwareGraphState"').then(out => {
             const enabled = out === 'true';
             settoggleGraphState(enabled);
             if (enabled) {
@@ -95,16 +95,8 @@ export default function HardwareInfo() {
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/hardware-info.tsx --gtk 4`).catch((e) => print(e))
         playGrantedSound();
-        // execAsync(`ags request 'toggleHardwareGraph'`).then(out => {
-        //     const enabled = out === 'true';
-        //     settoggleGraphState(enabled);
-        //     if (enabled) {
-        //         startIntervals();
-        //     } else {
-        //         stopIntervals();
-        //     }
-        // });
     }
+
     // --- CPU Information ---
     execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
     execAsync(`dash -c "lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuArchitecture(out.toUpperCase()))
@@ -137,11 +129,11 @@ export default function HardwareInfo() {
                         <box>
                             <With value={toggleGraphState}>
                                 {(v) => (
-                                    <box orientation={Gtk.Orientation.VERTICAL}>
-                                        <box visible={v} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
+                                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
                                             <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={17}/>
                                         </box>
-                                        <box visible={v} orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
+                                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
                                             <With value={perCpuUsage}>
                                                 {(cpuData) =>
                                                     <box halign={Gtk.Align.FILL}>

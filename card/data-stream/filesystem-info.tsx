@@ -2,8 +2,8 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow } from "../../helper";
-import { interval, timeout } from "ags/time";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../../helper";
+import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
 export default function FilesystemInfo() {
@@ -22,9 +22,57 @@ export default function FilesystemInfo() {
     const [blockList, setblockList] = createState("");
     const [toggleContentState, settoggleContentState] = createState(false);
     const [dataGridImage, setdataGridImage] = createState(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`);
+    const [toggleGraphState, settoggleGraphState] = createState(false);
+
+    let avgMemUsageInterval: Timer | null = null;
+    let readDiskOperationInterval: Timer | null = null;
+    let writeDiskOperationInterval: Timer | null = null;
 
     playPanelSound(1600)
     timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')) });
+    interval(800, () => { execAsync('ags request "getFilesystemGraphState"').then(out => {
+            const enabled = out === 'true';
+            settoggleGraphState(enabled);
+            if (enabled) {
+                startIntervals();
+            } else {
+                stopIntervals();
+            }
+        });
+    });
+
+    function startIntervals() {
+        if (avgMemUsageInterval !== null) return; // Already running
+        avgMemUsageInterval = interval(1000, () => execAsync(`awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
+            const usage = parseFloat(out);
+            setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
+        }))
+
+        readDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
+            const usage = parseFloat(out);
+            setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
+        }))
+
+        writeDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
+            const usage = parseFloat(out);
+            setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
+        }))
+    }
+
+    function stopIntervals() {
+        if (avgMemUsageInterval !== null) {
+            avgMemUsageInterval.cancel();
+            avgMemUsageInterval = null;
+        }
+        if (readDiskOperationInterval !== null) {
+            readDiskOperationInterval.cancel();
+            readDiskOperationInterval = null;
+        }
+        if (writeDiskOperationInterval !== null) {
+            writeDiskOperationInterval.cancel();
+            writeDiskOperationInterval = null;
+        }
+    }
 
     function changedataGridImage() {
         const currentPath = dataGridImage.get();
@@ -37,23 +85,14 @@ export default function FilesystemInfo() {
         execAsync('ags request "toggleFilesystemInfo"').then(out => {
             const isVisible = out === 'true';
             settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
+            if (isVisible) playPanelSound(500);
         }).catch(() => {});
     }
-    interval(1000, () => execAsync(`awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
-        const usage = parseFloat(out);
-        setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
-    }))
-    interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
-        const usage = parseFloat(out);
-        setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
-    }))
-    interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
-        const usage = parseFloat(out);
-        setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
-    }))
+
+    function onRightClicked() {
+        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/filesystem-info.tsx --gtk 4`).catch((e) => print(e))
+        playGrantedSound();
+    }
 
     interval(1000, () => { changedataGridImage() })
     execAsync(`dash -c "lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2"`).then((out) => setfilesystemName(out.toUpperCase()))
@@ -68,18 +107,26 @@ export default function FilesystemInfo() {
     execAsync(`dash -c "lsblk -a --list"`).then((out) => setblockList(out));
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="FILESYSTEM" onClicked={panelClicked}>
+            <CreatePanel name="FILESYSTEM" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
-                        <box marginStart={10} marginEnd={10} marginTop={10}>
-                            <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={17}/>
-                        </box>
-                        <box marginStart={10} marginEnd={10} marginBottom={5} >
-                            <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={15} lineWidth={0.8}/>
-                            <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={15} lineWidth={0.8}/>
+                        <box>
+                            <With value={toggleGraphState}>
+                                {(v) => (
+                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL} >
+                                        <box marginStart={10} marginEnd={10} marginTop={10}>
+                                            <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={17} />
+                                        </box>
+                                        <box marginStart={10} marginEnd={10} marginBottom={5} >
+                                            <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={15} lineWidth={0.8} />
+                                            <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={15} lineWidth={0.8} />
+                                        </box>
+                                    </box>
+                                )}
+                            </With>
                         </box>
                         <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
                             <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
