@@ -313,6 +313,21 @@ tooltip {
   font-weight: 600;
 }
 
+.app-icon {
+  image { 
+    -gtk-icon-shadow: 0px 0px 4px rgba(black, 0.5);
+  }
+  .app-name {
+    color: white;
+    text-shadow: 
+      -1px -1px 0 rgba(black, 0.3),
+      1px -1px 0 rgba(black, 0.3),
+      -1px 1px 0 rgba(black, 0.3),
+      1px 1px 0 rgba(black, 0.3),
+      0px 2px 4px rgba(black, 0.5);
+  }
+}
+
 .graph-container {
   $color: (#1A39ED, #3353F3);
   margin: 3px;

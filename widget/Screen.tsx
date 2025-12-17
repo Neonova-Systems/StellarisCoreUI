@@ -33,7 +33,11 @@ function parseDesktopFiles(dir: string): DesktopEntry[] {
             try {
                 keyfile.load_from_file(filepath, GLib.KeyFileFlags.NONE);
                 const name = keyfile.get_string("Desktop Entry", "Name");
-                const exec = keyfile.get_string("Desktop Entry", "Exec");
+                let exec = keyfile.get_string("Desktop Entry", "Exec");
+                
+                // Strip field codes like %u, %U, %f, %F, %i, %c, %k
+                exec = exec.replace(/%[uUfFick]/g, '').trim();
+                
                 let icon: string | undefined;
                 try {
                     icon = keyfile.get_string("Desktop Entry", "Icon");
@@ -75,7 +79,7 @@ export default function Screen() {
                             
                             const btn = new Gtk.Button() as any;
                             btn.set_child(
-                                <box cssClasses={["app-icon" ]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+                                <box cssClasses={["app-icon"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                                     {app.icon && ( <Gtk.Image iconName={app.icon} pixelSize={48} />)}
                                     <label label={app.name} cssClasses={["app-name"]} />
                                 </box>
