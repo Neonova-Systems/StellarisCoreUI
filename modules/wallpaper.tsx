@@ -5,7 +5,10 @@ import Gio from "gi://Gio";
 import { readJson } from "../helper/json";
 import { WALLPAPER_JSON } from "../helper/constants";
 
-export default function Wallpaper() {
+type Props = {
+    $type: string | undefined;
+}
+export default function Wallpaper({ $type } : Props) {
     const [wallpaperPath, setWallpaperPath] = createState(readJson(WALLPAPER_JSON, { path: "" }).path);
     execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => {
         execAsync(`ags request "updateWallpaper ${out}"`);
@@ -14,8 +17,8 @@ export default function Wallpaper() {
     return (
         <With value={wallpaperPath}>
             {(v) => v ? (
-                <Gtk.Picture contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand />
-            ) : ( <box />)
+                <Gtk.Picture $type={$type} contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand />
+            ) : ( <box $type={$type} />)
             }
         </With>
     )
