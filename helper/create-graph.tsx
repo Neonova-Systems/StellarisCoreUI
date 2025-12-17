@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4";
 import giCairo from "cairo";
 import { setSourceRGBAFromHex } from "./utility";
 
-const criticalHex = "#F32626"
+const criticalHex = "#3353F3"
 type GraphProps = {
     title: string | Accessor<string> | undefined;
     valueToWatch: number[] | Accessor<number[]>;
