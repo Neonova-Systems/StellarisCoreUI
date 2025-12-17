@@ -26,8 +26,10 @@ export default function HardwareInfo() {
     const [byteOrder, setbyteOrder] = createState("");
     const [motherboard, setMotherboard] = createState("");
     const [biosInfo, setbiosInfo] = createState("");
+    const [toggleGraphState, settoggleGraphState] = createState(false);
 
     timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getHardwareGraphState"').then(out => settoggleGraphState(out === 'true')) });
     function panelClicked() {
         execAsync('ags request "toggleHardwareInfo"').then(out => {
             const isVisible = out === 'true';
@@ -37,6 +39,11 @@ export default function HardwareInfo() {
             }
         }).catch(() => {});
     }
+
+    function onRightClicked() {
+        execAsync(`ags request 'toggleHardwareGraph'`).then(out => settoggleGraphState(out === 'true'))
+    }
+
     interval(1000, () => execAsync(`dash -c "mpstat 1 1 | grep 'Average:' | awk '{print (100 - $NF) / 100}'"`).then((out) => {
         const usage = parseFloat(out);
         setAvgCpuUsage((prev) => updateRollingWindow(prev, usage, 30));
@@ -83,25 +90,33 @@ export default function HardwareInfo() {
     execAsync(`dash -c "inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub(\\"K\\", \\"X\\", $5); print $2, $3 }'"`).then((out) => setbiosInfo(out.toUpperCase()))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="HARDWARE" onClicked={panelClicked}>
+            <CreatePanel name="HARDWARE" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText="Right click to toggle hardware monitoring graphs visibility">
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
-                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={17}/>
-                        </box>
-                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
-                            <With value={perCpuUsage}>
-                                {(cpuData) =>
-                                    <box halign={Gtk.Align.FILL}>
-                                        {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
-                                            const coreDataAccessor = cpuData[coreNum] || [0];
-                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={1} height={18}/>);
-                                        })}
+                        <box>
+                            <With value={toggleGraphState}>
+                                {(v) => (
+                                    <box orientation={Gtk.Orientation.VERTICAL}>
+                                        <box visible={v} marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={17}/>
+                                        </box>
+                                        <box visible={v} orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
+                                            <With value={perCpuUsage}>
+                                                {(cpuData) =>
+                                                    <box halign={Gtk.Align.FILL}>
+                                                        {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
+                                                            const coreDataAccessor = cpuData[coreNum] || [0];
+                                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={1} height={18}/>);
+                                                        })}
+                                                    </box>
+                                                }
+                                            </With>
+                                        </box>
                                     </box>
-                                }
+                                )}
                             </With>
                         </box>
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
