@@ -2,6 +2,8 @@ import { Accessor, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import giCairo from "cairo";
 import { setSourceRGBAFromHex } from "./utility";
+import Gio from "gi://Gio?version=2.0";
+import { HOME_DIR } from "./constants";
 
 const criticalHex = "#3353F3"
 type GraphProps = {

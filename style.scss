@@ -335,6 +335,7 @@ tooltip {
   border-width: 1px;
   border-style: solid;
   border-color: rgba(list.nth($color, 1), .3);
+  background-color: gtkalpha(#040714, 0.5);
   box-shadow: inset 0px 0px 4px 2px rgba(list.nth($color, 1), .2), 0px 0px 2px rgba(list.nth($color, 1), .2);
 
   .separator {
@@ -349,6 +350,7 @@ tooltip {
     padding-left: 3px;
     &.critical-graph { @include apply-alt-blink-animation(1s); } // Critical on the graph
   }
+
   label { 
     box-shadow: unset;
     color: list.nth($color, 1); 
