@@ -75,7 +75,6 @@ export default function Screen() {
         const signalObj = readJson(SIGNAL_JSON, {})
         if (signalObj !== null && "refreshAppIcon" in signalObj && signalObj.refreshAppIcon === true) {
             setListApps(parseDesktopFiles(desktopDir));
-            print(listApps)
             signalObj.refreshAppIcon = false;
             writeJson(SIGNAL_JSON, signalObj);
         }
