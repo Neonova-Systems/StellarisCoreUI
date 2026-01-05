@@ -131,7 +131,7 @@ export default function HardwareInfo() {
                                 {(v) => (
                                     <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
                                         <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
-                                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={17}/>
+                                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={15} lineWidth={0.9}/>
                                         </box>
                                         <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
                                             <With value={perCpuUsage}>
@@ -139,7 +139,7 @@ export default function HardwareInfo() {
                                                     <box halign={Gtk.Align.FILL}>
                                                         {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
                                                             const coreDataAccessor = cpuData[coreNum] || [0];
-                                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={1} height={18}/>);
+                                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={0.9} height={15}/>);
                                                         })}
                                                     </box>
                                                 }
