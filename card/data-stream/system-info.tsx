@@ -38,6 +38,24 @@ export default function SystemInfo() {
     function changeProfilePicture() {
         const dialog = new Gtk.FileDialog();
         
+        // Create file filter for images
+        const imageFilter = new Gtk.FileFilter();
+        imageFilter.set_name("Image Files");
+        imageFilter.add_mime_type("image/png");
+        imageFilter.add_mime_type("image/jpeg");
+        imageFilter.add_mime_type("image/jpg");
+        imageFilter.add_mime_type("image/gif");
+        imageFilter.add_mime_type("image/webp");
+        imageFilter.add_mime_type("image/bmp");
+        imageFilter.add_mime_type("image/svg+xml");
+        
+        // Create list store for filters
+        const filterStore = Gio.ListStore.new(Gtk.FileFilter.$gtype);
+        filterStore.append(imageFilter);
+        
+        dialog.set_filters(filterStore);
+        dialog.set_default_filter(imageFilter);
+        
         dialog.open(null, null, (source, result) => {
             try {
                 const file = dialog.open_finish(result);
@@ -53,7 +71,6 @@ export default function SystemInfo() {
                     });
                 }
             } catch (err) {
-                // User cancelled or error occurred
                 console.log("File selection cancelled or failed");
             }
         });
