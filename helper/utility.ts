@@ -33,6 +33,20 @@ export function playHoverSound(timeoutSeconds: number = 100) {
     timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/hover-panel.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
 }
 
+/**
+ * Formats a number of bytes into a human-readable string with appropriate units.
+ *
+ * @param {number} bytes - The number of bytes to format.
+ * @param {number} [decimals=2] - The number of decimal places to include in the output.
+ * @returns {string} A human-readable string representing the byte size (e.g., "1.23 MB").
+ * @example
+ * // returns "1.00 KB"
+ * formatBytes(1024);
+ *
+ * @example
+ * // returns "1.177 MB"
+ * formatBytes(1234567, 3);
+ */
 export function formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
