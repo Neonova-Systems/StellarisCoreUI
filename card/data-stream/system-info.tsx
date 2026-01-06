@@ -3,6 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
 import { interval, timeout } from "ags/time";
+import Gio from 'gi://Gio?version=2.0';
 
 export default function SystemInfo() {
     const [userHostname, setuserHostname] = createState("");
@@ -34,6 +35,30 @@ export default function SystemInfo() {
         });
     }
 
+    function changeProfilePicture() {
+        const dialog = new Gtk.FileDialog();
+        
+        dialog.open(null, null, (source, result) => {
+            try {
+                const file = dialog.open_finish(result);
+                if (file) {
+                    const sourcePath = file.get_path();
+                    const targetPath = `${HOME_DIR}/.face.icon`;
+                    
+                    // Copy the selected file to ~/.face.icon
+                    execAsync(`cp "${sourcePath}" "${targetPath}"`).then(() => {
+                        console.log("Profile picture updated successfully");
+                    }).catch(err => {
+                        console.error("Failed to update profile picture:", err);
+                    });
+                }
+            } catch (err) {
+                // User cancelled or error occurred
+                console.log("File selection cancelled or failed");
+            }
+        });
+    }
+
     execAsync('bash -c "{ whoami; hostname; } | paste -d "@" -s"').then((out) => setuserHostname(out.toUpperCase()))
     execAsync('dash -c "pacman -Qdq | wc -l"').then((out) => setdependecyInstalled(out));
     execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setavailableUpgrade(out));
@@ -61,7 +86,9 @@ export default function SystemInfo() {
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <box cssClasses={["content"]} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}/>
+                            <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"}>
+                                <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}></image>
+                            </button>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />

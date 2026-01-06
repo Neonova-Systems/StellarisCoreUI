@@ -108,6 +108,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
     .profile-picture {
       border: 1px solid #0B1233;
       filter: grayscale(100%);
+      background-color: black;
       box-shadow: 0px 2px 4px 0px hsla(0, 0%, 0%, 0.2);
     }
     .extended-content {
