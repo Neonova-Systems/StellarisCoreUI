@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
-import { timeout } from "ags/time";
+import { interval, timeout } from "ags/time";
 
 export default function SystemInfo() {
     const [userHostname, setuserHostname] = createState("");
@@ -43,7 +43,6 @@ export default function SystemInfo() {
     execAsync(`dash -c "systemd-analyze | cut -d'=' -f2 | head -n1 | tr -d ' '"`).then((out) => settotalBootTime(out));
 
     execAsync('dash -c "id -u $(whoami)"').then((out) => setuserId(out));
-    execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setuptime(out.toUpperCase()));
     execAsync(`dash -c "systemd-analyze | cut -d'+' -f2 | head -n1 | cut -d' ' -f2"`).then((out) => setbootTimeLoader(out));
 
     execAsync('dash -c "pacman -Qq | wc -l"').then((out) => setpackageInstalled(out));
@@ -52,6 +51,7 @@ export default function SystemInfo() {
 
     execAsync(`dash -c "journalctl -b -o cat | head -n60"`).then((out) => setjournalHead(out));
     execAsync(`dash -c "systemd-analyze blame"`).then((out) => setsystemdBlame(out));
+    interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setuptime(out.toUpperCase())))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="SYSTEM" onClicked={panelClicked}>
