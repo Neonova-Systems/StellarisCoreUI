@@ -12,53 +12,42 @@ let signal = readJson(SIGNAL_JSON, {
 })
 
 // State management
+const stateKeys = {
+    visible: "Dashboard",
+    dataStreamVisible: "DataStream",
+    systemInfoVisible: "SystemInfo",
+    networkInfoVisible: "NetworkInfo",
+    filesystemInfoVisible: "FilesystemInfo",
+    hardwareInfoVisible: "HardwareInfo",
+    batteryInfoVisible: "BatteryInfo",
+    notificationVisible: "Notification",
+    layerInformationVisible: "LayerInformation",
+    ControlCenterVisible: "ControlCenter",
+    hardwareGraphState: "HardwareGraph",
+    filesystemGraphState: "FilesystemGraph",
+    desktopIconsVisible: "DesktopIcons",
+    notificationVerbosityState: "NotificationVerbosity"
+} as const;
+
 export type DashboardState = {
+    [K in keyof typeof stateKeys]: boolean;
+} & {
     [key: string]: boolean;
-    visible: boolean;
-    dataStreamVisible: boolean;
-    systemInfoVisible: boolean;
-    networkInfoVisible: boolean;
-    filesystemInfoVisible: boolean;
-    hardwareInfoVisible: boolean;
-    batteryInfoVisible: boolean;
-    notificationVisible: boolean;
-    layerInformationVisible: boolean;
-    ControlCenterVisible: boolean;
-    hardwareGraphState: boolean;
-    filesystemGraphState: boolean;
-    desktopIconsVisible: boolean;
 }
 
-let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, { 
-    visible: true, 
-    dataStreamVisible: true, 
-    systemInfoVisible: true, 
-    networkInfoVisible: true,
-    filesystemInfoVisible: true,
-    hardwareInfoVisible: true,
-    batteryInfoVisible: true,
-    notificationVisible: false,
-    layerInformationVisible: false,
-    ControlCenterVisible: true,
-    hardwareGraphState: true,
-    filesystemGraphState: true,
-    desktopIconsVisible: true,
-});
+// Auto-generate defaults (all true)
+const defaultDashboardState: DashboardState = Object.keys(stateKeys).reduce((acc, key) => {
+    (acc as any)[key] = true;
+    return acc;
+}, {} as DashboardState);
 
-const stateMappings: { [key: string]: keyof DashboardState } = {
-    "DataStream": "dataStreamVisible",
-    "SystemInfo": "systemInfoVisible",
-    "NetworkInfo": "networkInfoVisible",
-    "FilesystemInfo": "filesystemInfoVisible",
-    "HardwareInfo": "hardwareInfoVisible",
-    "BatteryInfo": "batteryInfoVisible",
-    "Notification": "notificationVisible",
-    "LayerInformation": "layerInformationVisible",
-    "ControlCenter": "ControlCenterVisible",
-    "HardwareGraph": "hardwareGraphState",
-    "FilesystemGraph": "filesystemGraphState",
-    "DesktopIcons": "desktopIconsVisible"
-};
+let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, defaultDashboardState);
+
+// Auto-generate mappings (inverted: "DataStream" -> "dataStreamVisible")
+const stateMappings = Object.entries(stateKeys).reduce((acc, [key, value]) => {
+    acc[value] = key as keyof DashboardState;
+    return acc;
+}, {} as { [key: string]: keyof DashboardState });
 
 export function applyCurrentDashboardState() {
     const visible = dashboardState.visible;
@@ -115,7 +104,7 @@ function handleStateChange(key: keyof DashboardState, res: (response: any) => vo
 export function requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv.join(" ");
     if (request === "toggleDashboard" || request === "toggle dashboard") {
-        dashboardState.visible = !dashboardState.visible;
+        (dashboardState as any).visible = !dashboardState.visible;
         writeJson(DASHBOARD_STATE_JSON, dashboardState);
         applyCurrentDashboardState();
         return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
