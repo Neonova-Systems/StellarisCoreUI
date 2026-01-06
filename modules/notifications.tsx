@@ -4,7 +4,9 @@ import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
-import { CreateEntryContent, HOME_DIR, playAlertSound, playNotificationsSound } from "../helper"
+import { CreateEntryContent, HOME_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
+import giCairo from "cairo"
+import { createState, With } from "ags"
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -46,6 +48,28 @@ interface NotificationProps {
 }
 
 export default function Notification({ notification: n }: NotificationProps) {
+
+  function drawActionButtonBackground(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, isHover: boolean = false) {
+    const notchSize = 10; // Size of the diagonal cut on the bottom-right
+
+    cr.newPath(); // Start the path
+    cr.moveTo(0, 0); // Top-left corner (no rounding)
+    cr.lineTo(width, 0); // Top edge straight across
+    cr.lineTo(width, height - notchSize); // Right edge down to notch start
+    cr.lineTo(width - notchSize, height); // Diagonal notch on bottom-right
+    cr.lineTo(0, height); // Bottom edge
+    cr.closePath(); // Left edge back to start
+
+    // Fill with background color
+    setSourceRGBAFromHex(cr, "#152052", 0.4);
+    cr.fillPreserve();
+
+    // Add border
+    setSourceRGBAFromHex(cr, "#0B1233", 1);
+    cr.setLineWidth(1);
+    cr.stroke();
+  }
+  
   return (
     <box $={initHandler} spacing={5} cssClasses={["notification", `${urgency(n)}`]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
       <box class="header" valign={Gtk.Align.CENTER} spacing={5} halign={Gtk.Align.FILL} hexpand>
@@ -96,15 +120,20 @@ export default function Notification({ notification: n }: NotificationProps) {
             <CreateEntryContent name="BODY" value={n.body.toUpperCase() || "NO BODY"} allowCopy />
           </box>
           {n.actions.length > 0 && (
-            <box>
-              {n.actions.map(({ label, id }) => (
+            <box spacing={7}>
+              {n.actions.map(({ label, id }) => {
+                return (
                 <button hexpand cssClasses={["action-button"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-                  <box spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-                    <label label={label} halign={Gtk.Align.CENTER} />
-                    <image file={`${HOME_DIR}/.config/ags/assets/icon/majesticons--open.svg`} pixelSize={12} />
-                  </box>
+                  <overlay>
+                    <drawingarea cssClasses={["action-button-bg"]} halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawActionButtonBackground(area, cr, width, height))} />
+                    <box $type="overlay" spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+                      <label label={label} halign={Gtk.Align.CENTER} />
+                      <image file={`${HOME_DIR}/.config/ags/assets/icon/majesticons--open.svg`} pixelSize={12} />
+                    </box>
+                  </overlay>
                 </button>
-              ))}
+                )
+              })}
             </box>
           )}
         </box>
