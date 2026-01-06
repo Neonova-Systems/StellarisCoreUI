@@ -4,10 +4,11 @@ import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
-import { CreateEntryContent, HOME_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
+import { CreateEntryContent, formatTime, HOME_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
 import giCairo from "cairo"
 import { createState, With } from "ags"
-import { createRandomString } from '../helper/utility';
+import { execAsync } from "ags/process"
+import { timeout } from "ags/time"
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -16,10 +17,6 @@ function isIcon(icon?: string | null) {
 
 function fileExists(path: string) {
   return GLib.file_test(path, GLib.FileTest.EXISTS)
-}
-
-function time(time: number, format = "%H:%M") {
-  return GLib.DateTime.new_from_unix_local(time).format(format)!
 }
 
 function urgency(n: AstalNotifd.Notification) {
@@ -49,6 +46,8 @@ interface NotificationProps {
 }
 
 export default function Notification({ notification: n }: NotificationProps) {
+  const [toggleVerbosityState, setToggleVerbosityState] = createState(false);
+  timeout(50, () => { execAsync('ags request "getNotificationVerbosityState"').then(out => setToggleVerbosityState(out === 'true')) });
 
   function drawActionButtonBackground(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, isHover: boolean = false) {
     const notchSize = 10; // Size of the diagonal cut on the bottom-right
@@ -95,28 +94,28 @@ export default function Notification({ notification: n }: NotificationProps) {
           </box>
         )}
         <box spacing={5} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true} orientation={Gtk.Orientation.VERTICAL}>
-          <box spacing={5} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
-            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
-              <CreateEntryContent name="NOTIFICATION ID" value={String(n.id)?.toUpperCase() || "UNKNOWN"} hexpand />
-              <CreateEntryContent name="APPLICATION NAME" value={n.appName.toUpperCase() || "UNKNOWN"} allowCopy hexpand />
-            </box>
-            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
-              <CreateEntryContent name="CATEGORY" value={n.category?.toUpperCase() || "UNKNOWN"} hexpand />
-              <CreateEntryContent name="SUPPRESS SOUND" value={String(n.suppressSound)?.toUpperCase() || "UNKNOWN"} hexpand />
-            </box>
-            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
-              <CreateEntryContent name="DESKTOP ENTRY" value={n.desktopEntry?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} allowCopy/>
-              <CreateEntryContent name="TRANSIENT" value={String(n.transient)?.toUpperCase() || "UNKNOWN"} hexpand />
-            </box>
-            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
-              <CreateEntryContent name="EXPIRE TIMEOUT" value={String(n.expireTimeout)?.toUpperCase() || "UNKNOWN"} hexpand />
-              <CreateEntryContent name="RESIDENT" value={String(n.resident)?.toUpperCase() || "UNKNOWN"} hexpand />
-            </box>
-            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
-              <CreateEntryContent name="URGENCY" value={urgency(n)?.toUpperCase() || "UNKNOWN"} hexpand />
-              <CreateEntryContent name="TIME" value={time(n.time)?.toUpperCase() || "UNKNOWN"} hexpand />
-            </box>
-          </box>
+              <box visible={toggleVerbosityState} spacing={5} homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                  <CreateEntryContent name="NOTIFICATION ID" value={String(n.id)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="APPLICATION NAME" value={n.appName.toUpperCase() || "UNKNOWN"} allowCopy hexpand />
+                </box>
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                  <CreateEntryContent name="CATEGORY" value={n.category?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="SUPPRESS SOUND" value={String(n.suppressSound)?.toUpperCase() || "UNKNOWN"} hexpand />
+                </box>
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL} hexpand={true}>
+                  <CreateEntryContent name="DESKTOP ENTRY" value={n.desktopEntry?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} allowCopy />
+                  <CreateEntryContent name="TRANSIENT" value={String(n.transient)?.toUpperCase() || "UNKNOWN"} hexpand />
+                </box>
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
+                  <CreateEntryContent name="EXPIRE TIMEOUT" value={String(n.expireTimeout)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="RESIDENT" value={String(n.resident)?.toUpperCase() || "UNKNOWN"} hexpand />
+                </box>
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Gtk.Align.FILL}>
+                  <CreateEntryContent name="URGENCY" value={urgency(n)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="TIME" value={formatTime(n.time)?.toUpperCase() || "UNKNOWN"} hexpand />
+                </box>
+              </box>
           <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>
             <CreateEntryContent name="BODY" value={n.body.toUpperCase() || "NO BODY"} allowCopy />
           </box>

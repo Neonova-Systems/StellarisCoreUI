@@ -1,6 +1,6 @@
 import Notification from "../modules/notifications";
 import { Accessor, With, For, createState } from "ags"
-import { CreatePanel, playPanelSound } from "../helper";
+import { CreatePanel, HOME_DIR, playGrantedSound, playPanelSound, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
 import { Astal, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
 import { execAsync } from "ags/process";
@@ -19,9 +19,14 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
         });
     }
 
+    function onRightClicked() {
+        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/notifications.tsx --gtk 4`).catch((e) => print(e))
+        playGrantedSound();
+    }
+
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="NOTIFICATION" onClicked={panelClicked} draggable onDragUp={onDragUp} onDragDown={onDragDown}/>
+            <CreatePanel name="NOTIFICATION" onClicked={panelClicked} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}/>
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
