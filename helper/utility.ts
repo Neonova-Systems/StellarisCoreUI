@@ -42,6 +42,17 @@ export function formatBytes(bytes: number, decimals = 2): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+/**
+ * Generates a random string of a specified length.
+ * The string is composed of uppercase letters (A-Z), lowercase letters (a-z),
+ * and numbers (0-9).
+ *
+ * @param length - The desired length of the random string.
+ * @returns The generated random string.
+ * @example
+ * // returns a 10-character random string, e.g., "aB3x7zP9kL"
+ * createRandomString(10);
+ */
 export function createRandomString(length: number): string {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
@@ -57,6 +68,23 @@ export function copyToClipboard(text: string) {
         clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
         playGrantedSound();
     }
+}
+
+/**
+ * Formats a Unix timestamp into a human-readable time string.
+ *
+ * @param time The Unix timestamp (seconds since epoch) to format.
+ * @param format The format string to use, based on GLib.DateTime format specifiers. Defaults to "%H:%M".
+ * @returns The formatted time string.
+ * @example
+ * // Get time in default HH:MM format
+ * formatTime(Date.now() / 1000); // e.g., "14:30"
+ *
+ * // Get time in a custom format
+ * formatTime(Date.now() / 1000, "%Y-%m-%d %I:%M %p"); // e.g., "2023-10-27 02:30 PM"
+ */
+export function formatTime(time: number, format = "%H:%M") {
+  return GLib.DateTime.new_from_unix_local(time).format(format)!
 }
 
 /**
