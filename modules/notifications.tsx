@@ -7,6 +7,7 @@ import Pango from "gi://Pango"
 import { CreateEntryContent, HOME_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
 import giCairo from "cairo"
 import { createState, With } from "ags"
+import { createRandomString } from '../helper/utility';
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -130,6 +131,7 @@ export default function Notification({ notification: n }: NotificationProps) {
                       <label label={label} halign={Gtk.Align.CENTER} />
                       <image file={`${HOME_DIR}/.config/ags/assets/icon/majesticons--open.svg`} pixelSize={12} />
                     </box>
+                    <label $type="overlay" label="action" cssClasses={["uppercase"]} css={"margin: 4px; font-size: 4px; color: #21307aff; letter-spacing: 1.1px;"} halign={Gtk.Align.START} valign={Gtk.Align.START} vexpand />
                   </overlay>
                 </button>
                 )
