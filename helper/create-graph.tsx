@@ -2,8 +2,6 @@ import { Accessor, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import giCairo from "cairo";
 import { setSourceRGBAFromHex } from "./utility";
-import Gio from "gi://Gio?version=2.0";
-import { HOME_DIR } from "./constants";
 
 const criticalHex = "#3353F3"
 type GraphProps = {
@@ -16,11 +14,26 @@ type GraphProps = {
 }
 
 export default function CreateGraph({title, valueToWatch, threshold = 1, fontSize = 8.3, lineWidth = 1.3, height = 30}: GraphProps) {
+    function drawGridBackground(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, gridColor: string) {
+        const gridSpacing = 7;
+
+        setSourceRGBAFromHex(cr, gridColor, 0.1);
+        for (let x = 0; x < width; x += gridSpacing) {
+            for (let y = 0; y < height; y += gridSpacing) {
+                cr.arc(x, y, 1, 0, 2 * Math.PI);
+                cr.fill();
+            }
+        }
+    }
+
     function renderChart(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, dataPoints: number[], isCritical?: boolean) {
         const chartWidth = width;
         const chartHeight = height;
         const points = dataPoints.length ? dataPoints : [0];
         const segmentWidth = points.length > 1 ? chartWidth / (points.length - 1) : 0;
+        const gridColor = isCritical ? criticalHex : "#1a39ed";
+
+        drawGridBackground(area, cr, width, height, gridColor);
 
         setSourceRGBAFromHex(cr, isCritical ? criticalHex : "#1a39ed", 0.17); // Background
         cr.moveTo(0, height);
