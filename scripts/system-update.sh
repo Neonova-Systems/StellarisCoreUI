@@ -4,31 +4,25 @@
 available_upgrade_count_before=$(pacman -Quq | wc -l)
 
 # Notify user that sync is starting
-notify-send "System Update" "Synchronizing package databases..." \
-    --icon=system-update-symbolic \
+notify-send "⟨⟨ SYS::UPDT ⟩⟩" "◢◤ Synchronizing neural database streams..." \
     --expire-time=5000
 
 # Sync repositories using pkexec for GUI password prompt
 if pkexec pacman -Sy; then # RECOMMENDEDL you can install policykit agent like polkit-gnome or polkit-kde agent for asking password in GUI interface 
-    # Count available upgrades after sync
-    available_upgrade_count_after=$(pacman -Quq | wc -l)
+    available_upgrade_count_after=$(pacman -Quq | wc -l) # Count available upgrades after sync
     
-    # Calculate the difference
-    new_packages=$((available_upgrade_count_after - available_upgrade_count_before))
+    new_packages=$((available_upgrade_count_after - available_upgrade_count_before)) # Calculate the difference
     
     # Send appropriate notification
     if [ "$new_packages" -gt 0 ]; then
-        notify-send "System Update" "Found $new_packages new package(s) available for upgrade.\nTotal upgradable packages: $available_upgrade_count_after" \
-            --icon=system-update-symbolic
+        notify-send "⟨⟨ SYS::UPDT ⟩⟩" "◢ DETECTED: $new_packages new data packets ◤\n> Total injectable modules: $available_upgrade_count_after\n\nFound $new_packages new package(s) available for upgrade.\nTotal upgradable packages: $available_upgrade_count_after"
     elif [ "$available_upgrade_count_after" -gt 0 ]; then
-        notify-send "System Update" "Repository synchronized.\n$available_upgrade_count_after package(s) available for upgrade." \
-            --icon=system-update-symbolic
+        notify-send "⟨⟨ SYS::UPDT ⟩⟩" "◢ Neural sync complete ◤\n> $available_upgrade_count_after module(s) pending injection [[Available for upgrade]]\n\nRepository synchronized"
     else
-        notify-send "System Update" "System is up to date. No packages need upgrading." \
-            --icon=system-update-symbolic
+        notify-send "⟨⟨ SYS::UPDT ⟩⟩" "◢ System optimized. All firmware current. ◤\n\nSystem is up to date. No packages need upgrading.\n\nSystem is up to date. No packages need upgrading."
     fi
 else
-    notify-send "System Update Failed" "Failed to synchronize package databases." \
+    notify-send "⟨⟨ ERR::CRIT ⟩⟩" "◢◤ FATAL: Database sync corrupted\n> Connection to mainframe lost\n\nFailed to synchronize package databases.\n> Either you cancelled the polkit or there is something wrong with *pacman*." \
         --icon=dialog-error \
         --urgency=critical
 fi
