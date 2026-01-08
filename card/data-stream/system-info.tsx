@@ -112,7 +112,7 @@ export default function SystemInfo() {
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
                                     <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
                                     <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
-                                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} pixelSize={8} />
+                                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Check for system updates"} pixelSize={8} />
                                     </CreateEntryContent>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
