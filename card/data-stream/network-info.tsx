@@ -68,7 +68,7 @@ export default function NetworkInfo() {
     execAsync(`dash -c "ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-"`).then((out) => setreceiveByte(out.toUpperCase()));
     execAsync(`dash -c "lsof -i -P | grep UDP | wc -l"`).then((out) => setudpConnection(out.toUpperCase()));
 
-    execAsync(`dash -c "journalctl -b --grep=network | tail -n 30"`).then((out) => setJournalNetwork(out));
+    execAsync(`dash -c "journalctl -b --grep=network | tail -n 13"`).then((out) => setJournalNetwork(out));
     execAsync(`dash -c "nmcli dev"`).then((out) => setNetworkDevice(out));
     execAsync(`dash -c "nmcli dev wifi list | head -n 10"`).then((out) => setwifiList(out));
     return (
@@ -112,7 +112,7 @@ export default function NetworkInfo() {
                                 {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} halign={Gtk.Align.FILL} /> )} 
                             </With>
                         </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Gtk.Align.FILL}>
+                        <box cssClasses={["extended-content"]} css={"font-size: 4px;"} hexpand={false} halign={Gtk.Align.FILL}>
                             <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
                                 <box valign={Gtk.Align.START} homogeneous={false} spacing={20}>
                                     <label label={journalNetwork} valign={Gtk.Align.START} halign={Gtk.Align.START} />

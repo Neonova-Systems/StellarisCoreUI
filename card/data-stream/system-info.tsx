@@ -1,9 +1,10 @@
 import { Accessor, createState, With } from "ags";
-import { Gtk } from "ags/gtk4"
+import { Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, ICON_DIR } from "../../helper";
 import { interval, timeout } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
+import CreateUtilityButton from '../../helper/create-utility-button';
 
 export default function SystemInfo() {
     const [userHostname, setuserHostname] = createState("");
@@ -103,14 +104,16 @@ export default function SystemInfo() {
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <box cssClasses={["content"]} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"}>
+                            <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                                 <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}></image>
                             </button>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
                                     <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
-                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade} />
+                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
+                                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} pixelSize={8} />
+                                    </CreateEntryContent>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} allowCopy={true} />
