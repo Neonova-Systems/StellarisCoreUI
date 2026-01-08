@@ -123,9 +123,9 @@ export default function Notification({ notification: n }: NotificationProps) {
             <box spacing={7}>
               {n.actions.map(({ label, id }) => {
                 return (
-                <button hexpand cssClasses={["action-button"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+                <button hexpand cssClasses={["action-button", "clickable"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                   <overlay>
-                    <drawingarea cssClasses={["action-button-bg"]} halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawActionButtonBackground(area, cr, width, height))} />
+                    <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawActionButtonBackground(area, cr, width, height))} />
                     <box $type="overlay" spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                       <label label={label} halign={Gtk.Align.CENTER} />
                       <image file={`${HOME_DIR}/.config/ags/assets/icon/majesticons--open.svg`} pixelSize={12} />
