@@ -39,7 +39,7 @@ export default function CreateUtilityButton({onClicked, imageFile, pixelSize = 8
     return (
         <button onClicked={onClicked} cssClasses={["clickable"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
             <overlay>
-                <drawingarea halign={Gtk.Align.FILL} css={`min-width: ${minWidth}px; min-height: ${minHeight}px`} $={(self) => self.set_draw_func((area, cr, width, height) => drawButtonBackground(area, cr, width, height, notchSize))} />
+                <drawingarea halign={Gtk.Align.FILL} css={`min-width: ${minWidth}px; min-height: ${minHeight}px;`} $={(self) => self.set_draw_func((area, cr, width, height) => drawButtonBackground(area, cr, width, height, notchSize))} />
                 <box $type="overlay" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                     <image file={imageFile} pixelSize={pixelSize} />
                 </box>
