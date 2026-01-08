@@ -116,7 +116,7 @@ export default function FilesystemInfo() {
                         <box>
                             <With value={toggleGraphState}>
                                 {(v) => (
-                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL} marginStart={10} marginEnd={10} marginBottom={5} >
+                                    <box visible={v} marginStart={10} marginEnd={10} marginBottom={5} >
                                         <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={13} lineWidth={0.8}/>
                                         <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={13} lineWidth={0.8} />
                                         <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={13} lineWidth={0.8} />
