@@ -77,6 +77,14 @@ export default function SystemInfo() {
         });
     }
 
+    function checkSystemUpdates() {
+        execAsync(`dash ${HOME_DIR}/.config/ags/scripts/system-update.sh`).then(() => {
+            execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setavailableUpgrade(out)); // Refresh the available upgrade count after the script completes
+        }).catch(err => {
+            console.error("Failed to check for system updates:", err);
+        });
+    }
+
     execAsync('bash -c "{ whoami; hostname; } | paste -d "@" -s"').then((out) => setuserHostname(out.toUpperCase()))
     execAsync('dash -c "pacman -Qdq | wc -l"').then((out) => setdependecyInstalled(out));
     execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setavailableUpgrade(out));
@@ -112,7 +120,7 @@ export default function SystemInfo() {
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
                                     <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
                                     <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
-                                        <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Check for system updates"} pixelSize={8} />
+                                        <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Check for system updates"} pixelSize={8} onClicked={checkSystemUpdates} />
                                     </CreateEntryContent>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
