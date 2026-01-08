@@ -1,6 +1,6 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor, createState } from "ags"
-import { HOME_DIR } from "./constants";
+import { HOME_DIR, ICON_DIR } from "./constants";
 import { playHoverSound } from "./utility";
 
 type PanelProps = {
@@ -67,7 +67,7 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
                 {children}
                 <label label={name} halign={Gtk.Align.START} />
                 <box hexpand />
-                {draggable && <image file={`${HOME_DIR}/.config/ags/assets/icon/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
+                {draggable && <image file={`${ICON_DIR}/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
                 {/* <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/> */}
             </box>
         </button>

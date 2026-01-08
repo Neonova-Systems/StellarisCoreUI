@@ -4,7 +4,7 @@ import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
-import { CreateEntryContent, formatTime, HOME_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
+import { CreateEntryContent, formatTime, HOME_DIR, ICON_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
 import giCairo from "cairo"
 import { createState, With } from "ags"
 import { execAsync } from "ags/process"
@@ -80,7 +80,7 @@ export default function Notification({ notification: n }: NotificationProps) {
         <label cssClasses={["title"]} label={n.summary || "NO SUMMARY"} ellipsize={3} />
         <box hexpand />
         <button onClicked={() => n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Gtk.Align.END} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-          <image file={`${HOME_DIR}/.config/ags/assets/icon/vaadin--close-small.svg`} pixelSize={13} />
+          <image file={`${ICON_DIR}/vaadin--close-small.svg`} pixelSize={13} />
         </button>
       </box>
       <Gtk.Separator visible />
@@ -128,7 +128,7 @@ export default function Notification({ notification: n }: NotificationProps) {
                     <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawActionButtonBackground(area, cr, width, height))} />
                     <box $type="overlay" spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                       <label label={label} halign={Gtk.Align.CENTER} />
-                      <image file={`${HOME_DIR}/.config/ags/assets/icon/majesticons--open.svg`} pixelSize={12} />
+                      <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />
                     </box>
                     <label $type="overlay" label="action" cssClasses={["uppercase"]} css={"margin: 4px; font-size: 4px; color: #21307aff; letter-spacing: 1.1px;"} halign={Gtk.Align.START} valign={Gtk.Align.START} vexpand />
                   </overlay>
