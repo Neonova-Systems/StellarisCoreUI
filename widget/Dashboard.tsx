@@ -18,6 +18,8 @@ import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
 import ExtraPane from "./ExtraPane";
 import Screen from "./Screen";
+import { HOME_DIR } from '../helper/constants';
+import Gio from "gi://Gio?version=2.0";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -79,7 +81,13 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 <scrolledwindow vexpand={true}>
                     <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                         <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12} css={'margin-bottom: 2px;'}>
-                            <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} />
+                            <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} 
+                                overlay={ 
+                                    <>
+                                        <image $type="overlay" file={`${HOME_DIR}/.config/ags/assets/ornament1.svg`} marginEnd={10} pixelSize={16} valign={Gtk.Align.START} halign={Gtk.Align.END}/>
+                                        <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
+                                    </>
+                                } />
                             <With value={dataStreamState}>
                                 {(v) => (
                                     <box visible={v} orientation={Gtk.Orientation.VERTICAL} spacing={11.8}>
