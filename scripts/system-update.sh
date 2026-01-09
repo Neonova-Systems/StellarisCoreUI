@@ -1,7 +1,6 @@
 #!/usr/bin/sh
 
-# Count available upgrades before sync
-available_upgrade_count_before=$(pacman -Quq | wc -l)
+available_upgrade_count_before=$(pacman -Quq | wc -l) # Count available upgrades before sync
 
 # Notify user that sync is starting
 notify-send "⟨⟨ SYS::UPDT ⟩⟩" "◢◤ Synchronizing neural database streams..." \
