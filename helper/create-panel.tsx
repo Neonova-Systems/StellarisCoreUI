@@ -8,6 +8,7 @@ type PanelProps = {
     onClicked?: ((source: Gtk.Button) => void) | undefined;
     $?: ((self: Gtk.Button) => void) | undefined;
     children?: JSX.Element | Array<JSX.Element>;
+    overlay?: JSX.Element | Array<JSX.Element>;
     draggable?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined;
     onDragUp?: (() => void) | undefined;
     onDragDown?: (() => void) | undefined;
@@ -15,7 +16,7 @@ type PanelProps = {
     tooltipText?: string | Accessor<string> | undefined;
 };
 
-export default function CreatePanel({ name, onClicked, $, children, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
+export default function CreatePanel({ name, onClicked, $, children, overlay, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
     let lastY: number | null = null;
     let dragDirection: 'up' | 'down' | null = null;
     let lastOutputY: number | null = null;
@@ -57,10 +58,9 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
         }
         lastY = offsetY;
     }
-
-    return (
-        <button $={$} cssClasses={["panel"]} onMoveFocus={() => console.log("test")} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
-            <box spacing={5}>
+    function renderContent() {
+        return (
+            <box spacing={5} css="padding-top: 10.5px; padding-bottom: 10.5px;">
                 <Gtk.EventControllerMotion onEnter={() => playHoverSound()} />
                 {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
                 {draggable && (<Gtk.GestureDrag onDragBegin={handleDragBegin} onDragEnd={handleDragEnd} onDragUpdate={handleDragUpdate} />)}
@@ -68,8 +68,18 @@ export default function CreatePanel({ name, onClicked, $, children, draggable = 
                 <label label={name} halign={Gtk.Align.START} />
                 <box hexpand />
                 {draggable && <image file={`${ICON_DIR}/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
-                {/* <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/> */}
             </box>
+        )
+    }
+
+    return (
+        <button $={$} cssClasses={["panel"]} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
+            {overlay ?
+                <overlay>
+                    {overlay}
+                    {renderContent()}
+                </overlay>
+            : renderContent() }
         </button>
     )
 }
