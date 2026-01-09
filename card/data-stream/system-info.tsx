@@ -5,6 +5,7 @@ import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, ICON_DIR } f
 import { interval, timeout } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
+import Adw from "gi://Adw?version=1";
 
 export default function SystemInfo() {
     const [userHostname, setuserHostname] = createState("");
@@ -112,9 +113,14 @@ export default function SystemInfo() {
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <box cssClasses={["content"]} spacing={5} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-                                <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}></image>
-                            </button>
+                            <box orientation={Gtk.Orientation.VERTICAL} homogeneous={false}>
+                                <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"} cursor={Gdk.Cursor.new_from_name("pointer", null)} vexpand>
+                                    <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Gtk.Align.START} cssClasses={["profile-picture"]}></image>
+                                </button>
+                                <Adw.Clamp maximumSize={33} vexpand>
+                                    <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament2.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                                </Adw.Clamp>
+                            </box>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />

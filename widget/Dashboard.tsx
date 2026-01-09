@@ -84,8 +84,9 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} 
                                 overlay={ 
                                     <>
-                                        <image $type="overlay" file={`${HOME_DIR}/.config/ags/assets/ornament1.svg`} marginEnd={10} pixelSize={16} valign={Gtk.Align.START} halign={Gtk.Align.END}/>
+                                        <image $type="overlay" file={`${HOME_DIR}/.config/ags/assets/ornament1.svg`} marginEnd={10} pixelSize={13} valign={Gtk.Align.START} halign={Gtk.Align.END}/>
                                         <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
+                                        <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.START}/>
                                     </>
                                 } />
                             <With value={dataStreamState}>
