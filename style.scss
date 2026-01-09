@@ -18,6 +18,7 @@
 .border-default { border: 1.5px solid #0A102E; }
 .shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
 .uppercase { text-transform: uppercase; }
+.filter-dim image { filter: brightness(0.7) saturate(0.8); }
 .clickable {
   &:hover { filter: brightness(1.2); }
   &:active { filter: brightness(0.5); }
@@ -41,8 +42,6 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   border-left: 5px solid #3353F3;
   padding-left: 10px;
   padding-right: 5px;
-  padding-top: 10.5px;
-  padding-bottom: 10.5px;
   font-family: Chakra Petch;
   font-size: 12px;
   letter-spacing: 1.6px;
@@ -226,6 +225,9 @@ calendar {
 .decoration-card {
   background: linear-gradient(to top, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
   border: 1.5px solid #0A102E;
+}
+.decoration-text {
+  font-size: 4px; color: #21307aff; letter-spacing: 1.1px;
 }
 
 .track-title {
