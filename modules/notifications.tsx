@@ -130,7 +130,7 @@ export default function Notification({ notification: n }: NotificationProps) {
                       <label label={label} halign={Gtk.Align.CENTER} />
                       <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />
                     </box>
-                    <label $type="overlay" label="action" cssClasses={["uppercase"]} css={"margin: 4px; font-size: 4px; color: #21307aff; letter-spacing: 1.1px;"} halign={Gtk.Align.START} valign={Gtk.Align.START} vexpand />
+                    <label $type="overlay" label="action" cssClasses={["uppercase", "decoration-text"]} css={"margin: 4px;"} halign={Gtk.Align.START} valign={Gtk.Align.START} vexpand />
                   </overlay>
                 </button>
                 )
