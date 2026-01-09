@@ -112,11 +112,11 @@ export default function FilesystemInfo() {
             </CreatePanel>
             <With value={toggleContentState}>
                 {(v) => ( 
-                    <box visible={v} spacing={5} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
+                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
                         <box>
                             <With value={toggleGraphState}>
                                 {(v) => (
-                                    <box visible={v} marginStart={10} marginEnd={10} marginBottom={5} >
+                                    <box visible={v} marginStart={7} marginEnd={7} marginTop={10} >
                                         <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={13} lineWidth={0.8}/>
                                         <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={13} lineWidth={0.8} />
                                         <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={13} lineWidth={0.8} />

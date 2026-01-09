@@ -130,10 +130,10 @@ export default function HardwareInfo() {
                             <With value={toggleGraphState}>
                                 {(v) => (
                                     <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
-                                        <box marginStart={10} marginEnd={10} marginTop={10} marginBottom={5}>
+                                        <box marginStart={7} marginEnd={7} marginTop={10} marginBottom={5}>
                                             <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={15} lineWidth={0.9}/>
                                         </box>
-                                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={10} marginEnd={10} marginBottom={5} >
+                                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={7} marginEnd={7} >
                                             <With value={perCpuUsage}>
                                                 {(cpuData) =>
                                                     <box halign={Gtk.Align.FILL}>
