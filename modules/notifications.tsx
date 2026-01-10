@@ -9,6 +9,7 @@ import giCairo from "cairo"
 import { createState, With } from "ags"
 import { execAsync } from "ags/process"
 import { timeout } from "ags/time"
+import { Corner, drawChamferedButton } from "../helper/draw-function"
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -49,27 +50,6 @@ export default function Notification({ notification: n }: NotificationProps) {
   const [toggleVerbosityState, setToggleVerbosityState] = createState(false);
   timeout(50, () => { execAsync('ags request "getNotificationVerbosityState"').then(out => setToggleVerbosityState(out === 'true')) });
 
-  function drawActionButtonBackground(area: Gtk.DrawingArea, cr: giCairo.Context, width: number, height: number, isHover: boolean = false) {
-    const notchSize = 10; // Size of the diagonal cut on the bottom-right
-
-    cr.newPath(); // Start the path
-    cr.moveTo(0, 0); // Top-left corner (no rounding)
-    cr.lineTo(width, 0); // Top edge straight across
-    cr.lineTo(width, height - notchSize); // Right edge down to notch start
-    cr.lineTo(width - notchSize, height); // Diagonal notch on bottom-right
-    cr.lineTo(0, height); // Bottom edge
-    cr.closePath(); // Left edge back to start
-
-    // Fill with background color
-    setSourceRGBAFromHex(cr, "#152052", 0.4);
-    cr.fillPreserve();
-
-    // Add border
-    setSourceRGBAFromHex(cr, "#0B1233", 1);
-    cr.setLineWidth(1);
-    cr.stroke();
-  }
-  
   return (
     <box $={initHandler} spacing={5} cssClasses={["notification", `${urgency(n)}`]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
       <box class="header" valign={Gtk.Align.CENTER} spacing={5} halign={Gtk.Align.FILL} hexpand>
@@ -125,7 +105,7 @@ export default function Notification({ notification: n }: NotificationProps) {
                 return (
                 <button hexpand cssClasses={["action-button", "clickable"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                   <overlay>
-                    <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawActionButtonBackground(area, cr, width, height))} />
+                    <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedButton({area, cr, width, height, notchPlacements: [ {corner: Corner.BottomRight}]}))} />
                     <box $type="overlay" spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                       <label label={label} halign={Gtk.Align.CENTER} />
                       <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />
