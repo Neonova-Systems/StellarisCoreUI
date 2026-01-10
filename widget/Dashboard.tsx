@@ -20,6 +20,7 @@ import ExtraPane from "./ExtraPane";
 import Screen from "./Screen";
 import { HOME_DIR } from '../helper/constants';
 import Gio from "gi://Gio?version=2.0";
+import Adw from "gi://Adw?version=1";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -84,9 +85,17 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             <CreatePanel name={"DATA STREAM"} onClicked={panelClicked} 
                                 overlay={ 
                                     <>
-                                        <image $type="overlay" file={`${HOME_DIR}/.config/ags/assets/ornament1.svg`} marginEnd={10} pixelSize={13} valign={Gtk.Align.START} halign={Gtk.Align.END}/>
+                                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={10} valign={Gtk.Align.START} halign={Gtk.Align.END}>
+                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament1.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                                        </Adw.Clamp>
                                         <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
                                         <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.START}/>
+                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Gtk.Align.START} halign={Gtk.Align.END}>
+                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament3.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                                        </Adw.Clamp>
+                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={200} valign={Gtk.Align.END} halign={Gtk.Align.END}>
+                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament4.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                                        </Adw.Clamp>
                                     </>
                                 } />
                             <With value={dataStreamState}>
