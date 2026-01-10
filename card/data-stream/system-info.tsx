@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, ICON_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, ICON_DIR, panelClicked } from "../../helper";
 import { interval, timeout } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
@@ -26,16 +26,6 @@ export default function SystemInfo() {
 
     playPanelSound(1400)
     timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')) });
-
-    function panelClicked() {
-        execAsync('ags request "toggleSystemInfo"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
-        });
-    }
 
     function changeProfilePicture() {
         const dialog = new Gtk.FileDialog();
@@ -106,7 +96,7 @@ export default function SystemInfo() {
     interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setuptime(out.toUpperCase())))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="SYSTEM" onClicked={panelClicked}>
+            <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", settoggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
