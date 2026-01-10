@@ -1,7 +1,5 @@
 import { Accessor } from "ags";
 import { Gdk, Gtk } from "ags/gtk4";
-import giCairo from "cairo";
-import { setSourceRGBAFromHex } from "./utility";
 import { Corner, drawChamferedButton } from "./draw-function";
 
 type UtilityButtonProps = {
