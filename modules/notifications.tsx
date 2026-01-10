@@ -33,8 +33,10 @@ function urgency(n: AstalNotifd.Notification) {
   }
 }
 
-function initHandler(self: Gtk.Box) {
+function initHandler(self: Gtk.Box, mute: boolean) {
   let urgency = self.get_css_classes()
+
+  if (mute) return;
   if (urgency.includes("critical")) {
     playSound(AudioFile.Error)
   } else {
@@ -43,15 +45,16 @@ function initHandler(self: Gtk.Box) {
 }
 
 interface NotificationProps {
-  notification: AstalNotifd.Notification
+  notification: AstalNotifd.Notification,
+  mute: boolean
 }
 
-export default function Notification({ notification: n }: NotificationProps) {
+export default function Notification({ notification: n, mute}: NotificationProps) {
   const [toggleVerbosityState, setToggleVerbosityState] = createState(false);
   timeout(50, () => { execAsync('ags request "getNotificationVerbosityState"').then(out => setToggleVerbosityState(out === 'true')) });
 
   return (
-    <box $={initHandler} spacing={5} cssClasses={["notification", `${urgency(n)}`]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
+    <box $={(self) => initHandler(self, mute) } spacing={5} cssClasses={["notification", `${urgency(n)}`]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
       <box class="header" valign={Gtk.Align.CENTER} spacing={5} halign={Gtk.Align.FILL} hexpand>
         <image visible={urgency(n) === "critical"} file={`${HOME_DIR}/.config/ags/assets/critical.svg`} pixelSize={16} />
         {((isIcon(n.appIcon) || isIcon(n.desktopEntry) ) && urgency(n) !== "critical") && (

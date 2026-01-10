@@ -5,9 +5,10 @@ import { AudioFile, playSound } from "./utility";
 
 type PanelProps = {
     name?: string | Accessor<string> | undefined;
-    onClicked?: ((source: Gtk.Button) => void) | undefined;
+    onClicked?: ((source: Gtk.GestureClick) => void) | undefined;
     $?: ((self: Gtk.Button) => void) | undefined;
     children?: JSX.Element | Array<JSX.Element>;
+    childrenRight?: JSX.Element | Array<JSX.Element>;
     overlay?: JSX.Element | Array<JSX.Element>;
     draggable?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined;
     onDragUp?: (() => void) | undefined;
@@ -16,7 +17,7 @@ type PanelProps = {
     tooltipText?: string | Accessor<string> | undefined;
 };
 
-export default function CreatePanel({ name, onClicked, $, children, overlay, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
+export default function CreatePanel({ name, onClicked, $, children, childrenRight, overlay, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
     let lastY: number | null = null;
     let dragDirection: 'up' | 'down' | null = null;
     let lastOutputY: number | null = null;
@@ -62,24 +63,26 @@ export default function CreatePanel({ name, onClicked, $, children, overlay, dra
         return (
             <box spacing={5} css="padding-top: 10.5px; padding-bottom: 10.5px;">
                 <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Hover)} />
-                {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
                 {draggable && (<Gtk.GestureDrag onDragBegin={handleDragBegin} onDragEnd={handleDragEnd} onDragUpdate={handleDragUpdate} />)}
                 {children}
                 <label label={name} halign={Gtk.Align.START} />
                 <box hexpand />
+                {childrenRight}
                 {draggable && <image file={`${ICON_DIR}/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
             </box>
         )
     }
 
     return (
-        <button $={$} cssClasses={["panel"]} onClicked={onClicked} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
+        <box cssClasses={["panel"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
+            {onClicked && (<Gtk.GestureClick button={1} onPressed={onClicked} />)}
+            {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
             {overlay ?
                 <overlay>
                     {overlay}
                     {renderContent()}
                 </overlay>
             : renderContent() }
-        </button>
+        </box>
     )
 }

@@ -26,7 +26,8 @@ const stateKeys = {
     hardwareGraphState: "HardwareGraph",
     filesystemGraphState: "FilesystemGraph",
     desktopIconsVisible: "DesktopIcons",
-    notificationVerbosityState: "NotificationVerbosity"
+    notificationVerbosityState: "NotificationVerbosity",
+    notificationDNDState: "NotificationDND"
 } as const;
 
 export type DashboardState = {
