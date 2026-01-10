@@ -113,16 +113,16 @@ export default function SystemInfo() {
                             </box>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
-                                    <CreateEntryContent name="USER & HOSTNAME" value={userHostname} allowCopy={true} />
+                                    <CreateEntryContent name="USER & HOSTNAME" value={userHostname} important allowCopy={true} />
                                     <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
                                     <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
                                         <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Check for system updates"} pixelSize={8} onClicked={checkSystemUpdates} />
                                     </CreateEntryContent>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
-                                    <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} allowCopy={true} />
+                                    <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} important allowCopy={true} />
                                     <CreateEntryContent name="UNNEEDED PACKAGE" value={unneededPackage} />
-                                    <CreateEntryContent name="TOTAL BOOT TIME" value={totalBootTime} />
+                                    <CreateEntryContent name="TOTAL BOOT TIME" important value={totalBootTime} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand>
                                     <CreateEntryContent name="CURRENT USER ID" value={userId} allowCopy/>

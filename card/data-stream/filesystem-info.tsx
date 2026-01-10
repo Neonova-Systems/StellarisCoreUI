@@ -125,10 +125,10 @@ export default function FilesystemInfo() {
                                     <CreateEntryContent name="MOUNTPOINT" value={mountpoint} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} vexpand>
-                                    <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' allowCopy/>
+                                    <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' important allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
-                                    <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' allowCopy/>
+                                    <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' important allowCopy/>
                                 </box>
                             </box>
                             <box>

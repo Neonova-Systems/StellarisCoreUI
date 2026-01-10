@@ -144,10 +144,10 @@ export default function HardwareInfo() {
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU NAME" value={cpuName} allowCopy/>
-                                    <CreateEntryContent name="VENDOR NAME" value={vendorName} allowCopy/>
+                                    <CreateEntryContent name="CPU NAME" value={cpuName} important allowCopy/>
+                                    <CreateEntryContent name="VENDOR NAME" value={vendorName} important allowCopy/>
                                     <CreateEntryContent name="THREAD[S]/CORE & CORE[S]/SOCKET" value={threadsCore} />
-                                    <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} allowCopy/>
+                                    <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} important allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} allowCopy/>

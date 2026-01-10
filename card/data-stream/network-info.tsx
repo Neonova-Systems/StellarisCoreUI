@@ -73,25 +73,25 @@ export default function NetworkInfo() {
                         <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
                             <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CURRENT SSID" value={currentSSID} allowCopy/>
+                                    <CreateEntryContent name="CURRENT SSID" value={currentSSID} important allowCopy/>
                                     <CreateEntryContent name="INTERFACE MODE" value={interfaceMode} allowCopy/>
                                     <CreateEntryContent name="FREQUENCY" value={frequency} allowCopy/>
                                     <CreateEntryContent name="DNS SERVERS" value={dnsServers} allowCopy/>
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CURRENT MAC" value={currentMAC} allowCopy/>
+                                    <CreateEntryContent name="CURRENT MAC" value={currentMAC} important allowCopy/>
                                     <CreateEntryContent name="ALT INTERFACE NAME" value={altInterfaceName} />
                                     <CreateEntryContent name="CURRENT SUBNET" value={currentSubnet} />
-                                    <CreateEntryContent name="OPEN PORTS" value={openPorts} />
+                                    <CreateEntryContent name="OPEN PORTS" value={openPorts} important />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="LOCAL IP" value={localIp} allowCopy/>
+                                    <CreateEntryContent name="LOCAL IP" value={localIp} important allowCopy/>
                                     <CreateEntryContent name="CURRENT BITRATE" value={currentBitrate} />
                                     <CreateEntryContent name="TRANSMIT BYTE" value={transmitByte} />
                                     <CreateEntryContent name="TCP CONNECTION" value={tcpConnection} />
                                 </box>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
-                                    <CreateEntryContent name="GATEWAY IP" value={gatewayIp} allowCopy/>
+                                    <CreateEntryContent name="GATEWAY IP" value={gatewayIp} important allowCopy/>
                                     <CreateEntryContent name="LINK QUALITY" value={linkQuality} />
                                     <CreateEntryContent name="RECEIVE BYTE" value={receiveByte} />
                                     <CreateEntryContent name="UDP CONNECTION" value={udpConnection} />
