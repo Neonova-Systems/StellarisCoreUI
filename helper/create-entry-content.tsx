@@ -1,6 +1,6 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor } from "ags"
-import { copyToClipboard, playGrantedSound, playKeySound } from "./utility";
+import { AudioFile, copyToClipboard, playSound } from "./utility";
 import Pango from "gi://Pango";
 
 type EntryContentProps = {
@@ -21,7 +21,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
         <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
             {allowCopy && (
                 <>
-                <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+                <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Key)} />
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
                 </>
             )}

@@ -1,5 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0"
-import { CreatePanel, HOME_DIR, panelClicked, playPanelSound } from "../helper";
+import { CreatePanel, HOME_DIR, panelClicked } from "../helper";
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import { Accessor, createState, For, With } from "ags";

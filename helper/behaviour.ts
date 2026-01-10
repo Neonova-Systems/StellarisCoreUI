@@ -1,5 +1,5 @@
 import { execAsync } from "ags/process";
-import { playPanelSound } from "./utility";
+import { AudioFile, playSound } from "./utility";
 
 /**
  * Handles the logic for a panel click event. It asynchronously toggles a
@@ -27,7 +27,7 @@ export function panelClicked(stateName: string, setterFunction: (value: boolean)
             const isVisible = out === 'true';
             setterFunction(isVisible);
             if (isVisible) {
-                playPanelSound(500);
+                playSound(AudioFile.Panel, 500);
             }
         })
         .catch(err => {

@@ -1,5 +1,5 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound, playKeySound, playEnterSound, panelClicked } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { interval, timeout } from "ags/time";
 import { execAsync } from "ags/process";
@@ -38,7 +38,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
 
     function EntryClicked(command : string)  {
         command && execAsync(command).catch((e) => print(e));
-        playEnterSound();
+        playSound(AudioFile.Enter)
     }
 
     // Helper function to chunk array into groups of 4
@@ -82,7 +82,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                                 return (
                                                     <button onClicked={() => EntryClicked(entry.command)}>
                                                         <box cssClasses={["container", "border"]}>
-                                                            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+                                                            <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Key)} />
                                                             {showAltFirstOverlay && render('first', true)}
                                                             {showAltLastOverlay && render('last', true)}
                                                             {showFirstOverlay && render('first', false)}

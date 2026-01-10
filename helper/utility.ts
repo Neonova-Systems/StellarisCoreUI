@@ -7,30 +7,34 @@ import app from "ags/gtk4/app";
 import GLib from "gi://GLib?version=2.0";
 import giCairo from "cairo";
 
-export function playPanelSound(timeoutSeconds: number = 500) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/panels.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
+/**
+ * Enum for available audio files
+ */
+export enum AudioFile {
+    Panel = "panels.wav",
+    Error = "error.wav",
+    Granted = "granted.wav",
+    Notification = "notification.wav",
+    Enter = "enter.wav",
+    Key = "key.wav",
+    Hover = "hover-panel.wav"
 }
 
-export function playAlertSound(timeoutSeconds: number = 500) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/error.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
-}
-
-export function playGrantedSound(timeoutSeconds: number = 100) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/granted.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
-}
-
-export function playNotificationsSound(timeoutSeconds: number = 100) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/notification.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
-}
-
-export function playEnterSound(timeoutSeconds: number = 100) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/enter.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
-}
-export function playKeySound(timeoutSeconds: number = 100) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/key.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
-}
-export function playHoverSound(timeoutSeconds: number = 100) {
-    timeout(timeoutSeconds, () => { execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/hover-panel.wav`]).catch(err => console.error(`Error playing sound: ${err}`)) })
+/**
+ * Plays an audio file using aplay after a specified timeout.
+ * 
+ * @param audioFileName - The name of the audio file in ~/.config/ags/assets/audio/
+ * @param timeoutMs - Delay in milliseconds before playing the sound (default: 100)
+ * 
+ * @example
+ * playSound(AudioFile.Panel, 500);
+ * playSound(AudioFile.Notification); // Uses default 100ms timeout
+ */
+export function playSound(audioFileName: AudioFile | string, timeoutMs: number = 100): void {
+    timeout(timeoutMs, () => {
+        execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/${audioFileName}`])
+            .catch(err => console.error(`Error playing sound ${audioFileName}:`, err));
+    });
 }
 
 /**
@@ -80,7 +84,7 @@ export function copyToClipboard(text: string) {
     const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
     if (clipboard && text) {
         clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
-        playGrantedSound();
+        playSound(AudioFile.Granted)
     }
 }
 

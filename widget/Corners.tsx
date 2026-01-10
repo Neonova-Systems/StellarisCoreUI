@@ -4,7 +4,7 @@ import { exec, execAsync } from "ags/process";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Gio from "gi://Gio?version=2.0";
 import { HOME_DIR } from "../helper";
-import { playKeySound } from '../helper/utility';
+import { AudioFile, playSound } from '../helper/utility';
 
 const WIDTH = 23
 const HEIGHT = 23
@@ -13,6 +13,8 @@ const { LEFT, RIGHT, TOP, BOTTOM } = Astal.WindowAnchor
 
 const marginBottom = hyprland.get_focused_monitor().height / 4
 const marginLeft = hyprland.get_focused_monitor().width / 4 - 10
+
+function onEnter() { playSound(AudioFile.Key) }
 export function TopRightCorner(gdkmonitor: Gdk.Monitor) {
     function onClick() {
         exec('dash -c "hyprctl dispatch togglefloating; hyprctl dispatch centerwindow; hyprctl dispatch resizeactive exact 65% 65%"');
@@ -31,7 +33,7 @@ export function TopRightCorner(gdkmonitor: Gdk.Monitor) {
         namespace={"top-right-corner"}
         anchor={ RIGHT | TOP }>
         <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+            <Gtk.EventControllerMotion onEnter={onEnter} />
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-right-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -53,7 +55,7 @@ export function BottomRightCorner(gdkmonitor: Gdk.Monitor) {
         namespace={"bottom-right-corner"}
         anchor={ RIGHT | BOTTOM}>
         <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+            <Gtk.EventControllerMotion onEnter={onEnter} />
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-right-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -75,7 +77,7 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
         namespace={"bottom-left-corner"}
         anchor={ LEFT | BOTTOM}>
         <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+            <Gtk.EventControllerMotion onEnter={onEnter} />
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/bottom-left-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)
@@ -100,7 +102,7 @@ export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
         namespace={"top-left-corner"}
         anchor={ LEFT | TOP}>
         <button onClicked={onClick} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-            <Gtk.EventControllerMotion onEnter={() => playKeySound()} />
+            <Gtk.EventControllerMotion onEnter={onEnter} />
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/top-left-corner.svg`)} halign={Gtk.Align.FILL}/>
         </button>
     </window>)

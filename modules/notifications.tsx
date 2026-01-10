@@ -4,7 +4,7 @@ import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
-import { CreateEntryContent, formatTime, HOME_DIR, ICON_DIR, playAlertSound, playNotificationsSound, setSourceRGBAFromHex } from "../helper"
+import { AudioFile, CreateEntryContent, formatTime, HOME_DIR, ICON_DIR, playSound, setSourceRGBAFromHex } from "../helper"
 import giCairo from "cairo"
 import { createState, With } from "ags"
 import { execAsync } from "ags/process"
@@ -36,9 +36,9 @@ function urgency(n: AstalNotifd.Notification) {
 function initHandler(self: Gtk.Box) {
   let urgency = self.get_css_classes()
   if (urgency.includes("critical")) {
-    playAlertSound()
+    playSound(AudioFile.Error)
   } else {
-    playNotificationsSound()
+    playSound(AudioFile.Notification)
   }
 }
 

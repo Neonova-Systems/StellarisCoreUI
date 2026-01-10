@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../../helper";
+import { AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
@@ -40,7 +40,7 @@ export function BatteryInfo() {
 
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/battery-info.tsx --gtk 4`).catch((e) => print(e))
-        playGrantedSound();
+        playSound(AudioFile.Granted);
     }
 
     // --- Correctly assign output to the corresponding state variable ---

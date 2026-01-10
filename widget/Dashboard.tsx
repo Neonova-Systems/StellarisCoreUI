@@ -1,6 +1,6 @@
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { With, For, createState, onCleanup } from "ags"
-import { CreatePanel, playPanelSound, createDashboardCards, panelClicked } from "../helper";
+import { CreatePanel, createDashboardCards, panelClicked } from "../helper";
 import SystemInfo from "../card/data-stream/system-info";
 import NetworkInfo from "../card/data-stream/network-info";
 import FilesystemInfo from "../card/data-stream/filesystem-info";

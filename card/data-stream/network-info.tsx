@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, panelClicked } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile } from "../../helper";
 
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");
@@ -29,7 +29,7 @@ export default function NetworkInfo() {
     const [toggleContentState, settoggleContentState] = createState(false);
     const [noiseGridImage, setnoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
-    playPanelSound(1500)
+    playSound(AudioFile.Panel, 1500);
     timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')) });
 
     function changeNoiseGridImage() {

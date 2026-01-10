@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound, panelClicked } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile } from "../../helper";
 import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
@@ -28,7 +28,7 @@ export default function FilesystemInfo() {
     let readDiskOperationInterval: Timer | null = null;
     let writeDiskOperationInterval: Timer | null = null;
 
-    playPanelSound(1600)
+    playSound(AudioFile.Panel, 1600)
     timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')) });
     interval(800, () => { execAsync('ags request "getFilesystemGraphState"').then(out => {
             const enabled = out === 'true';
@@ -83,7 +83,7 @@ export default function FilesystemInfo() {
 
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/filesystem-info.tsx --gtk 4`).catch((e) => print(e))
-        playGrantedSound();
+        playSound(AudioFile.Granted)
     }
 
     interval(1000, () => { changedataGridImage() })

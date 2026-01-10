@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, ICON_DIR, panelClicked } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, AudioFile, playSound } from "../../helper";
 import { interval, timeout } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
@@ -24,7 +24,7 @@ export default function SystemInfo() {
     const [systemdBlame, setsystemdBlame] = createState("");
     const [toggleContentState, settoggleContentState] = createState(false);
 
-    playPanelSound(1400)
+    playSound(AudioFile.Panel, 1400);
     timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')) });
 
     function changeProfilePicture() {
