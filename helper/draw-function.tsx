@@ -64,7 +64,7 @@ interface NotchPlacement {
  * const width = area.get_allocated_width();
  * const height = area.get_allocated_height();
  *
- * drawChamferedButton({
+ * drawChamferedBackground({
  *   area,
  *   cr,
  *   width,
@@ -77,7 +77,7 @@ interface NotchPlacement {
  *   borderColor: '#FFFFFF'
  * });
  */
-export function drawChamferedButton({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#152052", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0}: Props): void {
+export function drawChamferedBackground({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#152052", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0}: Props): void {
     const getNotchSize = (corner: Corner): number => {
         const placement = notchPlacements.find(p => p.corner === corner);
         return placement?.size ?? notchSize;

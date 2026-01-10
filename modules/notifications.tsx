@@ -9,7 +9,7 @@ import giCairo from "cairo"
 import { createState, With } from "ags"
 import { execAsync } from "ags/process"
 import { timeout } from "ags/time"
-import { Corner, drawChamferedButton } from "../helper/draw-function"
+import { Corner, drawChamferedBackground} from "../helper/draw-function"
 
 function isIcon(icon?: string | null) {
   const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
@@ -108,7 +108,7 @@ export default function Notification({ notification: n, mute}: NotificationProps
                 return (
                 <button hexpand cssClasses={["action-button", "clickable"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                   <overlay>
-                    <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedButton({area, cr, width, height, notchPlacements: [ {corner: Corner.BottomRight}]}))} />
+                    <drawingarea halign={Gtk.Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchPlacements: [ {corner: Corner.BottomRight}]}))} />
                     <box $type="overlay" spacing={5} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                       <label label={label} halign={Gtk.Align.CENTER} />
                       <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />

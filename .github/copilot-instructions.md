@@ -53,9 +53,9 @@ timeout(500, () => {
 ### Cairo Custom Drawing
 **Pattern**: `<drawingarea>` with `$draw_func` for custom shapes (see `helper/draw-function.tsx`):
 ```tsx
-import { Corner, drawChamferedButton } from './helper/draw-function';
+import { Corner, drawChamferedBackground } from './helper/draw-function';
 <drawingarea $={(self) => self.set_draw_func((area, cr, width, height) => 
-    drawChamferedButton({ area, cr, width, height, 
+({ area, cr, width, height, 
         notchPlacements: [{ corner: Corner.TopRight }] })
 )} />
 ```
@@ -101,7 +101,7 @@ execAsync(`dash ${HOME_DIR}/.config/ags/scripts/system-update.sh`)
 - `services.ts` — Request handler, state management, Hyprland space reservation
 - `helper/behaviour.ts` — `panelClicked()` utility for panel toggles
 - `helper/utility.ts` — Sound system (`AudioFile` enum), Cairo helpers, data formatting
-- `helper/draw-function.tsx` — `drawChamferedButton()` with `Corner` enum for notched shapes
+- `helper/draw-function.tsx` — `drawChamferedBackground()` with `Corner` enum for notched shapes
 - `helper/dashboard-cards.ts` — Drag-and-drop card reordering with JSON persistence
 - `widget/Screen.tsx` — Desktop icons from `~/Desktop/*.desktop` files
 - `card/data-stream/system-info.tsx` — System metrics with `CreateUtilityButton` for updates
@@ -133,7 +133,7 @@ execAsync(`dash ${HOME_DIR}/.config/ags/scripts/system-update.sh`)
 2. Create wrapper: `export function playNewSound(ms = 100) { playSound(AudioFile.New, ms); }`
 
 **Custom Cairo shape**:
-1. Use `drawChamferedButton()` with `notchPlacements: [{ corner: Corner.*, size?: number }]`
+1. Use `drawChamferedBackground()` with `notchPlacements: [{ corner: Corner.*, size?: number }]`
 2. Or create new function following `helper/draw-function.tsx` pattern with `setSourceRGBAFromHex()`
 
 **New dashboard card**:
