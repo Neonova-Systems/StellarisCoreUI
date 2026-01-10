@@ -2,6 +2,7 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor, createState } from "ags"
 import { HOME_DIR, ICON_DIR } from "./constants";
 import { AudioFile, playSound } from "./utility";
+import { Corner, drawChamferedBackground } from "./draw-function";
 
 type PanelProps = {
     name?: string | Accessor<string> | undefined;
@@ -61,7 +62,7 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
     }
     function renderContent() {
         return (
-            <box spacing={5} css="padding-top: 10.5px; padding-bottom: 10.5px;">
+            <box spacing={5}>
                 <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Hover)} />
                 {draggable && (<Gtk.GestureDrag onDragBegin={handleDragBegin} onDragEnd={handleDragEnd} onDragUpdate={handleDragUpdate} />)}
                 {children}
@@ -77,12 +78,19 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
         <box cssClasses={["panel"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
             {onClicked && (<Gtk.GestureClick button={1} onPressed={onClicked} />)}
             {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
-            {overlay ?
-                <overlay>
-                    {overlay}
-                    {renderContent()}
-                </overlay>
-            : renderContent() }
+            <overlay>
+                <box>
+                    <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand css={"min-width: 33px; min-height: 33px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height: (height + 21), notchSize: 13, backgroundColor: "#0A102E", backgroundAlpha: 1.0, borderAlpha: 0, notchPlacements: [{corner: Corner.TopRight}], }))} />
+                </box>
+                <box cssClasses={["content"]} $type="overlay">
+                    {overlay ?
+                        <overlay>
+                            {overlay}
+                            {renderContent()}
+                        </overlay>
+                        : renderContent()}
+                </box>
+            </overlay>
         </box>
     )
 }
