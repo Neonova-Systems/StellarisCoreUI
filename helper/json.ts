@@ -25,6 +25,13 @@ export function readJson<T>(filePath: string, defaultValue: T): T {
     }
 }
 
+/**
+ * Serializes a JavaScript object into a pretty-printed JSON string and writes it to a file within the cache directory.
+ *
+ * @template T The type of the object to be written.
+ * @param {string} filePath The relative path of the file within the cache directory (e.g., 'my-data.json').
+ * @param {T} object The JavaScript object to serialize and write to the file.
+ */
 export function writeJson<T>(filePath: string, object: T): void {
     const fullPath = `${CACHE_DIR}/${filePath}`;
     const content = JSON.stringify(object, null, 2);
