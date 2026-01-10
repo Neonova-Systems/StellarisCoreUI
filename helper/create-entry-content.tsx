@@ -2,6 +2,7 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor } from "ags"
 import { AudioFile, copyToClipboard, playSound } from "./utility";
 import Pango from "gi://Pango";
+import { HOME_DIR } from "./constants";
 
 type EntryContentProps = {
     name?: string | Accessor<string> | undefined;
@@ -13,9 +14,10 @@ type EntryContentProps = {
     orientation?: Gtk.Orientation | Accessor<NonNullable<Gtk.Orientation | undefined>> | undefined
     ellipsize?: Pango.EllipsizeMode | Accessor<NonNullable<Pango.EllipsizeMode | undefined>> | undefined
     children?: JSX.Element | Array<JSX.Element>
+    important?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
 };
 
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, children}: EntryContentProps) {
+export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, children}: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : value?.get() || "";
     return (
         <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
@@ -25,7 +27,10 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
                 </>
             )}
-            <label label={`${name}:`} css={css} halign={Gtk.Align.START} cssClasses={["alt-start-animation"]}/>
+            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Gtk.Align.FILL} valign={Gtk.Align.CENTER}>
+                {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament5.svg`} pixelSize={9} valign={Gtk.Align.CENTER} halign={Gtk.Align.START} /> )}
+                <label label={`${name}:`} css={css} halign={Gtk.Align.START} cssClasses={["alt-start-animation"]} valign={Gtk.Align.CENTER}/>
+            </box>
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Gtk.Align.FILL} valign={Gtk.Align.START}>
                 {children}
                 <label 
