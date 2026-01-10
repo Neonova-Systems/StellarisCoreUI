@@ -62,16 +62,6 @@ export default function NetworkInfo() {
     execAsync(`dash -c "nmcli dev"`).then((out) => setNetworkDevice(out));
     execAsync(`dash -c "nmcli dev wifi list | head -n 10"`).then((out) => setwifiList(out));
 
-    // function panelClicked() {
-    //     execAsync('ags request "toggleNetworkInfo"').then(out => {
-    //         const isVisible = out === 'true';
-    //         settoggleContentState(isVisible);
-    //         if (isVisible) {
-    //             playPanelSound(500);
-    //         }
-    //     }).catch(() => {});
-    // }
-
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", settoggleContentState)}>

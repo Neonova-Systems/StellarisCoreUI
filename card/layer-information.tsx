@@ -1,5 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0"
-import { CreatePanel, HOME_DIR, playPanelSound } from "../helper";
+import { CreatePanel, HOME_DIR, panelClicked, playPanelSound } from "../helper";
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import { Accessor, createState, For, With } from "ags";
@@ -67,15 +67,6 @@ export default function LayerInformation() {
     const [toggleContentState, settoggleContentState] = createState(false);
 
     timeout(500, () => { execAsync('ags request "getLayerInformationState"').then((out) => { settoggleContentState(out === 'true'); }) });
-    function panelClicked() {
-        execAsync('ags request "toggleLayerInformation"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
-        });
-    }
 
     timeout(500, () => { execAsync('hyprctl layers -j').then((out) => {
             const layerData = JSON.parse(out);
@@ -95,7 +86,7 @@ export default function LayerInformation() {
     const masximumSize = hyprland.focused_monitor.height / 4.5;
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false} hexpand={false}>
-            <CreatePanel name={"LAYER INFORMATION"} onClicked={panelClicked} />
+            <CreatePanel name={"LAYER INFORMATION"} onClicked={() => panelClicked("LayerInformation", settoggleContentState)} />
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} css={`padding: 14px;`} spacing={15} orientation={Gtk.Orientation.VERTICAL}>

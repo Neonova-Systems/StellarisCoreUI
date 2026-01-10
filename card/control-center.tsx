@@ -1,5 +1,5 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound, playKeySound, playEnterSound } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, playPanelSound, playKeySound, playEnterSound, panelClicked } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { interval, timeout } from "ags/time";
 import { execAsync } from "ags/process";
@@ -9,15 +9,6 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     const [toggleContentState, settoggleContentState] = createState(false);
     const [decorationImage, setDecorationImage] = createState(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant1.svg`);
     timeout(500, () => { execAsync('ags request "getControlCenterState"').then(out => settoggleContentState(out === 'true')) });
-    function panelClicked() {
-        execAsync('ags request "toggleControlCenter"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
-        }).catch(() => {});
-    }
 
     function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1}.svg`) }
     interval(1396, () => cycleDecorationImage())
@@ -63,7 +54,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name={"CONTROL CENTER"} onClicked={panelClicked} draggable onDragUp={onDragUp} onDragDown={onDragDown}/>
+            <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown}/>
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
