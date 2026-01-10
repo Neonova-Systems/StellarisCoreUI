@@ -5,7 +5,7 @@ import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, TOOLTIP_TEXT
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
-
+import { panelClicked } from '../../helper/behaviour';
 
 export function BatteryInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
@@ -38,15 +38,6 @@ export function BatteryInfo() {
     const [toggleContentState, settoggleContentState] = createState(false);
     timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')) });
 
-    function panelClicked() {
-        execAsync('ags request "toggleBatteryInfo"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
-        }).catch(() => {});
-    }
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/battery-info.tsx --gtk 4`).catch((e) => print(e))
         playGrantedSound();
@@ -84,7 +75,7 @@ export function BatteryInfo() {
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
-            <CreatePanel name="BATTERY" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
+            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

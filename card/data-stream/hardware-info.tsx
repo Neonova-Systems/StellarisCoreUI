@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound} from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound, panelClicked} from "../../helper";
 import { timeout, interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
@@ -84,14 +84,6 @@ export default function HardwareInfo() {
         }
     }
     
-    function panelClicked() {
-        execAsync('ags request "toggleHardwareInfo"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) playPanelSound(500);
-        }).catch(() => {});
-    }
-
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/hardware-info.tsx --gtk 4`).catch((e) => print(e))
         playGrantedSound();
@@ -120,7 +112,7 @@ export default function HardwareInfo() {
     execAsync(`dash -c "inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub(\\"K\\", \\"X\\", $5); print $2, $3 }'"`).then((out) => setbiosInfo(out.toUpperCase()))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="HARDWARE" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
+            <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

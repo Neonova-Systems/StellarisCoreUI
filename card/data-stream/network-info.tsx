@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, panelClicked } from "../../helper";
 
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");
@@ -36,16 +36,6 @@ export default function NetworkInfo() {
         const currentPath = noiseGridImage.get();
         (currentPath.includes("variant1") ? setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
     }
-    function panelClicked() {
-        execAsync('ags request "toggleNetworkInfo"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) {
-                playPanelSound(500);
-            }
-        }).catch(() => {});
-    }
-
     interval(500, () => { changeNoiseGridImage() })
     execAsync(`bash -c "iwconfig wlan0 | grep ESSID | cut -d '\\"' -f 2"`).then((out) => setcurrentSSID(out.toUpperCase()))
     execAsync(`dash -c "iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2"`).then((out) => setinterfaceMode(out.toUpperCase()))
@@ -71,9 +61,20 @@ export default function NetworkInfo() {
     execAsync(`dash -c "journalctl -b --grep=network | tail -n 13"`).then((out) => setJournalNetwork(out));
     execAsync(`dash -c "nmcli dev"`).then((out) => setNetworkDevice(out));
     execAsync(`dash -c "nmcli dev wifi list | head -n 10"`).then((out) => setwifiList(out));
+
+    // function panelClicked() {
+    //     execAsync('ags request "toggleNetworkInfo"').then(out => {
+    //         const isVisible = out === 'true';
+    //         settoggleContentState(isVisible);
+    //         if (isVisible) {
+    //             playPanelSound(500);
+    //         }
+    //     }).catch(() => {});
+    // }
+
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="NETWORK" onClicked={panelClicked}>
+            <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", settoggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

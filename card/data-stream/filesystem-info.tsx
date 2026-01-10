@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound } from "../../helper";
+import { CreateEntryContent, CreatePanel, playPanelSound, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, playGrantedSound, panelClicked } from "../../helper";
 import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
@@ -81,14 +81,6 @@ export default function FilesystemInfo() {
         )
     }
 
-    function panelClicked() {
-        execAsync('ags request "toggleFilesystemInfo"').then(out => {
-            const isVisible = out === 'true';
-            settoggleContentState(isVisible);
-            if (isVisible) playPanelSound(500);
-        }).catch(() => {});
-    }
-
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/filesystem-info.tsx --gtk 4`).catch((e) => print(e))
         playGrantedSound();
@@ -107,7 +99,7 @@ export default function FilesystemInfo() {
     execAsync(`dash -c "lsblk -a --list"`).then((out) => setblockList(out));
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="FILESYSTEM" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
+            <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
