@@ -60,7 +60,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
         layer={Astal.Layer.BACKGROUND}
         cssClasses={["Dashboard"]}
         gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={hyprland.focused_monitor.width}
         default_height={hyprland.focused_monitor.height}
         application={app}

@@ -23,7 +23,7 @@ export function TopRightCorner(gdkmonitor: Gdk.Monitor) {
         name="TopRightCorner"
         layer={Astal.Layer.TOP}
         gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={WIDTH}
         defaultHeight={HEIGHT}
         margin-top={10}
@@ -45,7 +45,7 @@ export function BottomRightCorner(gdkmonitor: Gdk.Monitor) {
         name="BottomRightCorner"
         layer={Astal.Layer.TOP}
         gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={WIDTH}
         defaultHeight={HEIGHT}
         margin-bottom={marginBottom}
@@ -67,7 +67,7 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
         name="BottomLeftCorner"
         layer={Astal.Layer.BOTTOM}
         gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={WIDTH}
         defaultHeight={HEIGHT}
         margin-bottom={marginBottom}
@@ -92,7 +92,7 @@ export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
         name="TopLeftCorner"
         layer={Astal.Layer.TOP}
         gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={WIDTH}
         defaultHeight={HEIGHT}
         margin-top={10}

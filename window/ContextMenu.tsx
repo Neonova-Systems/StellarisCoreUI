@@ -79,7 +79,7 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
         <window visible
             name={windowName}
             layer={Astal.Layer.TOP}
-            exclusivity={Astal.Exclusivity.NORMAL}
+            exclusivity={Astal.Exclusivity.IGNORE}
             default_width={menuWidth}
             default_height={menuHeight}
             application={app}
@@ -137,7 +137,7 @@ export default function ContextMenu() {
     return ( <window visible
         name="ContextMenu"
         layer={Astal.Layer.TOP}
-        exclusivity={Astal.Exclusivity.NORMAL}
+        exclusivity={Astal.Exclusivity.IGNORE}
         default_width={menuWidth}
         default_height={menuHeight}
         application={app}
