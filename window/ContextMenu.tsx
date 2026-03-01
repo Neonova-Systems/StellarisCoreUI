@@ -23,7 +23,7 @@ interface CommandItem {
 }
 
 export function spawnContextMenu(commandList: CommandItem[]) {
-    const id = `ContextMenu-${Math.random().toString(36).substring(2, 11)}`; // unique id
+    const id = `context-menu-${Math.random().toString(36).substring(2, 11)}`; // unique id
     app.start({
         instanceName: id,
         css: style,
@@ -34,16 +34,16 @@ export function spawnContextMenu(commandList: CommandItem[]) {
     })
 }
 
-export function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
+function execCommand(command: CommandItem, windowName: string = "context-menu") {
+    (command.dontAsync) ? exec(command.command) : execAsync(command.command);
+    const w = app.get_window?.(windowName)
+    if (w) { w.destroy() }
+    app.quit()
+}
+
+function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
     const { LEFT, TOP } = Astal.WindowAnchor;
     const [user_commands, setUserCommands] = createState(commandsList);
-
-    function execCommand(command: CommandItem) {
-        (command.dontAsync) ? exec(command.command) : execAsync(command.command);
-        const w = app.get_window?.(windowName)
-        if (w) { w.destroy() }
-        app.quit()
-    }
 
     function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
         if (keyval === Gdk.KEY_Escape) {
@@ -72,7 +72,7 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
         // print(pressedKeybind); // debug only
 
         const command = user_commands.get().find(c => c.keybind?.toLowerCase() === pressedKeybind);
-        if (command && command.command) execCommand(command)
+        if (command && command.command) execCommand(command, windowName)
     }
 
     return (
@@ -95,7 +95,7 @@ export function SpawnContextMenu(commandsList: CommandItem[], windowName: string
                 <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
                     <For each={user_commands}>
                         {(command: CommandItem, index) => (
-                            <button onClicked={() => { execCommand(command) }}>
+                            <button onClicked={() => { execCommand(command, windowName) }}>
                                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={3}>
                                     <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
                                         <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand />
@@ -128,14 +128,8 @@ export default function ContextMenu() {
     const [displayMode, setDisplayMode] = createState<"target" | "description">("target");
     interval(6000, () => { setDisplayMode(current => current === "target" ? "description" : "target") });
 
-    function execCommand(command: any) {
-        execAsync(command.command);
-        const w = app.get_window?.("ContextMenu")
-        if (w) { w.destroy() }
-        app.quit()
-    }
     return ( <window visible
-        name="ContextMenu"
+        name="context-menu"
         layer={Astal.Layer.TOP}
         exclusivity={Astal.Exclusivity.IGNORE}
         default_width={menuWidth}
@@ -148,7 +142,7 @@ export default function ContextMenu() {
         namespace={"context-menu"}>
         <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) => {
             if (keyval === Gdk.KEY_Escape) {
-                const w = app.get_window?.("ContextMenu")
+                const w = app.get_window?.("context-menu")
                 if (w) { w.destroy() }
                 app.quit()
                 return;
