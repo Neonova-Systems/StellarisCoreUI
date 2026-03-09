@@ -6,6 +6,7 @@
 }
 
 * { all: unset; }
+.shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
 
 .context-menu {
   background: linear-gradient(to bottom, #070B1F, #040714);
@@ -51,5 +52,3 @@
     border-radius: 3px;
   }
 }
-
-.shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
