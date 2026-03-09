@@ -16,7 +16,7 @@ function OSD() {
         layer={focusedWorkspace_has_fullscreen ? Astal.Layer.OVERLAY : Astal.Layer.TOP}
         exclusivity={focusedWorkspace_has_fullscreen ? Astal.Exclusivity.IGNORE : Astal.Exclusivity.NORMAL}
         default_width={256}
-        default_height={63}
+        default_height={66}
         application={app}
         anchor={Astal.WindowAnchor.TOP}
         keymode={Astal.Keymode.ON_DEMAND}
@@ -29,20 +29,19 @@ function OSD() {
                 <box cssClasses={["contents"]} $type="overlay">
                     <overlay>
                         <box hexpand />
-                        <box $type="overlay" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} spacing={5}>
+                        <box $type="overlay" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} marginTop={5} spacing={5}>
                             <label label={`${hyprland.focusedWorkspace.id}`} cssClasses={["id"]} />
                             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                                 <label halign={Gtk.Align.START} label={`WORKSPACE [${hyprland.focusedWorkspace.name}] IN USE`} />
                                 <label halign={Gtk.Align.START} label={`${hyprland.focusedWorkspace.get_clients().length} CLIENTS`} />
                             </box>
                         </box>
-                        <label halign={Gtk.Align.CENTER} valign={Gtk.Align.START} $type="overlay" cssClasses={['monitor']} label={`${hyprland.focusedWorkspace.monitor.name} ${hyprland.focusedWorkspace.monitor.width}x${hyprland.focusedWorkspace.monitor.height}@${hyprland.focusedWorkspace.monitor.refreshRate}Hz`}/>
+                        <label halign={Gtk.Align.CENTER} valign={Gtk.Align.START} $type="overlay" marginTop={3} cssClasses={['monitor']} label={`${hyprland.focusedWorkspace.monitor.name} ${hyprland.focusedWorkspace.monitor.width}x${hyprland.focusedWorkspace.monitor.height}@${hyprland.focusedWorkspace.monitor.refreshRate}Hz`}/>
                         <label cssClasses={["decoration-text", "uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
-                        <label cssClasses={["decoration-text", "uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
-                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={7} marginTop={5} valign={Gtk.Align.START} halign={Gtk.Align.END}>
+                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={7} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.END}>
                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/Thumbnails-88.png`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                         </Adw.Clamp>
-                        <Adw.Clamp maximumSize={13} $type="overlay" marginStart={6} marginTop={5} valign={Gtk.Align.START} halign={Gtk.Align.START}>
+                        <Adw.Clamp maximumSize={13} $type="overlay" marginStart={6} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.START}>
                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/Thumbnails-89.png`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                         </Adw.Clamp>
                         <Adw.Clamp maximumSize={25} $type="overlay" marginStart={20} marginBottom={4} valign={Gtk.Align.END} halign={Gtk.Align.START}>
