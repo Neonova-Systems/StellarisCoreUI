@@ -195,6 +195,6 @@ app.start({
     css: style,
     main() {
        ContextMenu()
-       const poll = interval(200, () => { try { DeleteWindowOnOutofBound(hyprland.cursorPosition, "ContextMenu", pointerX, pointerY, poll); } catch (e) { poll.cancel() } })
+       const poll = interval(200, () => { try { DeleteWindowOnOutofBound(hyprland.cursorPosition, "context-menu", pointerX, pointerY, poll); } catch (e) { poll.cancel() } })
     },
 })
