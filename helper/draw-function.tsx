@@ -92,8 +92,8 @@ export function drawChamferedBackground({ area, cr, width, height, notchSize = 1
     // Top-left corner
     if (hasNotch(Corner.TopLeft)) {
         const size = getNotchSize(Corner.TopLeft);
-        cr.moveTo(size, 0);
-        cr.lineTo(0, size);
+        cr.moveTo(0, size);
+        cr.lineTo(size, 0);
     } else {
         cr.moveTo(0, 0);
     }
