@@ -5,7 +5,6 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import { Corner, drawChamferedBackground } from "../../helper/draw-function";
 import Adw from "gi://Adw?version=1";
 import Gio from "gi://Gio?version=2.0";
-import GLib from "gi://GLib";
 import { HOME_DIR } from "../../helper";
 import { timeout } from "ags/time";
 
@@ -33,7 +32,7 @@ function OSD() {
         <box cssClasses={["onscreen-display"]} valign={Gtk.Align.FILL} vexpand>
             <overlay>
                 <box>
-                    <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: "#070B1F", backgroundAlpha: 1.0, borderAlpha: 1.0, borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
+                    <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: (focusedWorkspace_has_fullscreen ? "#050713" : "#070B1F"), backgroundAlpha: 1.0, borderAlpha: 1.0, borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
                 </box>
                 <box cssClasses={["contents"]} $type="overlay">
                     <overlay>
