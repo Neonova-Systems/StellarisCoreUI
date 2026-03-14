@@ -5,12 +5,21 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import { Corner, drawChamferedBackground } from "../../helper/draw-function";
 import Adw from "gi://Adw?version=1";
 import Gio from "gi://Gio?version=2.0";
+import GLib from "gi://GLib";
 import { HOME_DIR } from "../../helper";
+import { timeout } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
 
 function OSD() {
-    const focusedWorkspace_has_fullscreen = hyprland.focusedWorkspace.has_fullscreen;
+    const focusedWorkspace = hyprland.focusedWorkspace;
+    const monitor = focusedWorkspace.monitor;
+    const workspaceId = `${focusedWorkspace.id}`;
+    const workspaceName = `${focusedWorkspace.name}`;
+    const workspaceWindows = `${focusedWorkspace.get_clients().length}`;
+    const workspaceMonitor = `${monitor.name}`;
+    const focusedWorkspace_has_fullscreen = (focusedWorkspace.has_fullscreen ? "1" : "0") === "1";
+
     return ( <window visible
         name="workspace-info-osd"
         layer={focusedWorkspace_has_fullscreen ? Astal.Layer.OVERLAY : Astal.Layer.TOP}
@@ -19,7 +28,7 @@ function OSD() {
         default_height={66}
         application={app}
         anchor={Astal.WindowAnchor.TOP}
-        keymode={Astal.Keymode.ON_DEMAND}
+        keymode={Astal.Keymode.NONE}
         namespace={"workspace-info-osd"}>
         <box cssClasses={["onscreen-display"]} valign={Gtk.Align.FILL} vexpand>
             <overlay>
@@ -30,13 +39,13 @@ function OSD() {
                     <overlay>
                         <box hexpand />
                         <box $type="overlay" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} marginTop={5} spacing={5}>
-                            <label label={`${hyprland.focusedWorkspace.id}`} cssClasses={["id"]} />
+                            <label label={workspaceId} cssClasses={["id"]} />
                             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
-                                <label halign={Gtk.Align.START} label={`WORKSPACE [${hyprland.focusedWorkspace.name}] IN USE`} />
-                                <label halign={Gtk.Align.START} label={`${hyprland.focusedWorkspace.get_clients().length} CLIENTS`} />
+                                <label halign={Gtk.Align.START} label={`WORKSPACE [${workspaceName}] IN USE`} />
+                                <label halign={Gtk.Align.START} label={`${workspaceWindows} CLIENTS`} />
                             </box>
                         </box>
-                        <label halign={Gtk.Align.CENTER} valign={Gtk.Align.START} $type="overlay" marginTop={3} cssClasses={['monitor']} label={`${hyprland.focusedWorkspace.monitor.name} ${hyprland.focusedWorkspace.monitor.width}x${hyprland.focusedWorkspace.monitor.height}@${hyprland.focusedWorkspace.monitor.refreshRate}Hz`}/>
+                        <label halign={Gtk.Align.CENTER} valign={Gtk.Align.START} $type="overlay" marginTop={3} cssClasses={['monitor']} label={`${workspaceMonitor} ${monitor.width}x${monitor.height}@${monitor.refreshRate}Hz`}/>
                         <label cssClasses={["decoration-text", "uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
                         <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={7} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.END}>
                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/Thumbnails-88.png`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
@@ -58,7 +67,8 @@ function OSD() {
 app.start({
     instanceName: "workspace-info-osd",
     css: style,
-    main() {
-        return OSD()
+    main() { 
+        OSD();
+        timeout(1533, () => { app.quit() });
     },
 })
