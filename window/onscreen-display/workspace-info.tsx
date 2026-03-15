@@ -1,11 +1,11 @@
 import app from "ags/gtk4/app";
 import style from "./style.scss";
-import { Astal, Gtk } from "ags/gtk4";
+import { Astal, Gdk, Gtk } from "ags/gtk4";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import { Corner, drawChamferedBackground } from "../../helper/draw-function";
 import Adw from "gi://Adw?version=1";
 import Gio from "gi://Gio?version=2.0";
-import { HOME_DIR } from "../../helper";
+import { AudioFile, HOME_DIR, playSound } from "../../helper";
 import { timeout } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
@@ -29,7 +29,8 @@ function OSD() {
         anchor={Astal.WindowAnchor.TOP}
         keymode={Astal.Keymode.NONE}
         namespace={"workspace-info-osd"}>
-        <box cssClasses={["onscreen-display"]} valign={Gtk.Align.FILL} vexpand>
+        <box cssClasses={["onscreen-display"]} valign={Gtk.Align.FILL} vexpand cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+            <Gtk.GestureClick onPressed={() => { app.quit(); playSound(AudioFile.Granted) }} />
             <overlay>
                 <box>
                     <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: (focusedWorkspace_has_fullscreen ? "#050713" : "#070B1F"), backgroundAlpha: 1.0, borderAlpha: 1.0, borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
