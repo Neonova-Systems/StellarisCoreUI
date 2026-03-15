@@ -18,7 +18,7 @@ import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
 import ExtraPane from "./ExtraPane";
 import Screen from "./Screen";
-import { HOME_DIR } from '../helper/constants';
+import { Align, HOME_DIR } from '../helper/constants';
 import Gio from "gi://Gio?version=2.0";
 import Adw from "gi://Adw?version=1";
 
@@ -74,15 +74,15 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                             <CreatePanel name={"DATA STREAM"} onClicked={() => panelClicked("DataStream", setDataStreamState)} 
                                 overlay={ 
                                     <>
-                                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={15} valign={Gtk.Align.START} halign={Gtk.Align.END}>
+                                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={15} valign={Align.LEFT} halign={Align.RIGHT}>
                                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament1.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                                         </Adw.Clamp>
-                                        <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Gtk.Align.END} halign={Gtk.Align.END}/>
-                                        <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Gtk.Align.START} halign={Gtk.Align.START}/>
-                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Gtk.Align.START} halign={Gtk.Align.END}>
+                                        <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Align.RIGHT} halign={Align.RIGHT}/>
+                                        <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Align.LEFT} halign={Align.LEFT}/>
+                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Align.LEFT} halign={Align.RIGHT}>
                                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament3.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                                         </Adw.Clamp>
-                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={200} valign={Gtk.Align.END} halign={Gtk.Align.END}>
+                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={200} valign={Align.RIGHT} halign={Align.RIGHT}>
                                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament4.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                                         </Adw.Clamp>
                                     </>
@@ -109,13 +109,13 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 <box homogeneous={true}>
                     <SystemTray />
                     <box cssClasses={["special-entry"]} spacing={2}>
-                        <label label="CURRENT DATE:" halign={Gtk.Align.START} />
-                        <label cssClasses={["value"]} label={currentDate} halign={Gtk.Align.START} />
+                        <label label="CURRENT DATE:" halign={Align.LEFT} />
+                        <label cssClasses={["value"]} label={currentDate} halign={Align.LEFT} />
                     </box>
                     <menubutton>
-                        <box cssClasses={["special-entry"]} spacing={2} halign={Gtk.Align.END}>
-                            <label label="CURRENT TIME:" halign={Gtk.Align.START} />
-                            <label cssClasses={["value"]} label={currentTime} halign={Gtk.Align.START} />
+                        <box cssClasses={["special-entry"]} spacing={2} halign={Align.RIGHT}>
+                            <label label="CURRENT TIME:" halign={Align.LEFT} />
+                            <label cssClasses={["value"]} label={currentTime} halign={Align.LEFT} />
                         </box>
                         <popover>
                             <Gtk.Calendar showWeekNumbers={true}/>

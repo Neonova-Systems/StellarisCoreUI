@@ -2,7 +2,7 @@ import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor } from "ags"
 import { AudioFile, copyToClipboard, playSound } from "./utility";
 import Pango from "gi://Pango";
-import { HOME_DIR } from "./constants";
+import { Align, HOME_DIR } from "./constants";
 
 type EntryContentProps = {
     name?: string | Accessor<string> | undefined;
@@ -27,19 +27,19 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(valueStr); }} />
                 </>
             )}
-            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Gtk.Align.FILL} valign={Gtk.Align.CENTER}>
-                {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament5.svg`} pixelSize={9} valign={Gtk.Align.CENTER} halign={Gtk.Align.START} /> )}
-                <label label={`${name}:`} css={css} halign={Gtk.Align.START} cssClasses={["alt-start-animation"]} valign={Gtk.Align.CENTER}/>
+            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Align.FILL} valign={Align.CENTER}>
+                {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament5.svg`} pixelSize={9} valign={Align.CENTER} halign={Align.LEFT} /> )}
+                <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={["alt-start-animation"]} valign={Align.CENTER}/>
             </box>
-            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Gtk.Align.FILL} valign={Gtk.Align.START}>
+            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Align.FILL} valign={Align.LEFT}>
                 {children}
                 <label 
                     useMarkup={useMarkup} 
                     cssClasses={["value", "start-animation", allowCopy ? "copyable" : ""]} 
                     css={css} 
                     label={valueStr} 
-                    halign={Gtk.Align.START} 
-                    valign={Gtk.Align.START}
+                    halign={Align.LEFT} 
+                    valign={Align.LEFT}
                     wrap 
                     wrapMode={Gtk.WrapMode.CHAR} 
                     ellipsize={ellipsize}

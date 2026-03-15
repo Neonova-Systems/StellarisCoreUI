@@ -1,6 +1,6 @@
 import Notification from "../modules/notifications";
 import { Accessor, With, For, createState } from "ags"
-import { AudioFile, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, playSound, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
+import { Align, AudioFile, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, playSound, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
 import { Astal, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
 import { execAsync } from "ags/process";
@@ -36,7 +36,7 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} visible={notifications((ns) => ns.length > 0)} spacing={5} halign={Gtk.Align.FILL} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
+                        <box cssClasses={["content"]} visible={notifications((ns) => ns.length > 0)} spacing={5} halign={Align.FILL} orientation={Gtk.Orientation.VERTICAL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
                             <For each={notifications}>
                                 {(notification) => <Notification notification={notification} mute={notifcationDNDState.get()}/>}
                             </For>

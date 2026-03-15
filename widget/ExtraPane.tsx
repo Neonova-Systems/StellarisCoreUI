@@ -1,5 +1,5 @@
 import { Gtk } from "ags/gtk4"
-import { HOME_DIR } from "../helper";
+import { Align, HOME_DIR } from "../helper";
 import Gio from "gi://Gio?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Alert from "../decoration/Alert";
@@ -10,7 +10,7 @@ import Workspaces from "../modules/workspace";
 export default function ExtraPane() {
     const hyprland = AstalHyprland.get_default();
     return (
-        <box spacing={10} css={`min-height: ${hyprland.focused_monitor.height / 4.5 - 15}px;`} homogeneous={false} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand={false}>
+        <box spacing={10} css={`min-height: ${hyprland.focused_monitor.height / 4.5 - 15}px;`} homogeneous={false} halign={Align.FILL} valign={Align.FILL} hexpand={false}>
             <scrolledwindow vexpand={false} hexpand={false} css={`min-width: 390px;`}>
                 <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                     <LayerInformation />
@@ -20,13 +20,13 @@ export default function ExtraPane() {
             </scrolledwindow>
             <box spacing={10} hexpand>
                 <box cssClasses={["decoration-card"]} css="min-width: 120px;">
-                    <Gtk.Picture cssClasses={["stagger-animation"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/decoration-2.svg`)} canShrink={false} halign={Gtk.Align.FILL}/>
+                    <Gtk.Picture cssClasses={["stagger-animation"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/decoration-2.svg`)} canShrink={false} halign={Align.FILL}/>
                 </box>
                 <scrolledwindow vexpand={false} hexpand={true}>
                     <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                         <Workspaces />
                         <box cssClasses={["decoration-card", "stagger-animation"]}>
-                            <Gtk.Picture cssClasses={["stagger-animation-alt"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/decoration-3.svg`)} canShrink={false} halign={Gtk.Align.FILL}/>
+                            <Gtk.Picture cssClasses={["stagger-animation-alt"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/decoration-3.svg`)} canShrink={false} halign={Align.FILL}/>
                         </box>
                     </box>
                 </scrolledwindow>

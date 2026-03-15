@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile} from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align} from "../../helper";
 import { timeout, interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
@@ -128,7 +128,7 @@ export default function HardwareInfo() {
                                         <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={7} marginEnd={7} >
                                             <With value={perCpuUsage}>
                                                 {(cpuData) =>
-                                                    <box halign={Gtk.Align.FILL}>
+                                                    <box halign={Align.FILL}>
                                                         {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
                                                             const coreDataAccessor = cpuData[coreNum] || [0];
                                                             return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={0.9} height={15}/>);
@@ -141,27 +141,27 @@ export default function HardwareInfo() {
                                 )}
                             </With>
                         </box>
-                        <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CPU NAME" value={cpuName} important allowCopy/>
                                     <CreateEntryContent name="VENDOR NAME" value={vendorName} important allowCopy/>
                                     <CreateEntryContent name="THREAD[S]/CORE & CORE[S]/SOCKET" value={threadsCore} />
                                     <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} important allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} allowCopy/>
                                     <CreateEntryContent name="CPU SCALING [MHZ]" value={cpuScaling} />
                                     <CreateEntryContent name="SOCKET[S]" value={sockets} />
                                     <CreateEntryContent name="GPU VENDOR NAME" value={gpuVendorName} allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CPU MODES" value={cpuModes} allowCopy/>
                                     <CreateEntryContent name="CPU MAX MHZ" value={cpuMaxMhz} allowCopy/>
                                     <CreateEntryContent name="VIRTUALIZATION" value={virtualization} allowCopy/>
                                     <CreateEntryContent name="VIDEO & UNIFIED MEMORY" value={videoUnifiedMemory} allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                     <CreateEntryContent name="BYTE ORDER" value={byteOrder} allowCopy/>
                                     <CreateEntryContent name="CPU MIN MHZ" value={cpuMinMhz} />
                                     <CreateEntryContent name="BIOS/UEFI" value={biosInfo} allowCopy/>

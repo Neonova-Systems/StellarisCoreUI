@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio";
 import { readJson } from "../helper/json";
-import { WALLPAPER_JSON } from "../helper/constants";
+import { Align, WALLPAPER_JSON } from "../helper/constants";
 import { interval } from "ags/time";
 
 type Props = {
@@ -20,7 +20,7 @@ export default function Wallpaper({ $type } : Props) {
     return (
         <With value={wallpaperPath}>
             {(v) => v ? (
-                <Gtk.Picture $type={$type} contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand />
+                <Gtk.Picture $type={$type} contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Align.FILL} valign={Align.FILL} hexpand />
             ) : ( <box $type={$type} />)
             }
         </With>

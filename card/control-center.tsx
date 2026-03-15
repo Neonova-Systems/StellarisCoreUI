@@ -1,5 +1,5 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile, Align } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { interval, timeout } from "ags/time";
 import { execAsync } from "ags/process";
@@ -61,7 +61,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                         <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
                             <box>
                                 <With value={decorationImage}> 
-                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Gtk.Align.FILL} hexpand/> )} 
+                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Align.FILL} hexpand/> )} 
                                 </With>
                             </box>
                             <box css={"min-height: 5px;"} />
@@ -87,14 +87,14 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                                             {showAltLastOverlay && render('last', true)}
                                                             {showFirstOverlay && render('first', false)}
                                                             {showLastOverlay && render('last', false)}
-                                                            <box cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={5}>
-                                                                <box orientation={Gtk.Orientation.HORIZONTAL} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} vexpand>
-                                                                    <label label={entry.index.toString() + "."} halign={Gtk.Align.START} />
+                                                            <box cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={5}>
+                                                                <box orientation={Gtk.Orientation.HORIZONTAL} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} vexpand>
+                                                                    <label label={entry.index.toString() + "."} halign={Align.LEFT} />
                                                                     <box hexpand />
-                                                                    <label label={"0x" + createRandomString(4).toUpperCase()} halign={Gtk.Align.END} />
+                                                                    <label label={"0x" + createRandomString(4).toUpperCase()} halign={Align.RIGHT} />
                                                                 </box>
-                                                                <label cssClasses={["title-content"]} label={entry.name} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vexpand wrap />
-                                                                <label label={createRandomString(15)} cssClasses={["uppercase"]} css={`font-size: 7px;`} halign={Gtk.Align.FILL} valign={Gtk.Align.END} vexpand wrap />
+                                                                <label cssClasses={["title-content"]} label={entry.name} halign={Align.CENTER} valign={Align.CENTER} vexpand wrap />
+                                                                <label label={createRandomString(15)} cssClasses={["uppercase"]} css={`font-size: 7px;`} halign={Align.FILL} valign={Align.RIGHT} vexpand wrap />
                                                             </box>
                                                         </box>
                                                     </button>

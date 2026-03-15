@@ -1,5 +1,5 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, playSound } from "../helper";
+import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, playSound, Align } from "../helper";
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
@@ -85,41 +85,41 @@ export default function MusicPlayer() {
             <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}/>
             <With value={toggleContentState}>
                 {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} valign={Gtk.Align.START}>
+                    <box visible={v} cssClasses={["card-content"]} valign={Align.LEFT}>
                         <For each={players}>
                             {(item) => (
-                                <box spacing={5} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.FILL} vexpand={false}>
+                                <box spacing={5} orientation={Gtk.Orientation.VERTICAL} valign={Align.FILL} vexpand={false}>
                                     <box cssClasses={["content"]} spacing={7} homogeneous={false} hexpand={false} vexpand={false}>
                                         <button visible={createBinding(item, "artUrl").get() != ""} onClicked={() => { execAsync(`xdg-open ${item.artUrl}`) }} css="margin-top: 3px;">
-                                            <image pixelSize={34} file={createBinding(item, "coverArt")} valign={Gtk.Align.START} />
+                                            <image pixelSize={34} file={createBinding(item, "coverArt")} valign={Align.LEFT} />
                                         </button>
-                                        <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
-                                            <label cssClasses={["track-title"]} label={createBinding(item, "title")} halign={Gtk.Align.START} ellipsize={3} />
-                                            <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
-                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                        <box valign={Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
+                                            <label cssClasses={["track-title"]} label={createBinding(item, "title")} halign={Align.LEFT} ellipsize={3} />
+                                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                                     <CreateEntryContent name="ARTIST NAME" value={createBinding(item, "artist").get().toUpperCase()} hexpand allowCopy/>
                                                     <CreateEntryContent name="PLAYER NAME" value={createBinding(item, "identity").get().toUpperCase()} hexpand allowCopy/>
                                                 </box>
-                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                                     <CreateEntryContent name="SHUFFLE STATUS" value={getShuffleStatus(item.shuffleStatus)} hexpand/>
                                                     <CreateEntryContent name="LOOP STATUS" value={getLoopStatus(item.loopStatus)} hexpand/>
                                                 </box>
-                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                                     <CreateEntryContent name="TRACK LENGTH" value={formatDuration(createBinding(item, "length").get())} hexpand allowCopy/>
                                                     <CreateEntryContent name="SPEED RATE" value={createBinding(item, "rate").get().toString()} hexpand/>
                                                 </box>
-                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                                     <CreateEntryContent name="ELAPSED TIME" value={formatDuration(createBinding(item, "position").get())} hexpand/>
                                                     <CreateEntryContent name="SPEED MIN RATE" value={createBinding(item, "minimumRate").get().toString()} hexpand/>
                                                 </box>
-                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                                     <CreateEntryContent name="PLAYBACK STATUS" value={getPlaybackStatus(item.playbackStatus)} hexpand/>
                                                     <CreateEntryContent name="SPEED MAX RATE" value={createBinding(item, "maximumRate").get().toString()} hexpand/>
                                                 </box>
                                             </box>
                                         </box>
                                     </box>
-                                    <box spacing={7} visible={createBinding(item, "canControl")} halign={Gtk.Align.CENTER} >
+                                    <box spacing={7} visible={createBinding(item, "canControl")} halign={Align.CENTER} >
                                         <button onClicked={() => item.shuffle()} >
                                             <image file={`${HOME_DIR}/.config/ags/assets/shuffle.svg`} pixelSize={14}/>
                                         </button>

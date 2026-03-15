@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align } from "../../helper";
 import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
@@ -104,7 +104,7 @@ export default function FilesystemInfo() {
             </CreatePanel>
             <With value={toggleContentState}>
                 {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START} vexpand={false}>
+                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Align.LEFT} vexpand={false}>
                         <box>
                             <With value={toggleGraphState}>
                                 {(v) => (
@@ -117,17 +117,17 @@ export default function FilesystemInfo() {
                             </With>
                         </box>
                         <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
-                            <box valign={Gtk.Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
-                                <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Gtk.Align.FILL} vexpand>
+                            <box valign={Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
+                                <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Align.FILL} vexpand>
                                     <CreateEntryContent name="FILESYSTEM NAME" value={filesystemName} />
                                     <CreateEntryContent name="TOTAL SIZE & FREE SPACE" value={totalSize} allowCopy/>
                                     <CreateEntryContent name="USED SPACE & PERCENTAGE" value={usedSpace} allowCopy/>
                                     <CreateEntryContent name="MOUNTPOINT" value={mountpoint} allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} vexpand>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} vexpand>
                                     <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' important allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                     <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' important allowCopy/>
                                 </box>
                             </box>
@@ -137,11 +137,11 @@ export default function FilesystemInfo() {
                                 </With>
                             </box>
                         </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Gtk.Align.FILL}>
+                        <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
                             <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Gtk.Align.START} homogeneous={false} spacing={20}>
-                                    <label label={mountpointList} valign={Gtk.Align.START} halign={Gtk.Align.START} />
-                                    <label label={blockList} valign={Gtk.Align.START} halign={Gtk.Align.START} />
+                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                                    <label label={mountpointList} valign={Align.LEFT} halign={Align.LEFT} />
+                                    <label label={blockList} valign={Align.LEFT} halign={Align.LEFT} />
                                 </box>
                             </scrolledwindow>
                         </box>

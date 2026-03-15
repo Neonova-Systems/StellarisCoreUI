@@ -3,7 +3,7 @@ import app from "ags/gtk4/app"
 import style from "./context-menu/style.scss";
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Accessor, createState, For, With } from 'ags';
-import { CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
+import { Align, CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
 import { exec, execAsync } from "ags/process";
 import { interval, Timer } from "ags/time";
 
@@ -96,10 +96,10 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
                     <For each={user_commands}>
                         {(command: CommandItem, index) => (
                             <button onClicked={() => { execCommand(command, windowName) }}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={3}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={3}>
                                     <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
-                                        <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand />
-                                        {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Gtk.Align.START} />)}
+                                        <label cssClasses={["title"]} label={command.name} halign={Align.LEFT} hexpand />
+                                        {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Align.LEFT} />)}
                                     </box>
                                     <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
                                 </box>
@@ -170,10 +170,10 @@ export default function ContextMenu() {
                 <For each={user_commands} >
                     {(command: any, index) => (
                         <button onClicked={() => {execCommand(command)}}>
-                            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Gtk.Align.FILL} spacing={3}>
+                            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={3}>
                                 <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
-                                    <label cssClasses={["title"]} label={command.name} halign={Gtk.Align.START} hexpand />
-                                    {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Gtk.Align.START} />)}
+                                    <label cssClasses={["title"]} label={command.name} halign={Align.LEFT} hexpand />
+                                    {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Align.LEFT} />)}
                                 </box>
                                 <With value={displayMode}>
                                     {(value) => value === "target" ? <CreateEntryContent name={"TARGET"} value={command.target} orientation={Gtk.Orientation.HORIZONTAL} />

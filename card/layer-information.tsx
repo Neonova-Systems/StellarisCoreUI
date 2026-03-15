@@ -1,5 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0"
-import { CreatePanel, HOME_DIR, panelClicked } from "../helper";
+import { Align, CreatePanel, HOME_DIR, panelClicked } from "../helper";
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import { Accessor, createState, For, With } from "ags";
@@ -19,9 +19,9 @@ interface Layer {
 
 function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: { layers: Accessor<Array<Layer>>, layerNumber: string, layerTitle: string, maximumSize: number }) {
     return (
-        <box spacing={10} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
+        <box spacing={10} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
             <Adw.Clamp maximumSize={maximumSize}>
-                <box css="min-width: 245px;" halign={Gtk.Align.FILL} homogeneous={false} hexpand={false}>
+                <box css="min-width: 245px;" halign={Align.FILL} homogeneous={false} hexpand={false}>
                     <overlay>
                         <Gtk.Picture 
                             $type="overlay" 
@@ -31,7 +31,7 @@ function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: 
                             contentFit={Gtk.ContentFit.FILL} 
                         />
                     </overlay>
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={3} halign={Gtk.Align.FILL} valign={Gtk.Align.CENTER} css={'padding-top: 12px; padding-bottom: 11px;'} hexpand>
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={3} halign={Align.FILL} valign={Align.CENTER} css={'padding-top: 12px; padding-bottom: 11px;'} hexpand>
                         <label cssClasses={["layer-title"]} label={layerTitle} />
                         <label cssClasses={["layer-number"]} label={`LAYER ${layerNumber.padStart(2, '0')}`} />
                         <label cssClasses={["layer-title"]} label={layerTitle} />
@@ -40,12 +40,12 @@ function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: 
             </Adw.Clamp>
             <With value={layers}>
                 {(_) => (
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={true} valign={Gtk.Align.CENTER} halign={Gtk.Align.FILL}>
+                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={true} valign={Align.CENTER} halign={Align.FILL}>
                         <For each={layers}>
                             {(item) => (
                                 <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                    <label cssClasses={["layer-namespace", "uppercase"]} label={`${item.namespace}`} halign={Gtk.Align.START} />
-                                    <label cssClasses={["entry", "uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Gtk.Align.START} />
+                                    <label cssClasses={["layer-namespace", "uppercase"]} label={`${item.namespace}`} halign={Align.LEFT} />
+                                    <label cssClasses={["entry", "uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Align.LEFT} />
                                 </box>
                             )}
                         </For>

@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align } from "../../helper";
 
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");
@@ -70,27 +70,27 @@ export default function NetworkInfo() {
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CURRENT SSID" value={currentSSID} important allowCopy/>
                                     <CreateEntryContent name="INTERFACE MODE" value={interfaceMode} allowCopy/>
                                     <CreateEntryContent name="FREQUENCY" value={frequency} allowCopy/>
                                     <CreateEntryContent name="DNS SERVERS" value={dnsServers} allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="CURRENT MAC" value={currentMAC} important allowCopy/>
                                     <CreateEntryContent name="ALT INTERFACE NAME" value={altInterfaceName} />
                                     <CreateEntryContent name="CURRENT SUBNET" value={currentSubnet} />
                                     <CreateEntryContent name="OPEN PORTS" value={openPorts} important />
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="LOCAL IP" value={localIp} important allowCopy/>
                                     <CreateEntryContent name="CURRENT BITRATE" value={currentBitrate} />
                                     <CreateEntryContent name="TRANSMIT BYTE" value={transmitByte} />
                                     <CreateEntryContent name="TCP CONNECTION" value={tcpConnection} />
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                     <CreateEntryContent name="GATEWAY IP" value={gatewayIp} important allowCopy/>
                                     <CreateEntryContent name="LINK QUALITY" value={linkQuality} />
                                     <CreateEntryContent name="RECEIVE BYTE" value={receiveByte} />
@@ -100,15 +100,15 @@ export default function NetworkInfo() {
                         </box>
                         <box cssClasses={["NoiseGrid"]}>
                             <With value={noiseGridImage}> 
-                                {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} halign={Gtk.Align.FILL} /> )} 
+                                {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} halign={Align.FILL} /> )} 
                             </With>
                         </box>
-                        <box cssClasses={["extended-content"]} css={"font-size: 4px;"} hexpand={false} halign={Gtk.Align.FILL}>
+                        <box cssClasses={["extended-content"]} css={"font-size: 4px;"} hexpand={false} halign={Align.FILL}>
                             <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Gtk.Align.START} homogeneous={false} spacing={20}>
-                                    <label label={journalNetwork} valign={Gtk.Align.START} halign={Gtk.Align.START} />
-                                    <label label={networkDevice} valign={Gtk.Align.START} halign={Gtk.Align.START} />
-                                    <label label={wifiList} valign={Gtk.Align.START} halign={Gtk.Align.START} />
+                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                                    <label label={journalNetwork} valign={Align.LEFT} halign={Align.LEFT} />
+                                    <label label={networkDevice} valign={Align.LEFT} halign={Align.LEFT} />
+                                    <label label={wifiList} valign={Align.LEFT} halign={Align.LEFT} />
                                 </box>
                             </scrolledwindow>
                         </box>

@@ -2,7 +2,7 @@ import { Gdk, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import Wallpaper from "../modules/wallpaper"
-import { HOME_DIR, SIGNAL_JSON } from "../helper"
+import { Align, HOME_DIR, SIGNAL_JSON } from "../helper"
 import { execAsync } from "ags/process"
 import { createState, For, With } from 'ags';
 import { interval } from "ags/time"
@@ -84,7 +84,7 @@ export default function Screen() {
     }
 
     return (
-        <box cssClasses={["screen"]} hexpand={false} halign={Gtk.Align.FILL} vexpand={true}>
+        <box cssClasses={["screen"]} hexpand={false} halign={Align.FILL} vexpand={true}>
             <Gtk.GestureClick button={3} onPressed={onRightClicked} />
             <overlay>
                 <Wallpaper $type="overlay"/>
@@ -94,7 +94,7 @@ export default function Screen() {
                             <box visible={v}>
                                 <With value={listApps}>
                                     {(apps) => (
-                                        <Gtk.Grid css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Gtk.Align.START} valign={Gtk.Align.START}
+                                        <Gtk.Grid css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Align.LEFT} valign={Align.LEFT}
                                             $={(grid) => {
                                                 const rows = 10;
                                                 apps.forEach((app, i) => {

@@ -2,6 +2,7 @@ import { Accessor, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import giCairo from "cairo";
 import { setSourceRGBAFromHex } from "./utility";
+import { Align } from "./constants";
 
 const criticalHex = "#3353F3"
 type GraphProps = {
@@ -68,7 +69,7 @@ export default function CreateGraph({title, valueToWatch, threshold = 1, fontSiz
                         const latestValue = dataPoints[dataPoints.length - 1] || 0;
                         const isCritical = (latestValue >= threshold);
                         return (
-                            <box cssClasses={["graph-container", (isCritical ? "critical" : "")]}  halign={Gtk.Align.FILL}>
+                            <box cssClasses={["graph-container", (isCritical ? "critical" : "")]}  halign={Align.FILL}>
                                 <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
                                 <box orientation={Gtk.Orientation.VERTICAL}>
                                     <label label={title} css={`font-size: ${fontSize}px;`} cssClasses={[isCritical ? "critical" : ""]} />
@@ -86,7 +87,7 @@ export default function CreateGraph({title, valueToWatch, threshold = 1, fontSiz
                     const latestValue = dataPoints[dataPoints.length - 1] || 0;
                     const isCritical = (latestValue >= threshold);
                     return (
-                        <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} halign={Gtk.Align.FILL}>
+                        <box cssClasses={["graph-container", (isCritical ? "critical" : "")]} halign={Align.FILL}>
                             <box cssClasses={["separator", (isCritical ? "critical" : "")]} />
                             <box orientation={Gtk.Orientation.VERTICAL}>
                                 <label label={title} css={`font-size: ${fontSize}px;`} cssClasses={[isCritical ? "critical" : ""]} />

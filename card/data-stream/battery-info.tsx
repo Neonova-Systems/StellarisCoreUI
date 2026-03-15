@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
+import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
@@ -81,10 +81,10 @@ export function BatteryInfo() {
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} halign={Gtk.Align.FILL} valign={Gtk.Align.START} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Gtk.Align.FILL} hexpand={true}>
+                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
                                 {/* --- Corrected state variables for each value --- */}
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="NATIVE PATH" value={nativePath} allowCopy/>
                                     <CreateEntryContent name="HAS HISTORY" value={hasHistory} />
                                     <CreateEntryContent name="STATE" value={state} />
@@ -92,7 +92,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="TIME-TO-EMPTY" value={timeToEmpty} />
                                     <CreateEntryContent name="ACTIVE PROFILE" value={activeProfiles} allowCopy/>
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="VENDOR" value={vendor} allowCopy/>
                                     <CreateEntryContent name="HAS STATISTICS" value={hasStatistics} />
                                     <CreateEntryContent name="WARNING LEVEL" value={warningLevel} />
@@ -100,7 +100,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="PERCENTAGE" value={percentage} />
                                     <CreateEntryContent name="PERFORMANCE DEGRADED" value={performanceDegraded} />
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL} hexpand={true}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
                                     <CreateEntryContent name="POWER SUPPLY" value={powerSupply} />
                                     <CreateEntryContent name="PRESENT" value={present} />
                                     <CreateEntryContent name="ENERGY" value={energy} />
@@ -108,7 +108,7 @@ export function BatteryInfo() {
                                     <CreateEntryContent name="CAPACITY" value={capacity} />
                                     <CreateEntryContent name="POWERPROFILE VERSION" value={powerprofilesVersion} />
                                 </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Gtk.Align.FILL}>
+                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
                                     <CreateEntryContent name="UPDATED" value={updated} allowCopy/>
                                     <CreateEntryContent name="RECHARGEABLE" value={rechargeable} />
                                     <CreateEntryContent name="ENERGY-EMPTY" value={energyEmpty} />
@@ -118,10 +118,10 @@ export function BatteryInfo() {
                                 </box>
                             </box>
                         </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Gtk.Align.FILL}>
+                        <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
                             <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Gtk.Align.START} homogeneous={false} spacing={20}>
-                                    <label label={fullReport} valign={Gtk.Align.START} halign={Gtk.Align.START} />
+                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                                    <label label={fullReport} valign={Align.LEFT} halign={Align.LEFT} />
                                 </box>
                             </scrolledwindow>
                         </box>
@@ -138,16 +138,16 @@ export function BatteryRibbon() {
     const status = createBinding(battery, "charging")((v) => v ? "CHARGING" : "DISCHARGING")
     return ( <box cssClasses={["battery"]} spacing={10} homogeneous={false} visible={createBinding(battery, "isPresent")} hexpand={false}>
         <box cssClasses={["special-entry"]} spacing={2}>
-            <label label="CURRENT BATTERY:" halign={Gtk.Align.START} />
+            <label label="CURRENT BATTERY:" halign={Align.LEFT} />
             <With value={percentage}>
-                {(v) => ( <label cssClasses={["value"]} label={`${Math.floor(v * 100)}%`} halign={Gtk.Align.START} />)}
+                {(v) => ( <label cssClasses={["value"]} label={`${Math.floor(v * 100)}%`} halign={Align.LEFT} />)}
             </With>
         </box>
         <levelbar value={percentage} hexpand />
         <box spacing={5}>
-            <box cssClasses={["special-entry"]} spacing={2} valign={Gtk.Align.END}>
-                <label label="BATTERY STATUS:" halign={Gtk.Align.START} />
-                <label cssClasses={["value"]} label={status} halign={Gtk.Align.START} />
+            <box cssClasses={["special-entry"]} spacing={2} valign={Align.RIGHT}>
+                <label label="BATTERY STATUS:" halign={Align.LEFT} />
+                <label cssClasses={["value"]} label={status} halign={Align.LEFT} />
             </box>
             <box css={'min-width: 3px;'} />
             <box cssClasses={["blinking-square"]} />

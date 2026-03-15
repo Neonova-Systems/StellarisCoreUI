@@ -1,6 +1,6 @@
 import { Gdk, Gtk } from "ags/gtk4"
 import { Accessor, createState } from "ags"
-import { HOME_DIR, ICON_DIR } from "./constants";
+import { Align, HOME_DIR, ICON_DIR } from "./constants";
 import { AudioFile, playSound } from "./utility";
 import { Corner, drawChamferedBackground } from "./draw-function";
 
@@ -66,7 +66,7 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
                 <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Hover)} />
                 {draggable && (<Gtk.GestureDrag onDragBegin={handleDragBegin} onDragEnd={handleDragEnd} onDragUpdate={handleDragUpdate} />)}
                 {children}
-                <label label={name} halign={Gtk.Align.START} />
+                <label label={name} halign={Align.LEFT} />
                 <box hexpand />
                 {childrenRight}
                 {draggable && <image file={`${ICON_DIR}/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
@@ -80,7 +80,7 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
             {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
             <overlay>
                 <box>
-                    <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand css={"min-width: 33px; min-height: 33px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height: (height + 21), notchSize: 13, backgroundColor: "#0A102E", backgroundAlpha: 1.0, borderAlpha: 0, notchPlacements: [{corner: Corner.TopRight}], }))} />
+                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand css={"min-width: 33px; min-height: 33px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height: (height + 21), notchSize: 13, backgroundColor: "#0A102E", backgroundAlpha: 1.0, borderAlpha: 0, notchPlacements: [{corner: Corner.TopRight}], }))} />
                 </box>
                 <box cssClasses={["content"]} $type="overlay">
                     {overlay ?
