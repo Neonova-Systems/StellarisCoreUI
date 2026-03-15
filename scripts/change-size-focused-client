@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ratio_input="${1:-16:9}"
+
+if [[ ! "$ratio_input" =~ ^[0-9]+:[0-9]+$ ]]; then
+	echo "Usage: $0 <ratio> (example: 16:9)" >&2
+	exit 1
+fi
+
+ratio_w="${ratio_input%%:*}"
+ratio_h="${ratio_input##*:}"
+
+if [[ "$ratio_w" -eq 0 || "$ratio_h" -eq 0 ]]; then
+	echo "Ratio parts must be > 0" >&2
+	exit 1
+fi
+
+active_json="$(hyprctl activewindow -j)"
+size_line="$(printf '%s\n' "$active_json" | grep -o '"size"\s*:\s*\[[0-9]\+,\s*[0-9]\+\]' | head -n 1)"
+
+if [[ -z "$size_line" ]]; then
+	echo "Could not read focused client size from hyprctl" >&2
+	exit 1
+fi
+
+current_w="$(printf '%s\n' "$size_line" | sed -E 's/.*\[([0-9]+),[[:space:]]*([0-9]+)\].*/\1/')"
+current_h="$(printf '%s\n' "$size_line" | sed -E 's/.*\[([0-9]+),[[:space:]]*([0-9]+)\].*/\2/')"
+
+if [[ "$current_w" -le 0 || "$current_h" -le 0 ]]; then
+	echo "Focused client has invalid size" >&2
+	exit 1
+fi
+
+# Preserve the current area, then project to the selected ratio.
+new_h="$(awk -v cw="$current_w" -v ch="$current_h" -v rw="$ratio_w" -v rh="$ratio_h" 'BEGIN { printf("%d", sqrt((cw * ch * rh) / rw)); }')"
+if [[ "$new_h" -lt 1 ]]; then
+	new_h=1
+fi
+new_w="$(awk -v nh="$new_h" -v rw="$ratio_w" -v rh="$ratio_h" 'BEGIN { printf("%d", (nh * rw) / rh); }')"
+if [[ "$new_w" -lt 1 ]]; then
+	new_w=1
+fi
+
+hyprctl dispatch resizeactive exact "$new_w" "$new_h" >/dev/null
