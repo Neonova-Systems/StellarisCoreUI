@@ -7,6 +7,7 @@ import Adw from "gi://Adw?version=1";
 import Gio from "gi://Gio?version=2.0";
 import { AudioFile, HOME_DIR, playSound } from "../../helper";
 import { timeout } from "ags/time";
+import GLib from "gi://GLib?version=2.0";
 
 const hyprland = AstalHyprland.get_default();
 
@@ -18,6 +19,7 @@ function OSD() {
     const workspaceWindows = `${focusedWorkspace.get_clients().length}`;
     const workspaceMonitor = `${monitor.name}`;
     const focusedWorkspace_has_fullscreen = (focusedWorkspace.has_fullscreen ? "1" : "0") === "1";
+    const previousWorkspaceId = GLib.getenv("HYPRLAND_PREVIOUS_WORKSPACE_ID") ?? "0";
 
     return ( <window visible
         name="workspace-info-osd"
@@ -31,6 +33,7 @@ function OSD() {
         namespace={"workspace-info-osd"}>
         <box cssClasses={["onscreen-display"]} valign={Gtk.Align.FILL} vexpand cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.GestureClick onPressed={() => { app.quit() }} />
+            { focusedWorkspace_has_fullscreen && <Gtk.DropControllerMotion onEnter={() => hyprland.get_workspace(parseInt(previousWorkspaceId)).focus() } /> }
             <overlay>
                 <box>
                     <drawingarea halign={Gtk.Align.FILL} valign={Gtk.Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: (focusedWorkspace_has_fullscreen ? "#050713" : "#070B1F"), backgroundAlpha: 1.0, borderAlpha: 1.0, borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
@@ -39,7 +42,10 @@ function OSD() {
                     <overlay>
                         <box hexpand />
                         <box $type="overlay" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} marginTop={5} spacing={5}>
-                            <label label={workspaceId} cssClasses={["id"]} />
+                            <box spacing={3}>
+                                <label valign={Gtk.Align.START} marginTop={7} label={previousWorkspaceId} cssClasses={["prev-id"]}/>
+                                <label label={workspaceId} cssClasses={["id"]} />
+                            </box>
                             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                                 <label halign={Gtk.Align.START} label={`WORKSPACE [${workspaceName}] IN USE`} />
                                 <label halign={Gtk.Align.START} label={`${workspaceWindows} CLIENTS`} />
