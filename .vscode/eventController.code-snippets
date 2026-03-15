@@ -1,0 +1,56 @@
+{
+	"AGS Gtk.EventController": {
+		"scope": "typescriptreact",
+		"prefix": "ectrl",
+		"body": [
+			"<Gtk.EventController />",
+			"$0"
+		],
+		"description": "Insert base Gtk.EventController"
+	},
+	"AGS Gtk.EventControllerKey": {
+		"scope": "typescriptreact",
+		"prefix": "ekey",
+		"body": [
+			"<Gtk.EventControllerKey onKeyPressed={() => { ${1} }} />",
+			"$0"
+		],
+		"description": "Insert Gtk.EventControllerKey with onKeyPressed handler"
+	},
+	"AGS Gtk.EventControllerFocus": {
+		"scope": "typescriptreact",
+		"prefix": "efocus",
+		"body": [
+			"<Gtk.EventControllerFocus onEnter={() => { ${1} }} />",
+			"$0"
+		],
+		"description": "Insert Gtk.EventControllerFocus with onEnter handler"
+	},
+	"AGS Gtk.EventControllerLegacy": {
+		"scope": "typescriptreact",
+		"prefix": "elegacy",
+		"body": [
+			"<Gtk.EventControllerLegacy onEvent={() => { ${1} }} />",
+			"$0"
+		],
+		"description": "Insert Gtk.EventControllerLegacy with onEvent handler"
+	},
+	"AGS Gtk.EventControllerMotion": {
+		"scope": "typescriptreact",
+		"prefix": "emotion",
+		"body": [
+			"<Gtk.EventControllerMotion onEnter={() => { ${1} }} />",
+			"$0"
+		],
+		"description": "Insert Gtk.EventControllerMotion with onEnter handler"
+	},
+	"AGS Gtk.EventControllerScroll": {
+		"scope": "typescriptreact",
+		"prefix": "escroll",
+		"body": [
+			"<Gtk.EventControllerScroll onScroll={() => { ${1} }} />",
+			"$0"
+		],
+		"description": "Insert Gtk.EventControllerScroll with onScroll handler"
+	}
+}

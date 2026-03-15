@@ -1,0 +1,74 @@
+{
+	"AGS Gtk.GestureClick": {
+		"scope": "typescriptreact",
+		"prefix": "gclick",
+		"body": [
+			"<Gtk.GestureClick onPressed={() => {",
+			"\t${1:app.quit()}",
+			"}} />",
+			"$0"
+		],
+		"description": "Insert Gtk.GestureClick with onPressed handler"
+	},
+	"AGS Gtk.Gesture": {
+		"scope": "typescriptreact",
+		"prefix": "ggesture",
+		"body": [
+			"<Gtk.Gesture />",
+			"$0"
+		],
+		"description": "Insert base Gtk.Gesture"
+	},
+	"AGS Gtk.GesturePan": {
+		"scope": "typescriptreact",
+		"prefix": "gpan",
+		"body": [
+			"<Gtk.GesturePan orientation={Gtk.Orientation.${1:HORIZONTAL}} onPan={() => {",
+			"\t${2:// handle pan}",
+			"}} />",
+			"$0"
+		],
+		"description": "Insert Gtk.GesturePan with orientation and onPan handler"
+	},
+	"AGS Gtk.GestureDrag": {
+		"scope": "typescriptreact",
+		"prefix": "gdrag",
+		"body": [
+			"<Gtk.GestureDrag",
+			"\tonDragBegin={() => {",
+			"\t\t${1:// begin drag}",
+			"\t}}",
+			"\tonDragUpdate={() => {",
+			"\t\t${2:// update drag}",
+			"\t}}",
+			"\tonDragEnd={() => {",
+			"\t\t${3:// end drag}",
+			"\t}}",
+			"/>",
+			"$0"
+		],
+		"description": "Insert Gtk.GestureDrag with begin/update/end handlers"
+	},
+	"AGS Gtk.GestureZoom": {
+		"scope": "typescriptreact",
+		"prefix": "gzoom",
+		"body": [
+			"<Gtk.GestureZoom onScaleChanged={() => {",
+			"\t${1:// handle scale}",
+			"}} />",
+			"$0"
+		],
+		"description": "Insert Gtk.GestureZoom with onScaleChanged handler"
+	},
+	"AGS Gtk.GestureSwipe": {
+		"scope": "typescriptreact",
+		"prefix": "gswipe",
+		"body": [
+			"<Gtk.GestureSwipe onSwipe={() => {",
+			"\t${1:// handle swipe}",
+			"}} />",
+			"$0"
+		],
+		"description": "Insert Gtk.GestureSwipe with onSwipe handler"
+	}
+}

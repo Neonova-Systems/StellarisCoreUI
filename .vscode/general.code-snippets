@@ -1,0 +1,194 @@
+{
+	// Place your ags workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	//
+	// You can also restrict snippets to specific files using include/exclude patterns:
+	// "Test snippet": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "test",
+	// 	"body": "test('$1', () => {\n\t$0\n});",
+	// 	"include": ["**/*.test.ts", "*.spec.ts"],
+	// 	"exclude": ["**/temp/*.ts"],
+	// 	"description": "Insert test block"
+	// }
+	"AGS app.start": {
+		"scope": "typescript,typescriptreact",
+		"prefix": "agstart",
+		"body": [
+			"import app from \"ags/gtk4/app\"",
+			"",
+			"app.start({",
+			"\tmain() {",
+			"\t\t${1:// instantiate widgets}",
+			"\t},",
+			"})",
+			"$0"
+		],
+		"description": "AGS app entrypoint with app.start"
+	},
+	"AGS window widget": {
+		"scope": "typescriptreact",
+		"prefix": "agwindow",
+		"body": [
+			"function ${1:Bar}(monitor = 0) {",
+			"\treturn (",
+			"\t\t<window visible class=\"${1:Bar}\" monitor={monitor}>",
+			"\t\t\t<box>${2:Content}</box>",
+			"\t\t</window>",
+			"\t)",
+			"}",
+			"$0"
+		],
+		"description": "Root window widget template (Gtk4 windows should be visible)"
+	},
+	"AGS custom button": {
+		"scope": "typescriptreact",
+		"prefix": "agbutton",
+		"body": [
+			"function ${1:MyButton}() {",
+			"\treturn (",
+			"\t\t<button onClicked={(self) => {",
+			"\t\t\t${2:console.log(self, \"clicked\")}",
+			"\t\t}}>",
+			"\t\t\t<label label=\"${3:Click me!}\" />",
+			"\t\t</button>",
+			"\t)",
+			"}",
+			"$0"
+		],
+		"description": "Custom button component with click handler"
+	},
+	"AGS createState": {
+		"scope": "typescript,typescriptreact",
+		"prefix": "agstate",
+		"body": [
+			"import { createState } from \"ags\"",
+			"",
+			"const [${1:count}, set${2:Count}] = createState(${3:0})",
+			"$0"
+		],
+		"description": "Reactive writable state with createState"
+	},
+	"AGS counter state": {
+		"scope": "typescriptreact",
+		"prefix": "agcounter",
+		"body": [
+			"import { createState, createComputed } from \"ags\"",
+			"",
+			"function ${1:Counter}() {",
+			"\tconst [count, setCount] = createState(0)",
+			"",
+			"\tfunction increment() {",
+			"\t\tsetCount((v) => v + 1)",
+			"\t}",
+			"",
+			"\tconst label = createComputed(() => count().toString())",
+			"",
+			"\treturn (",
+			"\t\t<box>",
+			"\t\t\t<label label={label} />",
+			"\t\t\t<button onClicked={increment}>${2:Click to increment}</button>",
+			"\t\t</box>",
+			"\t)",
+			"}",
+			"$0"
+		],
+		"description": "Guide-style state management counter using createState/createComputed"
+	},
+	"AGS computed shorthand": {
+		"scope": "typescript,typescriptreact",
+		"prefix": "agcomputed",
+		"body": [
+			"const ${1:label} = ${2:count}((c) => c.toString())",
+			"$0"
+		],
+		"description": "Accessor computed shorthand: accessor(mapper)"
+	},
+	"AGS With dynamic render": {
+		"scope": "typescriptreact",
+		"prefix": "agwith",
+		"body": [
+			"import { With, type Accessor } from \"ags\"",
+			"",
+			"let ${1:value}: Accessor<{ member: string } | null>",
+			"",
+			"<box>",
+			"\t<With value={${1:value}}>",
+			"\t\t{(v) => v && <label label={v.member} />}",
+			"\t</With>",
+			"</box>",
+			"$0"
+		],
+		"description": "Dynamic rendering with With component"
+	},
+	"AGS For dynamic list": {
+		"scope": "typescriptreact",
+		"prefix": "agfor",
+		"body": [
+			"import { For, type Accessor } from \"ags\"",
+			"",
+			"let ${1:list}: Accessor<Array<${2:string}>>",
+			"",
+			"<box>",
+			"\t<For each={${1:list}}>",
+			"\t\t{(item, index: Accessor<number>) => (",
+			"\t\t\t<label label={index((i) => i + \". \" + item)} />",
+			"\t\t)}",
+			"\t</For>",
+			"</box>",
+			"$0"
+		],
+		"description": "Dynamic list rendering with For component"
+	},
+	"AGS createPoll date": {
+		"scope": "typescript,typescriptreact",
+		"prefix": "agpoll",
+		"body": [
+			"import { createPoll } from \"ags\"",
+			"",
+			"const ${1:date} = createPoll(\"\", ${2:1000}, () => new Date().toString())",
+			"",
+			"<label label={${1:date}} />",
+			"$0"
+		],
+		"description": "Polling example from guide (prefer events/signals when possible)"
+	},
+	"AGS conditional render": {
+		"scope": "typescriptreact",
+		"prefix": "agcond",
+		"body": [
+			"<box>{${1:condition} ? <${2:True} /> : <${3:False} />}</box>",
+			"$0"
+		],
+		"description": "Inline conditional JSX rendering"
+	},
+	"AGS map list render": {
+		"scope": "typescriptreact",
+		"prefix": "agmap",
+		"body": [
+			"const ${1:labels} = [\"label1\", \"label2\", \"label3\"]",
+			"",
+			"<box>",
+			"\t{${1:labels}.map((label) => (",
+			"\t\t<label label={label} />",
+			"\t))}",
+			"</box>",
+			"$0"
+		],
+		"description": "Render an array with map()"
+	}
+}
