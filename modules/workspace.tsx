@@ -11,6 +11,7 @@ export default function Workspaces() {
             <For each={workspaces}>
                 {(workspace: any) => (
                     <button onClicked={() => workspace.focus()} tooltipText={`Click to change into workspace ${workspace.id}`} cursor={Gdk.Cursor.new_from_name("crosshair", null)}>
+                        <Gtk.DropControllerMotion onEnter={() => workspace.focus()} />
                         <With value={focusedWorkspace}>
                             {(value: any) => <box cssClasses={[value.id == workspace.id ? "focused-item" : "item"]} spacing={5} hexpand />}
                         </With>
