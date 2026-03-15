@@ -10,6 +10,7 @@ type EntryContentProps = {
     css?: string | Accessor<string> | undefined;
     hexpand?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     allowCopy?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    animation?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     useMarkup?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     orientation?: Gtk.Orientation | Accessor<NonNullable<Gtk.Orientation | undefined>> | undefined
     ellipsize?: Pango.EllipsizeMode | Accessor<NonNullable<Pango.EllipsizeMode | undefined>> | undefined
@@ -17,7 +18,7 @@ type EntryContentProps = {
     important?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
 };
 
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, children}: EntryContentProps) {
+export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, children}: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : value?.get() || "";
     return (
         <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
@@ -29,13 +30,13 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
             )}
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Align.FILL} valign={Align.CENTER}>
                 {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament5.svg`} pixelSize={9} valign={Align.CENTER} halign={Align.LEFT} /> )}
-                <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={["alt-start-animation"]} valign={Align.CENTER}/>
+                <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={[animation ?"alt-start-animation" : ""]} valign={Align.CENTER}/>
             </box>
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Align.FILL} valign={Align.LEFT}>
                 {children}
                 <label 
                     useMarkup={useMarkup} 
-                    cssClasses={["value", "start-animation", allowCopy ? "copyable" : ""]} 
+                    cssClasses={["value", animation ? "start-animation" : "", allowCopy ? "copyable" : ""]} 
                     css={css} 
                     label={valueStr} 
                     halign={Align.LEFT} 
