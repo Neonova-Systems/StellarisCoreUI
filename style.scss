@@ -293,6 +293,9 @@ calendar {
   .item {
     background-color: #0b123280;
     min-height: 3px;
+    &:hover {
+      filter: brightness(1.2);
+    }
   }
   .focused-item {
     background-color: #1832e7;
