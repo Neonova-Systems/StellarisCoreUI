@@ -36,7 +36,7 @@ function OSD() {
             { focusedWorkspace_has_fullscreen && <Gtk.DropControllerMotion onEnter={() => hyprland.get_workspace(parseInt(previousWorkspaceId)).focus() } /> }
             <overlay>
                 <box>
-                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: (focusedWorkspace_has_fullscreen ? "#050713" : "#070B1F"), backgroundAlpha: 1.0, borderAlpha: 1.0, borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
+                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 20, backgroundColor: (focusedWorkspace_has_fullscreen ? "#050713" : "#070B1F"), backgroundAlpha: 1.0, borderAlpha: 1.0, borderSize: (focusedWorkspace_has_fullscreen ? 3 : 1), borderColor: "#0A102E", notchPlacements: [{corner: Corner.BottomLeft}, {corner: Corner.BottomRight}], }))} />
                 </box>
                 <box cssClasses={["contents"]} $type="overlay">
                     <overlay>
@@ -53,6 +53,14 @@ function OSD() {
                         </box>
                         <label halign={Align.CENTER} valign={Align.LEFT} $type="overlay" marginTop={3} cssClasses={['monitor']} label={`${workspaceMonitor} ${monitor.width}x${monitor.height}@${monitor.refreshRate}Hz`}/>
                         <label cssClasses={["decoration-text", "uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Align.RIGHT} halign={Align.RIGHT}/>
+                        {focusedWorkspace_has_fullscreen &&
+                            <Adw.Clamp maximumSize={9} $type="overlay" marginStart={7} marginTop={23} valign={Align.TOP} halign={Align.LEFT}>
+                                <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/icon/streamline--dangerous-zone-sign-remix.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                            </Adw.Clamp>
+                        }
+                        <Adw.Clamp maximumSize={11} $type="overlay" marginEnd={7} marginTop={25} valign={Align.TOP} halign={Align.RIGHT}>
+                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/icon/ic--round-ads-click.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                        </Adw.Clamp>
                         <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={7} marginTop={3} valign={Align.LEFT} halign={Align.RIGHT}>
                             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/Thumbnails-88.png`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                         </Adw.Clamp>
