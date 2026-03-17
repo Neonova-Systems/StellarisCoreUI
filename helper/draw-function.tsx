@@ -25,6 +25,7 @@ type Props = {
     backgroundAlpha?: number;
     borderColor?: string;
     borderAlpha?: number;
+    borderSize?: number;
 }
 
 /**
@@ -57,6 +58,7 @@ interface NotchPlacement {
  * @param {number} [props.backgroundAlpha=0.4] - The alpha (opacity) for the background, from 0.0 to 1.0.
  * @param {string} [props.borderColor="#0B1233"] - The hex color code for the button's border.
  * @param {number} [props.borderAlpha=1.0] - The alpha (opacity) for the border, from 0.0 to 1.0.
+ * @param {number} [props.borderSize=1] - The border stroke width in pixels.
  * @returns {void}
  *
  * @example
@@ -77,7 +79,7 @@ interface NotchPlacement {
  *   borderColor: '#FFFFFF'
  * });
  */
-export function drawChamferedBackground({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#152052", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0}: Props): void {
+export function drawChamferedBackground({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#152052", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0, borderSize = 1 }: Props): void {
     const getNotchSize = (corner: Corner): number => {
         const placement = notchPlacements.find(p => p.corner === corner);
         return placement?.size ?? notchSize;
@@ -131,6 +133,6 @@ export function drawChamferedBackground({ area, cr, width, height, notchSize = 1
     cr.fillPreserve();
 
     setSourceRGBAFromHex(cr, borderColor, borderAlpha); // Add border
-    cr.setLineWidth(1);
+    cr.setLineWidth(borderSize);
     cr.stroke();
 }
