@@ -139,9 +139,9 @@ export default function FilesystemInfo() {
                         </box>
                         <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
                             <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
-                                    <label label={mountpointList} valign={Align.LEFT} halign={Align.LEFT} />
-                                    <label label={blockList} valign={Align.LEFT} halign={Align.LEFT} />
+                                <box valign={Align.TOP} homogeneous={false} spacing={20}>
+                                    <label label={mountpointList} valign={Align.TOP} halign={Align.LEFT} />
+                                    <label label={blockList} valign={Align.TOP} halign={Align.LEFT} />
                                 </box>
                             </scrolledwindow>
                         </box>

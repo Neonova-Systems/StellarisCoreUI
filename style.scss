@@ -250,38 +250,31 @@ calendar {
 }
 
 .control-collection {
-  min-width: 50px;
-  min-height: 80px;
-  font-size: 10px;
   .title-content {
     text-transform: uppercase;
     font-family: Chakra Petch;
-    font-size: 9px;
+    font-size: 7.7px;
     font-weight: bold;
-    letter-spacing: 1.1px;
+    letter-spacing: 1.0px;
   }
-  .container:hover .overlay {
-    opacity: 0.17;
-  }
-  .container:hover .alt-overlay {
-    filter: brightness(1.5);
-  }
-  .alt-entry:hover, .entry:hover {
-    // background-color: gtkalpha(#0f1849, 0.6);
-    color: #2043ff;
-  }
+  .container:hover .overlay { opacity: 0.17; }
+  .container:hover .alt-overlay { filter: brightness(1.5); }
+  .alt-entry:hover, .entry:hover { color: #2043ff; }
   .container:active .overlay { filter: brightness(3); opacity: 1; }
   .container:active .alt-overlay { filter: brightness(3); opacity: 0.8; }
-  .entry:active { color: black; }
-  .alt-entry:active { color: #2752ff; }
+  .entry:active { color: black; } // Font transition
+  .alt-entry:active { color: #2752ff; } // Font transition
   .alt-entry {
+    font-size: 6.5px;
     font-family: Rajdhani;
-    font-size: 9px;
     font-weight: 600;
     color: #1832e7;
     padding: 5px;
   }
   .entry {
+    font-size: 6.5px;
+    font-family: Rajdhani;
+    font-weight: 600;
     color: black;
     padding: 5px;
   }
