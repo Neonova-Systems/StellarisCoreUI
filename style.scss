@@ -15,6 +15,13 @@
 .layer-image { border: 0.7px solid #3253F6; box-shadow: 0px 0px 5px gtkalpha(#3253F6, 0.25); min-width: 230px;}
 .layer-title { font-family: Chakra Petch; font-size: 6px; color: #20274d; font-weight: bold; letter-spacing: 1.1px;}
 .layer-number { font-family: Chakra Petch; font-size: 12px; color: #3253F6; font-weight: bold; letter-spacing: 1.5px; text-shadow: 0px 2px 4px gtkalpha(#3253F6, 0.25);}
+.title {     
+    font-family: Chakra Petch;
+    font-size: 10px;
+    letter-spacing: 1.1px;
+    text-shadow: 0px 1px 4px hsla(230, 19%, 64%, 0.2);
+    font-weight: bold;
+    color: #b4badc;}
 .border-default { border: 1.5px solid #0A102E; }
 .shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
 .uppercase { text-transform: uppercase; }
