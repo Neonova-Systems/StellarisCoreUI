@@ -70,11 +70,12 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
     .close-button { background-color: #F32626; &:hover { background-color: gtkalpha(#F32626, 0.5); } }
     .entry { color: #aa1b1b; .value { color: #e91111; } }
   }
-
   .title {
     font-family: Chakra Petch;
-    font-size: 13px;
+    font-size: 20px;
     color: #9EA6CC;
+    text-transform: uppercase;
+    letter-spacing: 0px;
     font-weight: 600;
   }
   .close-button {
@@ -86,7 +87,6 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
 }
 
 .action-button {
-  // background-color: #9EA6CC;
   color: #6E78A7;
   font-family: Chakra Petch;
   font-size: 10px;
@@ -240,7 +240,7 @@ calendar {
   border: 1.5px solid #0A102E;
 }
 .decoration-text {
-  font-size: 4px; color: #21307aff; letter-spacing: 1.1px;
+  font-size: 4px; color: #21307aff; letter-spacing: 1.0px;
 }
 
 .track-title {
@@ -375,71 +375,65 @@ tooltip {
 
 .volume-control-row {
   padding: 4px 6px;
-  border: 1px solid gtkalpha(#48463d, 0.35);
-  background: linear-gradient(to right, gtkalpha(#f4f0e1, 0.34), gtkalpha(#c2bda6, 0.22));
+  border: 1px solid gtkalpha(#0B1233, 0.35);
   min-height: 22px;
-}
-
-.volume-mute-button {
-  min-width: 90px;
-  padding: 2px 6px;
-  border: 1px solid gtkalpha(#48463d, 0.55);
-  background: linear-gradient(90deg, gtkalpha(#48463d, 0.22) 0%, gtkalpha(#48463d, 0.22) 50%, gtkalpha(#48463d, 0.75) 50%, gtkalpha(#48463d, 0.75) 100%);
-  background-size: 200% 100%;
-  label {
-    font-family: Rajdhani;
-    font-size: 8px;
-    text-transform: lowercase;
-    color: #48463d;
-    letter-spacing: 0.4px;
+  .volume-mute-button {
+    min-width: 90px;
+    padding: 2px 6px;
+    border: 1px solid gtkalpha(#152052, 0.55);
+    background: linear-gradient(90deg, gtkalpha(#152052, 0.22) 0%, gtkalpha(#152052, 0.22) 50%, gtkalpha(#152052, 0.75) 50%, gtkalpha(#152052, 0.75) 100%);
+    background-size: 200% 100%;
+    label {
+      color: #152052;
+      font-family: Chakra Petch;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
   }
-}
-
-.volume-value-label {
-  font-family: Rajdhani;
-  font-size: 8px;
-  color: #48463d;
-  min-width: 34px;
+  .volume-value-label {
+    font-family: Chakra Petch;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.0px;
+    color: #9EA6CC;
+  }
 }
 
 .volume-segment-track {
   min-height: 20px;
   padding-left: 2px;
   padding-right: 2px;
-}
-
-.volume-segment-button {
-  padding: 0;
-  margin: 0;
-  min-width: 4px;
-  min-height: 20px;
-  background: transparent;
-  border: none;
-}
-
-.volume-segment {
-  margin-top: 9px;
-  margin-bottom: 9px;
-  min-height: 1px;
-  min-width: 3px;
-  background: #c2bda6;
-  transition: margin 0.15s ease, background 0.15s ease;
-}
-
-.volume-segment.filled {
-  margin-top: 6px;
-  margin-bottom: 6px;
-  min-height: 8px;
-  background: #48463d;
-}
-
-.volume-segment.focus {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  min-height: 10px;
-  background: #f4f0e1;
-  box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0.5);
-  animation: volume-slider-blink 2s ease infinite;
+  .volume-segment-button {
+    padding: 0;
+    margin: 0;
+    min-width: 4px;
+    min-height: 20px;
+    background: transparent;
+    border: none;
+    .volume-segment {
+      margin-top: 9px;
+      margin-bottom: 9px;
+      min-height: 1px;
+      min-width: 3px;
+      background: #48463d;
+      transition: margin 0.15s ease, background 0.15s ease;
+      &.filled {
+        margin-top: 6px;
+        margin-bottom: 6px;
+        min-height: 8px;
+        background: #c2bda6;
+      }
+      &.focus {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        min-height: 10px;
+        background: #f4f0e1;
+        box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0.5);
+        animation: volume-slider-blink 2s ease infinite;
+      }
+    }
+  }
 }
 
 @keyframes volume-slider-blink {

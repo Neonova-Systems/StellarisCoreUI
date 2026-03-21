@@ -1,12 +1,10 @@
 import Gtk from "gi://Gtk?version=4.0"
 import Gdk from "gi://Gdk?version=4.0"
-import Adw from "gi://Adw"
 import GLib from "gi://GLib"
 import AstalNotifd from "gi://AstalNotifd"
 import Pango from "gi://Pango"
-import { Align, AudioFile, CreateEntryContent, formatTime, HOME_DIR, ICON_DIR, playSound, setSourceRGBAFromHex } from "../helper"
-import giCairo from "cairo"
-import { createState, With } from "ags"
+import { Align, AudioFile, CreateEntryContent, formatTime, HOME_DIR, ICON_DIR, playSound } from "../helper"
+import { createState } from "ags"
 import { execAsync } from "ags/process"
 import { timeout } from "ags/time"
 import { Corner, drawChamferedBackground} from "../helper/draw-function"
@@ -60,8 +58,9 @@ export default function Notification({ notification: n, mute}: NotificationProps
         {((isIcon(n.appIcon) || isIcon(n.desktopEntry) ) && urgency(n) !== "critical") && (
           <image visible={Boolean(n.appIcon || n.desktopEntry)} iconName={n.appIcon || n.desktopEntry} pixelSize={14} />
         )}
-        <label cssClasses={["title"]} label={n.summary || "NO SUMMARY"} ellipsize={3} />
-        <box hexpand />
+        <box hexpand halign={Align.FILL}>
+          <label cssClasses={["title"]} justify={Gtk.Justification.LEFT} halign={Align.FILL} hexpand xalign={0} label={n.summary || "NO SUMMARY"} wrap={false} singleLineMode ellipsize={Pango.EllipsizeMode.END} />
+        </box>
         <button onClicked={() => n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Align.RIGHT} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
           <image file={`${ICON_DIR}/vaadin--close-small.svg`} pixelSize={13} />
         </button>
@@ -84,19 +83,19 @@ export default function Notification({ notification: n, mute}: NotificationProps
                 </box>
                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Align.FILL} hexpand={true}>
                   <CreateEntryContent name="CATEGORY" value={n.category?.toUpperCase() || "UNKNOWN"} hexpand />
-                  <CreateEntryContent name="SUPPRESS SOUND" value={String(n.suppressSound)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="EXPIRE TIMEOUT" value={String(n.expireTimeout)?.toUpperCase() || "UNKNOWN"} hexpand />
                 </box>
                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Align.FILL} hexpand={true}>
                   <CreateEntryContent name="DESKTOP ENTRY" value={n.desktopEntry?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} allowCopy />
-                  <CreateEntryContent name="TRANSIENT" value={String(n.transient)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="TIME" value={formatTime(n.time)?.toUpperCase() || "UNKNOWN"} hexpand />
                 </box>
                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Align.FILL}>
-                  <CreateEntryContent name="EXPIRE TIMEOUT" value={String(n.expireTimeout)?.toUpperCase() || "UNKNOWN"} hexpand />
-                  <CreateEntryContent name="RESIDENT" value={String(n.resident)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="APP ICON" value={n.appIcon?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} />
+                  <CreateEntryContent name="IMAGE" value={n.image?.toUpperCase() || "UNKNOWN"} hexpand ellipsize={Pango.EllipsizeMode.END} />
                 </box>
                 <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Align.FILL}>
                   <CreateEntryContent name="URGENCY" value={urgency(n)?.toUpperCase() || "UNKNOWN"} hexpand />
-                  <CreateEntryContent name="TIME" value={formatTime(n.time)?.toUpperCase() || "UNKNOWN"} hexpand />
+                  <CreateEntryContent name="ACTIONS" value={String(n.actions.length).toUpperCase() || "UNKNOWN"} hexpand />
                 </box>
               </box>
           <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Align.FILL} vexpand>
@@ -108,12 +107,12 @@ export default function Notification({ notification: n, mute}: NotificationProps
                 return (
                 <button hexpand cssClasses={["action-button", "clickable"]} onClicked={() => n.invoke(id)} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
                   <overlay>
-                    <drawingarea halign={Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchPlacements: [ {corner: Corner.BottomRight}]}))} />
+                    <drawingarea halign={Align.FILL} hexpand css={"min-height: 27px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, backgroundColor: "#152052", notchPlacements: [ {corner: Corner.BottomRight}]}))} />
                     <box $type="overlay" spacing={5} halign={Align.CENTER} valign={Align.CENTER}>
                       <label label={label} halign={Align.CENTER} />
                       <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />
                     </box>
-                    <label $type="overlay" label="action" cssClasses={["uppercase", "decoration-text"]} css={"margin: 4px;"} halign={Align.LEFT} valign={Align.LEFT} vexpand />
+                    <label $type="overlay" label={id} cssClasses={["uppercase", "decoration-text"]} css={"margin: 4px;"} halign={Align.LEFT} valign={Align.LEFT} vexpand />
                   </overlay>
                 </button>
                 )
