@@ -5,6 +5,7 @@ import { interval, timeout } from "ags/time";
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 import AudioControl from "./control-center/audio-control";
+import HyprlandControl from "./control-center/hyprland-control";
 
 export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
@@ -113,6 +114,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
                                 }}
                             </For>
                             <AudioControl />
+                            <HyprlandControl />
                         </box>
                     </box>
                 )}

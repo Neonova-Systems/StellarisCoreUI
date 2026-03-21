@@ -2,7 +2,7 @@ import { Gtk } from "ags/gtk4"
 import { Align, HOME_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 
-export default function AudioControl() {
+export default function HyprlandControl() {
     return (
         <box marginTop={10}>
             <overlay>
@@ -12,7 +12,7 @@ export default function AudioControl() {
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="AUDIO CONTROL"/>
+                        <label cssClasses={["title"]} label="HYPRLAND CONTROL"/>
                     </box>
                 </box>
             </overlay>
