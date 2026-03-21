@@ -79,7 +79,7 @@ interface NotchPlacement {
  *   borderColor: '#FFFFFF'
  * });
  */
-export function drawChamferedBackground({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#152052", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0, borderSize = 1 }: Props): void {
+export function drawChamferedBackground({ area, cr, width, height, notchSize = 10, notchPlacements = [{ corner: Corner.BottomRight }], backgroundColor = "#000000", backgroundAlpha = 0.4, borderColor = "#0B1233", borderAlpha = 1.0, borderSize = 1 }: Props): void {
     const getNotchSize = (corner: Corner): number => {
         const placement = notchPlacements.find(p => p.corner === corner);
         return placement?.size ?? notchSize;

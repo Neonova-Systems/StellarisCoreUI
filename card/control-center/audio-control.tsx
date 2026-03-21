@@ -63,7 +63,7 @@ export default function AudioControl() {
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
                     </box>
                     <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
-                        <button cssClasses={["volume-mute-button"]} onClicked={toggleMute}>
+                        <button cssClasses={["volume-mute-button", "clickable"]} onClicked={toggleMute}>
                             <label label={isMuted(v => v ? "muted" : "speaker")} />
                         </button>
                         <CreateSlider value={volumePercent} onChange={setVolume} segmentCount={24} />

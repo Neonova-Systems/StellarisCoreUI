@@ -380,11 +380,11 @@ tooltip {
   .volume-mute-button {
     min-width: 90px;
     padding: 2px 6px;
-    border: 1px solid gtkalpha(#152052, 0.55);
-    background: linear-gradient(90deg, gtkalpha(#152052, 0.22) 0%, gtkalpha(#152052, 0.22) 50%, gtkalpha(#152052, 0.75) 50%, gtkalpha(#152052, 0.75) 100%);
+    border: 1px solid gtkalpha(#1a2868, 0.55);
+    background: gtkalpha(#152052, 0.22);
     background-size: 200% 100%;
     label {
-      color: #152052;
+      color: #1a2868;
       font-family: Chakra Petch;
       font-size: 10px;
       font-weight: 600;
