@@ -2,19 +2,14 @@ import { createState, With } from "ags"
 import { execAsync } from "ags/process"
 import { interval, timeout } from "ags/time"
 import { Gtk } from "ags/gtk4"
-import { Align, HOME_DIR } from "../../helper"
+import { Align, CreateSlider, HOME_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 
 export default function AudioControl() {
-    const segmentCount = 24
     const volumeDebounceMs = 30
-    const segments = Array.from({ length: segmentCount })
     const [volumePercent, setVolumePercent] = createState(0)
     const [isMuted, setIsMuted] = createState(false)
-    const [isDraggingSegments, setIsDraggingSegments] = createState(false)
     let debounceRevision = 0
-    let dragStartX = 0
-    let trackWidget: Gtk.Box | null = null
 
     function refreshVolume() {
         execAsync('wpctl get-volume @DEFAULT_AUDIO_SINK@')
@@ -50,39 +45,7 @@ export default function AudioControl() {
     }
 
     function toggleMute() {
-        execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle')
-            .then(() => refreshVolume())
-            .catch((e) => print(e))
-    }
-
-    function setVolumeFromSegment(index: number) {
-        const next = Math.round(((index + 1) / segmentCount) * 100)
-        setVolume(next)
-    }
-
-    function setVolumeFromTrackPosition(x: number) {
-        if (!trackWidget) return
-
-        const width = Math.max(trackWidget.get_width(), 1)
-        const ratio = Math.max(0, Math.min(1, x / width))
-        const index = Math.min(segmentCount - 1, Math.floor(ratio * segmentCount))
-        setVolumeFromSegment(index)
-    }
-
-    function beginSegmentDrag(self: Gtk.GestureDrag) {
-        const [hasPoint, startX] = self.get_start_point()
-        dragStartX = hasPoint ? startX : 0
-        setIsDraggingSegments(true)
-        setVolumeFromTrackPosition(dragStartX)
-    }
-
-    function updateSegmentDrag(self: Gtk.GestureDrag) {
-        const [, offsetX] = self.get_offset()
-        setVolumeFromTrackPosition(dragStartX + offsetX)
-    }
-
-    function endSegmentDrag() {
-        setIsDraggingSegments(false)
+        execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle').then(() => refreshVolume()).catch((e) => print(e))
     }
 
     timeout(300, () => refreshVolume())
@@ -103,27 +66,7 @@ export default function AudioControl() {
                         <button cssClasses={["volume-mute-button"]} onClicked={toggleMute}>
                             <label label={isMuted(v => v ? "muted" : "speaker")} />
                         </button>
-                        <box cssClasses={["volume-segment-track"]} spacing={1} halign={Align.FILL} hexpand $={(self) => { trackWidget = self }}>
-                            <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
-                            {segments.map((_, index) => (
-                                <button cssClasses={["volume-segment-button"]} onClicked={() => setVolumeFromSegment(index)}>
-                                    <With value={volumePercent}>
-                                        {(v) => {
-                                            const filledCount = Math.max(0, Math.ceil((v / 100) * segmentCount))
-                                            const focusIndex = Math.max(0, filledCount - 1)
-                                            return (
-                                                <box cssClasses={[
-                                                    "volume-segment",
-                                                    ...(index < filledCount ? ["filled"] : []),
-                                                    ...(index === focusIndex ? ["focus"] : []),
-                                                    ...(isDraggingSegments.peek() && index === focusIndex ? ["dragging"] : []),
-                                                ]} />
-                                            )
-                                        }}
-                                    </With>
-                                </button>
-                            ))}
-                        </box>
+                        <CreateSlider value={volumePercent} onChange={setVolume} segmentCount={24} />
                         <With value={volumePercent}>
                             {(v) => <label cssClasses={["volume-value-label"]} label={`${v}%`} halign={Align.RIGHT} widthChars={4} />}
                         </With>

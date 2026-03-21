@@ -6,3 +6,4 @@ export * from "./array-reorder";
 export * from "./json";
 export * from "./dashboard-cards";
 export * from "./behaviour";
+export * from "./create-slider";
