@@ -7,7 +7,7 @@ export default function Ornaments() {
         <box halign={Align.FILL} homogeneous={false} css={"margin-bottom: 20px;"}>
             <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ProtocolAccessControl.svg`)} canShrink={false} halign={Align.FILL} />
             <box halign={Align.FILL} hexpand />
-            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament.svg`)} canShrink={true} contentFit={Gtk.ContentFit.SCALE_DOWN} valign={Align.LEFT} halign={Align.RIGHT} />
+            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament.svg`)} canShrink={true} contentFit={Gtk.ContentFit.SCALE_DOWN} valign={Align.LEFT} halign={Align.RIGHT} />
         </box>
     );
 }
