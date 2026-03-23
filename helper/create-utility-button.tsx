@@ -18,7 +18,7 @@ export default function CreateUtilityButton({onClicked, imageFile, pixelSize = 8
     return (
         <button onClicked={onClicked} cssClasses={["clickable"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
             <overlay>
-                <drawingarea halign={Align.FILL} css={`min-width: ${minWidth}px; min-height: ${minHeight}px;`} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchPlacements: [{corner: Corner.TopRight}], notchSize}))} />
+                <drawingarea halign={Align.FILL} css={`min-width: ${minWidth}px; min-height: ${minHeight}px;`} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, backgroundColor: "#152052", notchPlacements: [{corner: Corner.TopRight}], notchSize}))} />
                 <box $type="overlay" halign={Align.CENTER} valign={Align.CENTER}>
                     <image file={imageFile} pixelSize={pixelSize} />
                 </box>
