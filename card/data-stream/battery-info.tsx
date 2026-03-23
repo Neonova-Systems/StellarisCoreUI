@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
+import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
@@ -75,7 +75,9 @@ export function BatteryInfo() {
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
-            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
+            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
+            }>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

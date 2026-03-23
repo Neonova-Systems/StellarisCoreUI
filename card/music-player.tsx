@@ -1,5 +1,5 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, playSound, Align } from "../helper";
+import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, playSound, Align, ICON_DIR } from "../helper";
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
@@ -82,7 +82,9 @@ export default function MusicPlayer() {
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}/>
+            <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
+            }/>
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} valign={Align.LEFT}>
