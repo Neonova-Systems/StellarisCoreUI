@@ -1,6 +1,14 @@
-import { Accessor, createState, With } from "ags";
-import { Gtk } from "ags/gtk4";
+import { Accessor, createState, For, With } from "ags";
+import { Gdk, Gtk } from "ags/gtk4";
+import { timeout } from "ags/time";
 import { Align } from "./constants";
+
+function resolveDisabled(disabled: boolean | Accessor<boolean> | undefined): boolean {
+    if (disabled === undefined) return false;
+    if (typeof disabled === "boolean") return disabled;
+    if (typeof disabled === "function") return disabled();
+    return false;
+}
 
 /**
  * Props for creating the segmented volume slider widget.
@@ -17,11 +25,11 @@ type CreateSliderProps = {
     onChange: (nextPercent: number) => void;
 
     /**
-     * Number of visual segments rendered in the slider track.
+     * When true or accessor evaluates true, disables interaction (dragging and clicking).
      *
-     * @defaultValue 24
+     * @defaultValue false
      */
-    segmentCount?: number;
+    disabled?: boolean | Accessor<boolean> | undefined;
 };
 
 /**
@@ -35,27 +43,46 @@ type CreateSliderProps = {
  * @param props - Slider configuration and bindings.
  * @returns A JSX element representing the custom segmented slider.
  */
-export function CreateSlider({ value, onChange, segmentCount = 24 }: CreateSliderProps) {
-    const segments = Array.from({ length: segmentCount });
+export function CreateSlider({ value, onChange, disabled = false }: CreateSliderProps) {
+    const [resolvedSegmentCount, setResolvedSegmentCount] = createState(0);
+    const [segmentIndexes, setSegmentIndexes] = createState<number[]>([]);
     const [isDraggingSegments, setIsDraggingSegments] = createState(false);
+    const [disabledState] = typeof disabled === "function" ? [disabled] : [createState(disabled)[0]];
     let dragStartX = 0;
     let trackWidget: Gtk.Box | null = null;
 
+    function recalculateSegmentsForWidth(width: number) {
+        // Segment density is controlled by CSS spacing/width; calculate count from width alone.
+        const dynamicCount = width > 0 ? Math.max(1, Math.floor(width / 5)) : 0;
+        const nextCount = dynamicCount;
+        if (nextCount !== resolvedSegmentCount.peek()) {
+            setResolvedSegmentCount(nextCount);
+            setSegmentIndexes(Array.from({ length: nextCount }, (_, i) => i));
+        }
+    }
+
     function setVolumeFromSegment(index: number) {
-        const next = Math.round(((index + 1) / segmentCount) * 100);
+        const count = resolvedSegmentCount.peek();
+        if (count <= 0) return;
+        const next = Math.round(((index + 1) / count) * 100);
         onChange(next);
     }
 
     function setVolumeFromTrackPosition(x: number) {
         if (!trackWidget) return;
 
-        const width = Math.max(trackWidget.get_width(), 1);
+        const width = trackWidget.get_width();
+        recalculateSegmentsForWidth(width);
+        if (width <= 0) return;
+        const count = resolvedSegmentCount.peek();
+        if (count <= 0) return;
         const ratio = Math.max(0, Math.min(1, x / width));
-        const index = Math.min(segmentCount - 1, Math.floor(ratio * segmentCount));
+        const index = Math.min(count - 1, Math.floor(ratio * count));
         setVolumeFromSegment(index);
     }
 
     function beginSegmentDrag(self: Gtk.GestureDrag) {
+        if (resolveDisabled(disabled)) return;
         const [hasPoint, startX] = self.get_start_point();
         dragStartX = hasPoint ? startX : 0;
         setIsDraggingSegments(true);
@@ -63,6 +90,7 @@ export function CreateSlider({ value, onChange, segmentCount = 24 }: CreateSlide
     }
 
     function updateSegmentDrag(self: Gtk.GestureDrag) {
+        if (resolveDisabled(disabled)) return;
         const [, offsetX] = self.get_offset();
         setVolumeFromTrackPosition(dragStartX + offsetX);
     }
@@ -72,28 +100,47 @@ export function CreateSlider({ value, onChange, segmentCount = 24 }: CreateSlide
     }
 
     return (
-        <box cssClasses={["volume-segment-track"]} spacing={1} halign={Align.FILL} hexpand $={(self) => { trackWidget = self; }}>
+        <With value={disabledState}>
+            {(_) => {
+                const isDisabled = resolveDisabled(disabled);
+                return (
+        <box cssClasses={["volume-segment-track", ...(isDisabled ? ["disabled"] : [])]}
+            spacing={1.3} halign={Align.FILL} hexpand
+            $={(self) => {
+                trackWidget = self;
+                const updateCount = () => recalculateSegmentsForWidth(self.get_width());
+                // Width allocation can settle over multiple frames at startup.
+                // Recalculate a few times so we converge even if notify::width is late or skipped.
+                [0, 16, 48, 120, 250].forEach((ms) => timeout(ms, updateCount));
+                self.connect("notify::width", updateCount);
+            }} cursor={isDisabled ? Gdk.Cursor.new_from_name("not-allowed", null) : undefined}>
             <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
-            {segments.map((_, index) => (
-                <button cssClasses={["volume-segment-button"]} onClicked={() => setVolumeFromSegment(index)}>
-                    <With value={value}>
-                        {(v) => {
-                            const filledCount = Math.max(0, Math.ceil((v / 100) * segmentCount));
-                            const focusIndex = Math.max(0, filledCount - 1);
-                            return (
-                                <box
-                                    cssClasses={[
-                                        "volume-segment",
-                                        ...(index < filledCount ? ["filled"] : []),
-                                        ...(index === focusIndex ? ["focus"] : []),
-                                        ...(isDraggingSegments.peek() && index === focusIndex ? ["dragging"] : []),
-                                    ]}
-                                />
-                            );
-                        }}
-                    </With>
-                </button>
-            ))}
+            <For each={segmentIndexes}>
+                {(index) => (
+                    <button cssClasses={["volume-segment-button"]} onClicked={() => !isDisabled && setVolumeFromSegment(index)}>
+                        <With value={value}>
+                            {(v) => {
+                                const count = resolvedSegmentCount.peek();
+                                const filledCount = Math.max(0, Math.ceil((v / 100) * count));
+                                const focusIndex = Math.max(0, filledCount - 1);
+                                return (
+                                    <box
+                                        cssClasses={[
+                                            "volume-segment",
+                                            (index < filledCount ? "filled" : ""),
+                                            (index === focusIndex ? "focus" : ""),
+                                            (isDraggingSegments.peek() && index === focusIndex ? "dragging" : ""),
+                                        ]}
+                                    />
+                                );
+                            }}
+                        </With>
+                    </button>
+                )}
+            </For>
         </box>
+                );
+            }}
+        </With>
     );
 }
