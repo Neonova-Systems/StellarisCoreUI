@@ -1,7 +1,9 @@
 import { Accessor, createState, For, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4";
 import { timeout } from "ags/time";
-import { Align } from "./constants";
+import Gio from "gi://Gio";
+import { Align, HOME_DIR } from "./constants";
+import Adw from "gi://Adw?version=1";
 
 function resolveDisabled(disabled: boolean | Accessor<boolean> | undefined): boolean {
     if (disabled === undefined) return false;
@@ -104,41 +106,49 @@ export function CreateSlider({ value, onChange, disabled = false }: CreateSlider
             {(_) => {
                 const isDisabled = resolveDisabled(disabled);
                 return (
-        <box cssClasses={["volume-segment-track", ...(isDisabled ? ["disabled"] : [])]}
-            spacing={1.3} halign={Align.FILL} hexpand
-            $={(self) => {
-                trackWidget = self;
-                const updateCount = () => recalculateSegmentsForWidth(self.get_width());
-                // Width allocation can settle over multiple frames at startup.
-                // Recalculate a few times so we converge even if notify::width is late or skipped.
-                [0, 16, 48, 120, 250].forEach((ms) => timeout(ms, updateCount));
-                self.connect("notify::width", updateCount);
-            }} cursor={isDisabled ? Gdk.Cursor.new_from_name("not-allowed", null) : undefined}>
-            <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
-            <For each={segmentIndexes}>
-                {(index) => (
-                    <button cssClasses={["volume-segment-button"]} onClicked={() => !isDisabled && setVolumeFromSegment(index)}>
-                        <With value={value}>
-                            {(v) => {
-                                const count = resolvedSegmentCount.peek();
-                                const filledCount = Math.max(0, Math.ceil((v / 100) * count));
-                                const focusIndex = Math.max(0, filledCount - 1);
-                                return (
-                                    <box
-                                        cssClasses={[
-                                            "volume-segment",
-                                            (index < filledCount ? "filled" : ""),
-                                            (index === focusIndex ? "focus" : ""),
-                                            (isDraggingSegments.peek() && index === focusIndex ? "dragging" : ""),
-                                        ]}
-                                    />
-                                );
-                            }}
-                        </With>
-                    </button>
-                )}
-            </For>
-        </box>
+        <overlay>
+            <box cssClasses={["volume-segment-track", ...(isDisabled ? ["disabled"] : [])]}
+                spacing={1} halign={Align.FILL} hexpand
+                $={(self) => {
+                    trackWidget = self;
+                    const updateCount = () => recalculateSegmentsForWidth(self.get_width());
+                    // Width allocation can settle over multiple frames at startup.
+                    // Recalculate a few times so we converge even if notify::width is late or skipped.
+                    [0, 16, 48, 120, 250].forEach((ms) => timeout(ms, updateCount));
+                    self.connect("notify::width", updateCount);
+                }} cursor={isDisabled ? Gdk.Cursor.new_from_name("not-allowed", null) : undefined}>
+                <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
+                <For each={segmentIndexes}>
+                    {(index) => (
+                        <button cssClasses={["volume-segment-button"]} onClicked={() => !isDisabled && setVolumeFromSegment(index)}>
+                            <With value={value}>
+                                {(v) => {
+                                    const count = resolvedSegmentCount.peek();
+                                    const filledCount = Math.max(0, Math.ceil((v / 100) * count));
+                                    const focusIndex = Math.max(0, filledCount - 1);
+                                    return (
+                                        <box
+                                            cssClasses={[
+                                                "volume-segment",
+                                                (index < filledCount ? "filled" : ""),
+                                                (index === focusIndex ? "focus" : ""),
+                                                (isDraggingSegments.peek() && index === focusIndex ? "dragging" : ""),
+                                            ]}
+                                        />
+                                    );
+                                }}
+                            </With>
+                        </button>
+                    )}
+                </For>
+            </box>
+            <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.TOP} halign={Align.RIGHT}>
+                <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle-invert.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+            </Adw.Clamp>
+            <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.BOTTOM} halign={Align.RIGHT}>
+                <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+            </Adw.Clamp>
+        </overlay>
                 );
             }}
         </With>

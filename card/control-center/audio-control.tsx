@@ -62,11 +62,22 @@ export default function AudioControl() {
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
-                        <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Open volume setting"} pixelSize={8} onClicked={() => {}} />
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open volume setting"} pixelSize={8} onClicked={() => {}} />
                     </box>
                     <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
                         <button cssClasses={["volume-mute-button", "clickable"]} onClicked={toggleMute}>
                             <label label={isMuted(v => v ? "muted" : "speaker")} />
+                        </button>
+                        <box cssClasses={["entry"]}>
+                            <With value={volumePercent}>
+                                {(v) =>  <CreateEntryContent name={"VOL PERCENT"} animation={false} value={`${v}%`} /> }
+                            </With>
+                        </box>
+                        <CreateSlider value={volumePercent} onChange={setVolume} disabled={isMuted} />
+                    </box>
+                    <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+                        <button cssClasses={["volume-mute-button", "clickable"]} onClicked={toggleMute}>
+                            <label label={isMuted(v => v ? "muted" : "microphone")} />
                         </button>
                         <box cssClasses={["entry"]}>
                             <With value={volumePercent}>
