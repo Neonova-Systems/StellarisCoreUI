@@ -384,7 +384,7 @@ tooltip {
     background: gtkalpha(#152052, 0.22);
     background-size: 200% 100%;
     label {
-      color: #1a2868;
+      color: #223381;
       font-family: Chakra Petch;
       font-size: 10px;
       font-weight: 600;
@@ -402,8 +402,7 @@ tooltip {
 
 .volume-segment-track {
   min-height: 20px;
-  padding-left: 2px;
-  padding-right: 2px;
+  &.disabled { opacity: 0.5; }
   .volume-segment-button {
     padding: 0;
     margin: 0;
@@ -412,24 +411,22 @@ tooltip {
     background: transparent;
     border: none;
     .volume-segment {
-      margin-top: 9px;
-      margin-bottom: 9px;
-      min-height: 1px;
-      min-width: 3px;
-      background: #48463d;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      margin-right: 0.2px;
+      background: #0e163a80;
       transition: margin 0.15s ease, background 0.15s ease;
       &.filled {
         margin-top: 6px;
         margin-bottom: 6px;
-        min-height: 8px;
-        background: #c2bda6;
+        background: #a3addf;
       }
       &.focus {
         margin-top: 5px;
         margin-bottom: 5px;
-        min-height: 10px;
-        background: #f4f0e1;
-        box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0.5);
+        min-height: 13px;
+        background: #adb7ec;
+        box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
         animation: volume-slider-blink 2s ease infinite;
       }
     }
@@ -438,15 +435,15 @@ tooltip {
 
 @keyframes volume-slider-blink {
   0% {
-    background: #f4f0e1;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0.5);
+    background: #bdc5ea;
+    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
   }
   50% {
-    background: #c2bda6;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0);
+    background: #adb7ec;
+    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0);
   }
   100% {
-    background: #f4f0e1;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#f4f0e1, 0.5);
+    background: #bdc5ea;
+    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
   }
 }

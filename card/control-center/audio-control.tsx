@@ -2,8 +2,9 @@ import { createState, With } from "ags"
 import { execAsync } from "ags/process"
 import { interval, timeout } from "ags/time"
 import { Gtk } from "ags/gtk4"
-import { Align, CreateSlider, HOME_DIR } from "../../helper"
+import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
+import CreateUtilityButton from "../../helper/create-utility-button"
 
 export default function AudioControl() {
     const volumeDebounceMs = 30
@@ -55,21 +56,24 @@ export default function AudioControl() {
         <box marginTop={10}>
             <overlay>
                 <box css={`min-height: 110px;`}>
-                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 13, backgroundColor: "#000000", backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{corner: Corner.BottomRight}], }))} />
+                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 13, backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{corner: Corner.BottomRight}], }))} />
                 </box>
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Open volume setting"} pixelSize={8} onClicked={() => {}} />
                     </box>
                     <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
                         <button cssClasses={["volume-mute-button", "clickable"]} onClicked={toggleMute}>
                             <label label={isMuted(v => v ? "muted" : "speaker")} />
                         </button>
-                        <CreateSlider value={volumePercent} onChange={setVolume} segmentCount={24} />
-                        <With value={volumePercent}>
-                            {(v) => <label cssClasses={["volume-value-label"]} label={`${v}%`} halign={Align.RIGHT} widthChars={4} />}
-                        </With>
+                        <box cssClasses={["entry"]}>
+                            <With value={volumePercent}>
+                                {(v) =>  <CreateEntryContent name={"VOL PERCENT"} animation={false} value={`${v}%`} /> }
+                            </With>
+                        </box>
+                        <CreateSlider value={volumePercent} onChange={setVolume} disabled={isMuted} />
                     </box>
                 </box>
             </overlay>
