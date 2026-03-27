@@ -16,10 +16,11 @@ type EntryContentProps = {
     ellipsize?: Pango.EllipsizeMode | Accessor<NonNullable<Pango.EllipsizeMode | undefined>> | undefined
     children?: JSX.Element | Array<JSX.Element>
     important?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    watchValue?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
 };
 
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, children}: EntryContentProps) {
-    const valueStr = typeof value === "string" ? value : value?.get() || "";
+export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, watchValue = false, children}: EntryContentProps) {
+    const valueStr = typeof value === "string" ? value : value?.peek() || "";
     return (
         <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
             {allowCopy && (
@@ -29,7 +30,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
                 </>
             )}
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Align.FILL} valign={Align.CENTER}>
-                {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament/ornament5.svg`} pixelSize={9} valign={Align.CENTER} halign={Align.LEFT} /> )}
+                {(allowCopy || important) && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament/ornament5.svg`} pixelSize={9} valign={Align.CENTER} halign={Align.LEFT} /> )}
                 <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={[animation ?"alt-start-animation" : ""]} valign={Align.CENTER}/>
             </box>
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Align.FILL} valign={Align.LEFT}>

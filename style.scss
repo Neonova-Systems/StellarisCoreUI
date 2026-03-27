@@ -150,7 +150,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   font-size: 9px;
   font-weight: 600;
   color: #6E78A7;
-  .value { color: #9EA6CC; }
+  .value { color: #9EA6CC; text-transform: uppercase; }
 }
 
 .special-entry {
