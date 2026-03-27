@@ -381,10 +381,9 @@ tooltip {
     min-width: 90px;
     padding: 2px 6px;
     border: 1px solid gtkalpha(#1a2868, 0.55);
-    background: gtkalpha(#152052, 0.22);
-    background-size: 200% 100%;
+    background: linear-gradient(to bottom, #1520522d, #0f227737);
     label {
-      color: #223381;
+      color: #20348d;
       font-family: Chakra Petch;
       font-size: 10px;
       font-weight: 600;
