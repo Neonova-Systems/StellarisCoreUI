@@ -45,9 +45,8 @@ export default function AudioControl() {
         })
     }
 
-    function toggleMute() {
-        execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle').then(() => refreshVolume()).catch((e) => print(e))
-    }
+    function toggleMute() { execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle').then(() => refreshVolume()).catch((e) => print(e)) }
+    function openSettings() { execAsync(`/usr/bin/env pavucontrol`); }
 
     timeout(300, () => refreshVolume())
     interval(1000, () => refreshVolume())
@@ -62,7 +61,7 @@ export default function AudioControl() {
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
-                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open volume setting"} pixelSize={8} onClicked={() => {}} />
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open volume setting"} pixelSize={8} onClicked={openSettings}/>
                     </box>
                     <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
                         <button cssClasses={["volume-mute-button", "clickable"]} onClicked={toggleMute}>
