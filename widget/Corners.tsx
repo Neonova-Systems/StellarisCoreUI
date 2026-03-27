@@ -86,7 +86,7 @@ export function BottomLeftCorner(gdkmonitor: Gdk.Monitor) {
 export function TopLeftCorner(gdkmonitor: Gdk.Monitor) {
     function onClick() { 
         execAsync(`ags request "toggle dashboard"`) 
-        execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => execAsync(`ags request "updateWallpaper ${out}"`));
+        execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => execAsync(`ags request "updateWallpaper ${out}"`));
     }
     return ( <window visible
         name="TopLeftCorner"

@@ -11,7 +11,7 @@ type Props = {
 }
 export default function Wallpaper({ $type } : Props) {
     const [wallpaperPath, setWallpaperPath] = createState(readJson(WALLPAPER_JSON, { path: "" }).path);
-    execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => {
+    execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => {
         execAsync(`ags request "updateWallpaper ${out}"`);
         setWallpaperPath(out)
     })

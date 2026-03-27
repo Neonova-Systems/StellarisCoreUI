@@ -125,7 +125,7 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
     }
 
     if (request === "refresh desktop") {
-        execAsync(`dash -c "swww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
+        execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
             execAsync(`ags request "updateWallpaper ${out}"`);
         })
         signal.refreshAppIcon = true;
