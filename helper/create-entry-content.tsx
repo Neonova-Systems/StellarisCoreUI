@@ -20,6 +20,53 @@ type EntryContentProps = {
     addPercentSuffix?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
 };
 
+/**
+ * Displays a labeled entry with a reactive value display
+ * 
+ * Creates a two-row layout: name label on top, value label below. Supports reactive state binding,
+ * copy-to-clipboard functionality, animations, and optional dynamic value updates.
+ * 
+ * @param props - Component configuration
+ * @param props.name - Display label text (shown with colon). Can be static string or reactive {@link Accessor}
+ * @param props.value - Text or number to display. Supports static values and reactive {@link Accessor}s with automatic tracking
+ * @param props.css - CSS string applied to both labels. Can be static or reactive
+ * @param props.hexpand - Horizontal expansion flag. Default: `false`
+ * @param props.allowCopy - Enable copy-to-clipboard on value click. Plays sound feedback. Default: `false`
+ * @param props.animation - Apply entrance animations to labels. Default: `true`
+ * @param props.useMarkup - Enable Pango markup in value label. Default: `false`
+ * @param props.orientation - Layout direction: `VERTICAL` (name→value) or `HORIZONTAL`. Default: `VERTICAL`
+ * @param props.ellipsize - Text truncation mode for long values. Uses {@link Pango.EllipsizeMode}. Default: `undefined` (no truncation)
+ * @param props.children - Additional JSX elements rendered alongside value label
+ * @param props.important - Show decorative ornament image before name. Default: `false`
+ * @param props.watchValue - Wrap value in `<With>` component for reactive updates when passed {@link Accessor}. Default: `false`
+ * @param props.addPercentSuffix - Append "%" character to value label output. Default: `false`
+ * 
+ * @returns JSX box element with labeled entry content
+ * 
+ * @example
+ * // Static display
+ * <CreateEntryContent name="Volume" value="50%" animation={true} />
+ * 
+ * @example
+ * // Reactive with copy support
+ * const [deviceName, setDeviceName] = createState("Device A")
+ * <CreateEntryContent 
+ *   name="Device" 
+ *   value={deviceName} 
+ *   watchValue 
+ *   allowCopy 
+ * />
+ * 
+ * @example
+ * // With percentage suffix
+ * const [volume, setVolume] = createState(75)
+ * <CreateEntryContent 
+ *   name="Speaker" 
+ *   value={volume} 
+ *   watchValue 
+ *   addPercentSuffix
+ * />
+ */
 export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, watchValue = false, addPercentSuffix = false, children}: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : typeof value === "number" ? String(value) : value?.peek() || "";
     const valueLabel = (labelValue: string | number) => (
