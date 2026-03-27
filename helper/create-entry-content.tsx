@@ -74,7 +74,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
             useMarkup={useMarkup} 
             cssClasses={["value", animation ? "start-animation" : "", allowCopy ? "copyable" : ""]} 
             css={css} 
-            label={String(labelValue) + (addPercentSuffix && "%")} 
+            label={String(labelValue) + (addPercentSuffix ? "%" : "")} 
             halign={Align.LEFT} 
             valign={Align.LEFT}
             wrap 
