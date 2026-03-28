@@ -160,7 +160,6 @@ export default function ContextMenu() {
             if (state & Gdk.ModifierType.ALT_MASK) modifiers.push("alt"); // Alt key
 
             const pressedKeybind = [...modifiers, key].join(" + ");
-            // print(pressedKeybind); // debug only
 
             const command = user_commands.get().find(c => c.keybind?.toLowerCase() === pressedKeybind);
             if (command && command.command) execCommand(command)
