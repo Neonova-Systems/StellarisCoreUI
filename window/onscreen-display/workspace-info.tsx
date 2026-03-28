@@ -33,6 +33,9 @@ function OSD() {
         namespace={"workspace-info-osd"}>
         <box cssClasses={["onscreen-display"]} valign={Align.FILL} vexpand cursor={Gdk.Cursor.new_from_name("pointer", null)}>
             <Gtk.GestureClick onPressed={() => { app.quit() }} />
+            <Gtk.GestureClick button={3} onPressed={() => { // On Right Click
+                hyprland.get_workspace(parseInt(previousWorkspaceId)).focus(); app.quit(); 
+            }} />
             { focusedWorkspace_has_fullscreen && <Gtk.DropControllerMotion onEnter={() => hyprland.get_workspace(parseInt(previousWorkspaceId)).focus() } /> }
             <overlay>
                 <box>
