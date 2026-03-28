@@ -9,6 +9,7 @@ type EntryContentProps = {
     value?: string | number | Accessor<string | number> | undefined;
     css?: string | Accessor<string> | undefined;
     hexpand?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
+    vexpand?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     allowCopy?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     animation?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
     useMarkup?: boolean | Accessor<NonNullable<boolean | undefined>> | undefined
@@ -67,7 +68,7 @@ type EntryContentProps = {
  *   addPercentSuffix
  * />
  */
-export default function CreateEntryContent({ name, value, css, hexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, watchValue = false, addPercentSuffix = false, children}: EntryContentProps) {
+export default function CreateEntryContent({ name, value, css, hexpand = false, vexpand = false, allowCopy = false, animation = true, useMarkup = false, orientation = Gtk.Orientation.VERTICAL, ellipsize, important = false, watchValue = false, addPercentSuffix = false, children}: EntryContentProps) {
     const valueStr = typeof value === "string" ? value : typeof value === "number" ? String(value) : value?.peek() || "";
     const valueLabel = (labelValue: string | number) => (
         <label 
@@ -84,7 +85,7 @@ export default function CreateEntryContent({ name, value, css, hexpand = false, 
     )
     
     return (
-        <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand}>
+        <box orientation={orientation} spacing={orientation == Gtk.Orientation.VERTICAL ? 1.5 : 3.0} hexpand={hexpand} vexpand={vexpand}>
             {allowCopy && (
                 <>
                 <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Key)} />

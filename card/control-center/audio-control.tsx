@@ -5,6 +5,7 @@ import { Gtk } from "ags/gtk4"
 import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 import CreateUtilityButton from "../../helper/create-utility-button"
+import CreateValueWatcher from "../../helper/create-value-watcher"
 
 type PwDumpMetadataRow = {
     key?: unknown
@@ -42,6 +43,8 @@ export default function AudioControl() {
     const [micVolume, setMicVolume] = createState(0)
     const [micMuted, setMicMuted] = createState(false)
     let micDebounceRevision = 0
+
+    const [verboseInformation, setVerboseInformation] = createState(true)
 
     function pickOrNA(value: unknown) {
         let text = ""
@@ -185,31 +188,44 @@ export default function AudioControl() {
     return (
         <box marginTop={10}>
             <overlay>
-                <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand css={"min-height: 220px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 13, backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{corner: Corner.BottomRight}], }))} />
+                <With value={verboseInformation}>
+                    {(v) => {
+                        const size = v ? "220" : "120";
+                        return (
+                            <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand css={`min-height: ${size}px;`} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({ area, cr, width, height, notchSize: 13, backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{ corner: Corner.BottomRight }], }))} /> 
+                        )
+                    }}
+                </With>
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={7} halign={Align.FILL} hexpand vexpand>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT} vexpand>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
                         <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n<span size='small'>[pavucontrol]</span>"} pixelSize={8} onClicked={openSettings}/>
+                        <With value={verboseInformation}>
+                            {(v) => <CreateUtilityButton imageFile={v ? `${ICON_DIR}/mdi--eye.svg` : `${ICON_DIR}/mdi--eye-off.svg`} tooltipText={"Hide detailed audio device information for a cleaner, compact view"} pixelSize={8} onClicked={() => setVerboseInformation(!verboseInformation.peek())}/> }
+                        </With>
                     </box>
-                    <box cssClasses={["entry"]} halign={Align.FILL} hexpand marginStart={5} marginEnd={5} spacing={5}>
-                        <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                            <CreateEntryContent name={"SINK NAME"} animation={false} value={sinkName} watchValue />
-                            <CreateEntryContent name={"SINK LABEL"} animation={false} value={sinkDescription} watchValue />
+                    <CreateValueWatcher value={verboseInformation}>
+                        {(v) => <box visible={v} cssClasses={["entry"]} halign={Align.FILL} marginStart={5} marginEnd={5} spacing={5}>
+                            <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                                <CreateEntryContent name={"SINK NAME"} animation={false} value={sinkName} watchValue />
+                                <CreateEntryContent name={"SINK CLASS"} animation={false} value={sinkMediaClass} watchValue vexpand/>
+                            </box>
+                            <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                                <CreateEntryContent name={"SINK LABEL"} animation={false} value={sinkDescription} watchValue />
+                                <CreateEntryContent name={"SINK PATH"} animation={false} value={sinkPath} watchValue vexpand/>
+                            </box>
+                            <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                                <CreateEntryContent name={"SOURCE NAME"} animation={false} value={sourceName} watchValue />
+                                <CreateEntryContent name={"SOURCE CLASS"} animation={false} value={sourceMediaClass} watchValue vexpand/>
+                            </box>
+                            <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                                <CreateEntryContent name={"SOURCE LABEL"} animation={false} value={sourceDescription} watchValue />
+                                <CreateEntryContent name={"SOURCE PATH"} animation={false} value={sourcePath} watchValue vexpand/>
+                            </box>
                         </box>
-                        <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                            <CreateEntryContent name={"SINK CLASS"} animation={false} value={sinkMediaClass} watchValue />
-                            <CreateEntryContent name={"SINK PATH"} animation={false} value={sinkPath} watchValue />
-                        </box>
-                        <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                            <CreateEntryContent name={"SOURCE NAME"} animation={false} value={sourceName} watchValue />
-                            <CreateEntryContent name={"SOURCE LABEL"} animation={false} value={sourceDescription} watchValue />
-                        </box>
-                        <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                            <CreateEntryContent name={"SOURCE CLASS"} animation={false} value={sourceMediaClass} watchValue />
-                            <CreateEntryContent name={"SOURCE PATH"} animation={false} value={sourcePath} watchValue />
-                        </box>
-                    </box>
+                        }
+                    </CreateValueWatcher>
                     {renderVolumeControl("speaker", speakerVolume, speakerMuted, toggleSpeakerMute, handleSpeakerVolume)}
                     {renderVolumeControl("microphone", micVolume, micMuted, toggleMicMute, handleMicVolume)}
                 </box>
