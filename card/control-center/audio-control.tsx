@@ -90,7 +90,7 @@ export default function AudioControl() {
         if (deviceInfoRefreshInFlight) return
         deviceInfoRefreshInFlight = true
 
-        execAsync(`dash -c "pw-dump > ${pwDumpCacheFile}.tmp && mv ${pwDumpCacheFile}.tmp ${pwDumpCacheFile}"`)
+        execAsync(`dash -c "pw-dump > ${pwDumpCacheFile}"`)
             .then(() => execAsync(`dash -c "cat ${pwDumpCacheFile}"`))
             .then((out) => {
                 const objects = JSON.parse(out) as PwDumpObject[]
@@ -181,7 +181,7 @@ export default function AudioControl() {
 
     timeout(300, () => { refreshSpeakerVolume(); refreshMicVolume(); refreshDeviceInfo() })
     interval(1000, () => { refreshSpeakerVolume(); refreshMicVolume() })
-    interval(4000, () => { refreshDeviceInfo() })
+    interval(33000, () => { refreshDeviceInfo() })
     return (
         <box marginTop={10}>
             <overlay>
@@ -190,9 +190,9 @@ export default function AudioControl() {
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT} vexpand>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
-                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n[pavucontrol]"} pixelSize={8} onClicked={openSettings}/>
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n<span size='small'>[pavucontrol]</span>"} pixelSize={8} onClicked={openSettings}/>
                     </box>
-                    <box cssClasses={["entry"]} halign={Align.FILL} hexpand marginStart={5} marginEnd={5}>
+                    <box cssClasses={["entry"]} halign={Align.FILL} hexpand marginStart={5} marginEnd={5} spacing={5}>
                         <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
                             <CreateEntryContent name={"SINK NAME"} animation={false} value={sinkName} watchValue />
                             <CreateEntryContent name={"SINK LABEL"} animation={false} value={sinkDescription} watchValue />
