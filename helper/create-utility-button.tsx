@@ -13,10 +13,10 @@ type UtilityButtonProps = {
 
 export default function CreateUtilityButton({onClicked, imageFile, pixelSize = 8, notchSize = 5, tooltipText} : UtilityButtonProps) {
     const padding = 6; // in px
-    const minWidth = (typeof pixelSize === 'number' ? pixelSize : pixelSize.get()) + padding;
-    const minHeight = (typeof pixelSize === 'number' ? pixelSize : pixelSize.get()) + padding;
+    const minWidth = (typeof pixelSize === 'number' ? pixelSize : pixelSize.peek()) + padding;
+    const minHeight = (typeof pixelSize === 'number' ? pixelSize : pixelSize.peek()) + padding;
     return (
-        <button onClicked={onClicked} cssClasses={["clickable"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
+        <button onClicked={onClicked} cssClasses={["clickable"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipMarkup={tooltipText}>
             <overlay>
                 <drawingarea halign={Align.FILL} css={`min-width: ${minWidth}px; min-height: ${minHeight}px;`} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, backgroundColor: "#152052", notchPlacements: [{corner: Corner.TopRight}], notchSize}))} />
                 <box $type="overlay" halign={Align.CENTER} valign={Align.CENTER}>
