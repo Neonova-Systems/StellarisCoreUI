@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+value="${1:-}"
+
+if ! command -v jq >/dev/null 2>&1; then
+	echo "jq is required but not installed." >&2
+	exit 1
+fi
+
+if [[ -z "$value" ]]; then
+	echo "Usage: $0 <value|+delta|-delta>" >&2
+	exit 1
+fi
+
+current="$(hyprctl getoption general:gaps_out -j | jq -r '.int // empty')"
+
+if [[ -z "$current" ]]; then
+	echo "Could not read current outer gap size." >&2
+	exit 1
+fi
+
+if [[ "$value" =~ ^[+-][0-9]+$ ]]; then
+	new_gap=$((current + value))
+elif [[ "$value" =~ ^-?[0-9]+$ ]]; then
+	new_gap="$value"
+else
+	echo "Invalid value: $value" >&2
+	echo "Usage: $0 <value|+delta|-delta>" >&2
+	exit 1
+fi
+
+if (( new_gap < 0 )); then
+	new_gap=0
+fi
+
+hyprctl keyword general:gaps_out "$new_gap" >/dev/null
+printf '%s\n' "$new_gap"
