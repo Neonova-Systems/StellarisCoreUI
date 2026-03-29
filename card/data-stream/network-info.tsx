@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { interval } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
-import { initToggleState } from "../../helper/behaviour";
+import { cycleAssetVariant, initToggleState } from "../../helper/behaviour";
 
 export default function NetworkInfo() {
     const [currentSSID, setCurrentSSID] = createState("");
@@ -32,11 +32,12 @@ export default function NetworkInfo() {
     playSound(AudioFile.Panel, 1500);
     initToggleState("NetworkInfo", setToggleContentState);
 
-    function changeNoiseGridImage() {
-        const currentPath = noiseGridImage.peek();
-        (currentPath.includes("variant1") ? setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
-    }
-    interval(500, () => { changeNoiseGridImage() })
+    interval(500, () => {
+        setNoiseGridImage((currentPath) => cycleAssetVariant(currentPath, [
+            `${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`,
+            `${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`,
+        ]));
+    });
     createBindingCommandTableSetter({
             [`iwconfig wlan0 | grep ESSID | cut -d '"' -f 2`]: setCurrentSSID,
             [`iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2`]: setInterfaceMode,

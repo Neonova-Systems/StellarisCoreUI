@@ -5,7 +5,7 @@ import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { interval, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
-import { initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
+import { cycleAssetVariant, initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
 
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
@@ -73,18 +73,17 @@ export default function FilesystemInfo() {
         }
     }
 
-    function changedataGridImage() {
-        const currentPath = dataGridImage.get();
-        (currentPath.includes("variant1") ? setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant2.svg`) : 
-            (currentPath.includes("variant3") ? setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
-        )
-    }
-
     function onRightClicked() {
         openContextMenu("filesystem-info.tsx");
     }
 
-    interval(1000, () => { changedataGridImage() })
+    interval(1000, () => {
+        setDataGridImage((currentPath) => cycleAssetVariant(currentPath, [
+            `${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`,
+            `${HOME_DIR}/.config/ags/assets/DataGrid-variant2.svg`,
+            `${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`,
+        ]));
+    });
     createBindingCommandTableSetter({
             [`lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2`]: setFilesystemName,
             [`df -H / | tr -s ' ' | cut -d ' ' -f 2,4 | sed 1d`]: setTotalSize,

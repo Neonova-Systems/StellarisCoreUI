@@ -88,3 +88,21 @@ export function openContextMenu(menuFileName: string, sound: AudioFile | string 
 
     playSound(sound);
 }
+
+/**
+ * Returns the next asset path in a variant list based on the current path.
+ *
+ * If `currentPath` is not found in `variants`, it returns the first variant.
+ *
+ * @param currentPath Current asset path.
+ * @param variants Ordered list of asset variants.
+ * @returns The next variant path.
+ */
+export function cycleAssetVariant(currentPath: string, variants: string[]): string {
+    if (variants.length === 0) return currentPath;
+
+    const currentIndex = variants.indexOf(currentPath);
+    if (currentIndex === -1) return variants[0];
+
+    return variants[(currentIndex + 1) % variants.length];
+}

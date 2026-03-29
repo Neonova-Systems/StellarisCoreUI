@@ -4,7 +4,6 @@ import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
-import GLib from "gi://GLib";
 import { initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
 
 export default function HardwareInfo() {
