@@ -24,7 +24,6 @@ type PwDumpObject = {
 
 export default function AudioControl() {
     const volumeDebounceMs = 30
-    const pwDumpCacheFile = `${HOME_DIR}/.cache/ags/pw-dump-audio-control.json`
     let deviceInfoRefreshInFlight = false
 
     const [sinkName, setSinkName] = createState("N/A")
@@ -98,8 +97,7 @@ export default function AudioControl() {
         if (deviceInfoRefreshInFlight) return
         deviceInfoRefreshInFlight = true
 
-        execAsync(`dash -c "pw-dump > ${pwDumpCacheFile}"`)
-            .then(() => execAsync(`dash -c "cat ${pwDumpCacheFile}"`))
+        execAsync("pw-dump")
             .then((out) => {
                 const objects = JSON.parse(out) as PwDumpObject[]
                 const sinkNodeName = getDefaultNodeName(objects, "default.audio.sink")
