@@ -8,24 +8,24 @@ import CreateUtilityButton from '../../helper/create-utility-button';
 import Adw from "gi://Adw?version=1";
 
 export default function SystemInfo() {
-    const [userHostname, setuserHostname] = createState("");
-    const [dependecyInstalled, setdependecyInstalled] = createState("");
-    const [availableUpgrade, setavailableUpgrade] = createState("");
-    const [kernelInformation, setkernelInformation] = createState("");
-    const [unneededPackage, setunneedPackage] = createState("");
-    const [totalBootTime, settotalBootTime] = createState("");
-    const [userId, setuserId] = createState("");
-    const [uptime, setuptime] = createState("");
-    const [bootTimeLoader, setbootTimeLoader] = createState("");
-    const [packageInstalled, setpackageInstalled] = createState("");
-    const [explicitInstalled, setexplicitInstalled] = createState("");
-    const [bootTimeUserspace, setbootTimeUserspace] = createState("");
-    const [journalHead, setjournalHead] = createState("");
-    const [systemdBlame, setsystemdBlame] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(false);
+    const [userHostname, setUserHostname] = createState("");
+    const [dependecyInstalled, setDependecyInstalled] = createState("");
+    const [availableUpgrade, setAvailableUpgrade] = createState("");
+    const [kernelInformation, setKernelInformation] = createState("");
+    const [unneededPackage, setUnneedPackage] = createState("");
+    const [totalBootTime, setTotalBootTime] = createState("");
+    const [userId, setUserId] = createState("");
+    const [uptime, setUptime] = createState("");
+    const [bootTimeLoader, setBootTimeLoader] = createState("");
+    const [packageInstalled, setPackageInstalled] = createState("");
+    const [explicitInstalled, setExplicitInstalled] = createState("");
+    const [bootTimeUserspace, setBootTimeUserspace] = createState("");
+    const [journalHead, setJournalHead] = createState("");
+    const [systemdBlame, setSystemdBlame] = createState("");
+    const [toggleContentState, setToggleContentState] = createState(false);
 
     playSound(AudioFile.Panel, 1400);
-    timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => settoggleContentState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => setToggleContentState(out === 'true')) });
 
     function changeProfilePicture() {
         const dialog = new Gtk.FileDialog();
@@ -70,36 +70,36 @@ export default function SystemInfo() {
 
     function checkSystemUpdates() {
         execAsync(`dash ${HOME_DIR}/.config/ags/scripts/system-update.sh`).then(() => {
-            execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setavailableUpgrade(out)); // Refresh the available upgrade count after the script completes
+            execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setAvailableUpgrade(out)); // Refresh the available upgrade count after the script completes
         }).catch(err => {
             console.error("Failed to check for system updates:", err);
         });
     }
 
     createBindingCommandTableSetter({
-            [`{ whoami; hostname; } | paste -d '@' -s`]: setuserHostname,
-            [`pacman -Qdq | wc -l`]: setdependecyInstalled,
-            [`pacman -Quq | wc -l`]: setavailableUpgrade,
-            [`uname -sr`]: setkernelInformation,
-            [`pacman -Qdt | wc -l`]: setunneedPackage,
-            [`systemd-analyze | cut -d'=' -f2 | head -n1 | tr -d ' '`]: settotalBootTime,
-            [`id -u $(whoami)`]: setuserId,
-            [`systemd-analyze | cut -d'+' -f2 | head -n1 | cut -d' ' -f2`]: setbootTimeLoader,
-            [`pacman -Qq | wc -l`]: setpackageInstalled,
-            [`pacman -Qeq | wc -l`]: setexplicitInstalled,
-            [`systemd-analyze | cut -d'+' -f4 | head -n1 | cut -d' ' -f2`]: setbootTimeUserspace,
+            [`{ whoami; hostname; } | paste -d '@' -s`]: setUserHostname,
+            [`pacman -Qdq | wc -l`]: setDependecyInstalled,
+            [`pacman -Quq | wc -l`]: setAvailableUpgrade,
+            [`uname -sr`]: setKernelInformation,
+            [`pacman -Qdt | wc -l`]: setUnneedPackage,
+            [`systemd-analyze | cut -d'=' -f2 | head -n1 | tr -d ' '`]: setTotalBootTime,
+            [`id -u $(whoami)`]: setUserId,
+            [`systemd-analyze | cut -d'+' -f2 | head -n1 | cut -d' ' -f2`]: setBootTimeLoader,
+            [`pacman -Qq | wc -l`]: setPackageInstalled,
+            [`pacman -Qeq | wc -l`]: setExplicitInstalled,
+            [`systemd-analyze | cut -d'+' -f4 | head -n1 | cut -d' ' -f2`]: setBootTimeUserspace,
         }, {
             transform: (value, command) => command.includes("whoami") ? value.toUpperCase().trim() : value.trim(),
         });
 
     createBindingCommandTableSetter({
-        [`journalctl -b -o cat | head -n60`]: setjournalHead,
-        [`systemd-analyze blame`]: setsystemdBlame,
+        [`journalctl -b -o cat | head -n60`]: setJournalHead,
+        [`systemd-analyze blame`]: setSystemdBlame,
     });
-    interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setuptime(out.toUpperCase())))
+    interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setUptime(out.toUpperCase())))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", settoggleContentState)}>
+            <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

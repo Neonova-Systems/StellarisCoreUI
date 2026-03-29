@@ -7,35 +7,35 @@ import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
 
 export default function HardwareInfo() {
-    const [cpuName, setcpuName] = createState("");
+    const [cpuName, setCpuName] = createState("");
     const [avgCpuUsage, setAvgCpuUsage] = createState([0]);
     const [perCpuUsage, setPerCpuUsage] = createState<{ [key: string]: number[] }>({});
 
-    const [cpuArchitecture, setcpuArchitecture] = createState("");
-    const [vendorName, setvendorName] = createState("");
-    const [threadsCore, setthreadsCore] = createState("");
-    const [gpuDeviceName, setgpuDeviceName] = createState("");
-    const [cpuScaling, setcpuScaling] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(false);
-    const [sockets, setsockets] = createState("");
-    const [gpuVendorName, setgpuVendorName] = createState("");
-    const [cpuModes, setcpuModes] = createState("");
-    const [cpuMaxMhz, setcpuMaxMhz] = createState("");
-    const [cpuMinMhz, setcpuMinMhz] = createState("");
-    const [virtualization, setvirtualization] = createState("");
-    const [videoUnifiedMemory, setvideoUnifiedMemory] = createState("");
-    const [byteOrder, setbyteOrder] = createState("");
+    const [cpuArchitecture, setCpuArchitecture] = createState("");
+    const [vendorName, setVendorName] = createState("");
+    const [threadsCore, setThreadsCore] = createState("");
+    const [gpuDeviceName, setGpuDeviceName] = createState("");
+    const [cpuScaling, setCpuScaling] = createState("");
+    const [toggleContentState, setToggleContentState] = createState(false);
+    const [sockets, setSockets] = createState("");
+    const [gpuVendorName, setGpuVendorName] = createState("");
+    const [cpuModes, setCpuModes] = createState("");
+    const [cpuMaxMhz, setCpuMaxMhz] = createState("");
+    const [cpuMinMhz, setCpuMinMhz] = createState("");
+    const [virtualization, setVirtualization] = createState("");
+    const [videoUnifiedMemory, setVideoUnifiedMemory] = createState("");
+    const [byteOrder, setByteOrder] = createState("");
     const [motherboard, setMotherboard] = createState("");
-    const [biosInfo, setbiosInfo] = createState("");
-    const [toggleGraphState, settoggleGraphState] = createState(false);
+    const [biosInfo, setBiosInfo] = createState("");
+    const [toggleGraphState, setToggleGraphState] = createState(false);
     
     let avgCpuInterval: Timer | null = null;
     let perCpuInterval: Timer | null = null;
 
-    timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => settoggleContentState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => setToggleContentState(out === 'true')) });
     interval(800, () => { execAsync('ags request "getHardwareGraphState"').then(out => {
             const enabled = out === 'true';
-            settoggleGraphState(enabled);
+            setToggleGraphState(enabled);
             if (enabled) {
                 startIntervals();
             } else {
@@ -90,29 +90,29 @@ export default function HardwareInfo() {
     }
 
     createBindingCommandTableSetter({
-            [`lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuName,
-            [`lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuArchitecture,
-            [`lscpu | grep 'Vendor ID:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setvendorName,
-            [`lscpu | grep -E 'Thread\\(s\\) per core|Core\\(s\\) per socket' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd 'x' -`]: setthreadsCore,
-            [`lscpu | grep 'Socket(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setsockets,
-            [`lscpu | grep 'CPU(s) scaling MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuScaling,
-            [`glxinfo -B | grep -i 'device:' | awk -F: '{print $2}' | sed 's/(0x[0-9a-fA-F]\\+)//g' | sed 's/^[ \t]*//'`]: setgpuDeviceName,
-            [`glxinfo -B | grep -i 'vendor:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setgpuVendorName,
-            [`lscpu | grep 'CPU op-mode(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuModes,
-            [`lscpu | grep 'CPU max MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuMaxMhz,
-            [`lscpu | grep 'CPU min MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuMinMhz,
-            [`lscpu | grep 'Virtualization:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setvirtualization,
-            [`glxinfo -B | grep -i 'memory' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd ' ' -`]: setvideoUnifiedMemory,
-            [`lscpu | grep 'Byte Order:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setbyteOrder,
+            [`lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuName,
+            [`lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuArchitecture,
+            [`lscpu | grep 'Vendor ID:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setVendorName,
+            [`lscpu | grep -E 'Thread\\(s\\) per core|Core\\(s\\) per socket' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd 'x' -`]: setThreadsCore,
+            [`lscpu | grep 'Socket(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setSockets,
+            [`lscpu | grep 'CPU(s) scaling MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuScaling,
+            [`glxinfo -B | grep -i 'device:' | awk -F: '{print $2}' | sed 's/(0x[0-9a-fA-F]\\+)//g' | sed 's/^[ \t]*//'`]: setGpuDeviceName,
+            [`glxinfo -B | grep -i 'vendor:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setGpuVendorName,
+            [`lscpu | grep 'CPU op-mode(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuModes,
+            [`lscpu | grep 'CPU max MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuMaxMhz,
+            [`lscpu | grep 'CPU min MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuMinMhz,
+            [`lscpu | grep 'Virtualization:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setVirtualization,
+            [`glxinfo -B | grep -i 'memory' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd ' ' -`]: setVideoUnifiedMemory,
+            [`lscpu | grep 'Byte Order:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setByteOrder,
             [`inxi -M --color=0 | grep 'Mobo' | tr -s ' ' | cut -d ' ' -f 3,5`]: setMotherboard,
-            [`inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub("K", "X", $5); print $2, $3 }'`]: setbiosInfo,
+            [`inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub("K", "X", $5); print $2, $3 }'`]: setBiosInfo,
         }, {
             transform: (value) => value.toUpperCase().trim(),
             onError: (_, error) => console.log(error),
         });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+            <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
                 <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
             }>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>

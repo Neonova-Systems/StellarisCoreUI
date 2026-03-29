@@ -11,28 +11,28 @@ export default function FilesystemInfo() {
     const [readDiskOperation, setReadDiskOperation] = createState([0])
     const [writeDiskOperation, setWriteDiskOperation] = createState([0])
 
-    const [filesystemName, setfilesystemName] = createState("");
-    const [totalSize, settotalSize] = createState("");
-    const [usedSpace, setusedSpace] = createState("");
-    const [mountpoint, setmountpoint] = createState("");
-    const [uuidLabel, setuuidLabel] = createState("");
-    const [filesystemOptions, setfilesystemOptions] = createState("");
+    const [filesystemName, setFilesystemName] = createState("");
+    const [totalSize, setTotalSize] = createState("");
+    const [usedSpace, setUsedSpace] = createState("");
+    const [mountpoint, setMountpoint] = createState("");
+    const [uuidLabel, setUuidLabel] = createState("");
+    const [filesystemOptions, setFilesystemOptions] = createState("");
 
-    const [mountpointList, setmountpointList] = createState("");
-    const [blockList, setblockList] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(false);
-    const [dataGridImage, setdataGridImage] = createState(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`);
-    const [toggleGraphState, settoggleGraphState] = createState(false);
+    const [mountpointList, setMountpointList] = createState("");
+    const [blockList, setBlockList] = createState("");
+    const [toggleContentState, setToggleContentState] = createState(false);
+    const [dataGridImage, setDataGridImage] = createState(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`);
+    const [toggleGraphState, setToggleGraphState] = createState(false);
 
     let avgMemUsageInterval: Timer | null = null;
     let readDiskOperationInterval: Timer | null = null;
     let writeDiskOperationInterval: Timer | null = null;
 
     playSound(AudioFile.Panel, 1600)
-    timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => settoggleContentState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => setToggleContentState(out === 'true')) });
     interval(800, () => { execAsync('ags request "getFilesystemGraphState"').then(out => {
             const enabled = out === 'true';
-            settoggleGraphState(enabled);
+            setToggleGraphState(enabled);
             if (enabled) {
                 startIntervals();
             } else {
@@ -76,8 +76,8 @@ export default function FilesystemInfo() {
 
     function changedataGridImage() {
         const currentPath = dataGridImage.get();
-        (currentPath.includes("variant1") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant2.svg`) : 
-            (currentPath.includes("variant3") ? setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setdataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
+        (currentPath.includes("variant1") ? setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant2.svg`) : 
+            (currentPath.includes("variant3") ? setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`) : setDataGridImage(`${HOME_DIR}/.config/ags/assets/DataGrid-variant3.svg`))
         )
     }
 
@@ -88,24 +88,24 @@ export default function FilesystemInfo() {
 
     interval(1000, () => { changedataGridImage() })
     createBindingCommandTableSetter({
-            [`lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2`]: setfilesystemName,
-            [`df -H / | tr -s ' ' | cut -d ' ' -f 2,4 | sed 1d`]: settotalSize,
-            [`df -H / | tr -s ' ' | cut -d ' ' -f 3,5 | sed 1d`]: setusedSpace,
-            [`df -H -a -t $(lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2) | tr -s ' ' | cut -d ' ' -f 6 | paste -d ' ' -s | sed 's/Mounted //'`]: setmountpoint,
-            [`lsblk -l -no UUID,LABEL,NAME | sed '/^[[:space:]]*$/d' | tr -s ' ' | sed '/^ /d' | column | head -n2`]: setuuidLabel,
-            [`findmnt -n -o OPTIONS,TARGET -l -t btrfs | tr -s ' '`]: setfilesystemOptions,
+            [`lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2`]: setFilesystemName,
+            [`df -H / | tr -s ' ' | cut -d ' ' -f 2,4 | sed 1d`]: setTotalSize,
+            [`df -H / | tr -s ' ' | cut -d ' ' -f 3,5 | sed 1d`]: setUsedSpace,
+            [`df -H -a -t $(lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2) | tr -s ' ' | cut -d ' ' -f 6 | paste -d ' ' -s | sed 's/Mounted //'`]: setMountpoint,
+            [`lsblk -l -no UUID,LABEL,NAME | sed '/^[[:space:]]*$/d' | tr -s ' ' | sed '/^ /d' | column | head -n2`]: setUuidLabel,
+            [`findmnt -n -o OPTIONS,TARGET -l -t btrfs | tr -s ' '`]: setFilesystemOptions,
         }, {
             transform: (value) => value.toUpperCase().trim(),
             onError: (_, error) => console.log(error),
         },);
 
     createBindingCommandTableSetter({
-        [`findmnt -l -t btrfs,vfat,proc,efivarfs,tmpfs | head -n 13`]: setmountpointList,
-        [`lsblk -a --list`]: setblockList,
+        [`findmnt -l -t btrfs,vfat,proc,efivarfs,tmpfs | head -n 13`]: setMountpointList,
+        [`lsblk -a --list`]: setBlockList,
     });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+            <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
                 <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
             }>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>

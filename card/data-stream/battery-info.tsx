@@ -35,8 +35,8 @@ export function BatteryInfo() {
     const [technology, setTechnology] = createState("");
     const [batteryAware, setBatteryAware] = createState("");
     const [fullReport, setFullReport] = createState("Loading report...");
-    const [toggleContentState, settoggleContentState] = createState(false);
-    timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => settoggleContentState(out === 'true')) });
+    const [toggleContentState, setToggleContentState] = createState(false);
+    timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => setToggleContentState(out === 'true')) });
 
     function onRightClicked() {
         execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/battery-info.tsx --gtk 4`).catch((e) => print(e))
@@ -79,7 +79,7 @@ export function BatteryInfo() {
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
-            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
                 <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
             }>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>

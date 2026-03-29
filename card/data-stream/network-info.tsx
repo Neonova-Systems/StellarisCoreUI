@@ -6,54 +6,54 @@ import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
 
 export default function NetworkInfo() {
-    const [currentSSID, setcurrentSSID] = createState("");
-    const [interfaceMode, setinterfaceMode] = createState("");
-    const [frequency, setfrequency] = createState("");
-    const [dnsServers, setdnsServers] = createState("");
-    const [currentMAC, setcurrentMAC] = createState("");
-    const [altInterfaceName, setaltInterfaceName] = createState("");
-    const [currentSubnet, setcurrentSubnet] = createState("");
-    const [openPorts, setopenPorts] = createState("");
-    const [localIp, setlocalIp] = createState("");
-    const [currentBitrate, setcurrentBitrate] = createState("");
-    const [transmitByte, settransmitByte] = createState("");
-    const [tcpConnection, settcpConnection] = createState("");
+    const [currentSSID, setCurrentSSID] = createState("");
+    const [interfaceMode, setInterfaceMode] = createState("");
+    const [frequency, setFrequency] = createState("");
+    const [dnsServers, setDnsServers] = createState("");
+    const [currentMAC, setCurrentMAC] = createState("");
+    const [altInterfaceName, setAltInterfaceName] = createState("");
+    const [currentSubnet, setCurrentSubnet] = createState("");
+    const [openPorts, setOpenPorts] = createState("");
+    const [localIp, setLocalIp] = createState("");
+    const [currentBitrate, setCurrentBitrate] = createState("");
+    const [transmitByte, setTransmitByte] = createState("");
+    const [tcpConnection, setTcpConnection] = createState("");
 
-    const [gatewayIp, setgatewayIp] = createState("");
-    const [linkQuality, setlinkQuality] = createState("");
-    const [receiveByte, setreceiveByte] = createState("");
-    const [udpConnection, setudpConnection] = createState("");
+    const [gatewayIp, setGatewayIp] = createState("");
+    const [linkQuality, setLinkQuality] = createState("");
+    const [receiveByte, setReceiveByte] = createState("");
+    const [udpConnection, setUdpConnection] = createState("");
     const [journalNetwork, setJournalNetwork] = createState("");
     const [networkDevice, setNetworkDevice] = createState("");
-    const [wifiList, setwifiList] = createState("");
-    const [toggleContentState, settoggleContentState] = createState(false);
-    const [noiseGridImage, setnoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
+    const [wifiList, setWifiList] = createState("");
+    const [toggleContentState, setToggleContentState] = createState(false);
+    const [noiseGridImage, setNoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
     playSound(AudioFile.Panel, 1500);
-    timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => settoggleContentState(out === 'true')) });
+    timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => setToggleContentState(out === 'true')) });
 
     function changeNoiseGridImage() {
         const currentPath = noiseGridImage.get();
-        (currentPath.includes("variant1") ? setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
+        (currentPath.includes("variant1") ? setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
     }
     interval(500, () => { changeNoiseGridImage() })
     createBindingCommandTableSetter({
-            [`iwconfig wlan0 | grep ESSID | cut -d '"' -f 2`]: setcurrentSSID,
-            [`iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2`]: setinterfaceMode,
-            [`iwconfig wlan0 | grep Frequency | tr -s ' ' | cut -d ' ' -f 3-4 | cut -d ':' -f2`]: setfrequency,
-            [`nmcli device show | grep IP4.DNS | tr -s ' ' | cut -d ' ' -f 2 | paste -d ' ' -s`]: setdnsServers,
-            [`iwconfig wlan0 | grep Access | tr -s ' ' | cut -d ' ' -f 7`]: setcurrentMAC,
-            [`ip a | grep --after-context 4 wlan0 | grep altname | tr -s ' ' | cut -d ' ' -f 3 | head -n2 | paste -d ',' - -`]: setaltInterfaceName,
-            [`ifconfig wlan0 | grep netmask | tr -s ' ' | cut -d ' ' -f 5`]: setcurrentSubnet,
-            [`lsof -i -P -n | grep LISTEN | wc -l`]: setopenPorts,
-            [`ip address | grep --after-context 1 'enp\|eth\|wl\|wlan' | grep inet | cut -d ' ' -f 6,13 | head -n 1`]: setlocalIp,
-            [`iwconfig wlan0 | grep Bit | tr -s ' ' | cut -d ' ' -f 2-4 | cut -d '=' -f 2`]: setcurrentBitrate,
-            [`ifconfig wlan0 | grep TX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: settransmitByte,
-            [`lsof -i -P | grep TCP | wc -l`]: settcpConnection,
-            [`ip route show | grep default | cut -d ' ' -f3,5 | head -n 1`]: setgatewayIp,
-            [`iwconfig wlan0 | grep Link | tr -s ' ' | cut -d ' ' -f 2-3 | cut -d '=' -f 2`]: setlinkQuality,
-            [`ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setreceiveByte,
-            [`lsof -i -P | grep UDP | wc -l`]: setudpConnection,
+            [`iwconfig wlan0 | grep ESSID | cut -d '"' -f 2`]: setCurrentSSID,
+            [`iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2`]: setInterfaceMode,
+            [`iwconfig wlan0 | grep Frequency | tr -s ' ' | cut -d ' ' -f 3-4 | cut -d ':' -f2`]: setFrequency,
+            [`nmcli device show | grep IP4.DNS | tr -s ' ' | cut -d ' ' -f 2 | paste -d ' ' -s`]: setDnsServers,
+            [`iwconfig wlan0 | grep Access | tr -s ' ' | cut -d ' ' -f 7`]: setCurrentMAC,
+            [`ip a | grep --after-context 4 wlan0 | grep altname | tr -s ' ' | cut -d ' ' -f 3 | head -n2 | paste -d ',' - -`]: setAltInterfaceName,
+            [`ifconfig wlan0 | grep netmask | tr -s ' ' | cut -d ' ' -f 5`]: setCurrentSubnet,
+            [`lsof -i -P -n | grep LISTEN | wc -l`]: setOpenPorts,
+            [`ip address | grep --after-context 1 'enp\|eth\|wl\|wlan' | grep inet | cut -d ' ' -f 6,13 | head -n 1`]: setLocalIp,
+            [`iwconfig wlan0 | grep Bit | tr -s ' ' | cut -d ' ' -f 2-4 | cut -d '=' -f 2`]: setCurrentBitrate,
+            [`ifconfig wlan0 | grep TX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setTransmitByte,
+            [`lsof -i -P | grep TCP | wc -l`]: setTcpConnection,
+            [`ip route show | grep default | cut -d ' ' -f3,5 | head -n 1`]: setGatewayIp,
+            [`iwconfig wlan0 | grep Link | tr -s ' ' | cut -d ' ' -f 2-3 | cut -d '=' -f 2`]: setLinkQuality,
+            [`ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setReceiveByte,
+            [`lsof -i -P | grep UDP | wc -l`]: setUdpConnection,
         }, {
             transform: (value) => value.toUpperCase().trim(),
             onError: (_, error) => console.log(error),
@@ -62,12 +62,12 @@ export default function NetworkInfo() {
     createBindingCommandTableSetter({
         [`journalctl -b --grep=network | tail -n 13`]: setJournalNetwork,
         [`nmcli dev`]: setNetworkDevice,
-        [`nmcli dev wifi list | head -n 10`]: setwifiList,
+        [`nmcli dev wifi list | head -n 10`]: setWifiList,
     });
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", settoggleContentState)}>
+            <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>
