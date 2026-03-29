@@ -33,7 +33,7 @@ export default function NetworkInfo() {
     timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => setToggleContentState(out === 'true')) });
 
     function changeNoiseGridImage() {
-        const currentPath = noiseGridImage.get();
+        const currentPath = noiseGridImage.peek();
         (currentPath.includes("variant1") ? setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setNoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
     }
     interval(500, () => { changeNoiseGridImage() })

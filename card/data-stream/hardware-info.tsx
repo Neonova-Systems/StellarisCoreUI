@@ -1,10 +1,11 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { timeout, interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
+import { openContextMenu } from "../../helper/behaviour";
 
 export default function HardwareInfo() {
     const [cpuName, setCpuName] = createState("");
@@ -85,8 +86,7 @@ export default function HardwareInfo() {
     }
     
     function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/hardware-info.tsx --gtk 4`).catch((e) => print(e))
-        playSound(AudioFile.Granted)
+        openContextMenu("hardware-info.tsx");
     }
 
     createBindingCommandTableSetter({

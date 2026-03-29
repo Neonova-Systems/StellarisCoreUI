@@ -6,6 +6,7 @@ import AstalNotifd from "gi://AstalNotifd"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import CreateUtilityButton from "../helper/create-utility-button";
+import { openContextMenu } from "../helper/behaviour";
 
 export function NotificationCard({ notifications, onDragUp, onDragDown }: { notifications: Accessor<AstalNotifd.Notification[]>, onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
@@ -14,8 +15,7 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
     timeout(500, () => { execAsync('ags request "getNotificationState"').then((out) => { settoggleContentState(out === 'true'); }) });
 
     function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/notifications.tsx --gtk 4`).catch((e) => print(e))
-        playSound(AudioFile.Granted)
+        openContextMenu("notifications.tsx");
     }
 
     function dismissAllNotifications() {

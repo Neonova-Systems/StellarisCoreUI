@@ -1,11 +1,11 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, createBindingCommandTableSetter, } from "../../helper";
+import { Align, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, TOOLTIP_TEXT_CONTEXT_MENU, createBindingCommandTableSetter, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
-import { panelClicked } from '../../helper/behaviour';
+import { openContextMenu, panelClicked } from '../../helper/behaviour';
 
 export function BatteryInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
@@ -39,8 +39,7 @@ export function BatteryInfo() {
     timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => setToggleContentState(out === 'true')) });
 
     function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/battery-info.tsx --gtk 4`).catch((e) => print(e))
-        playSound(AudioFile.Granted);
+        openContextMenu("battery-info.tsx");
     }
 
     const batteryPath = "upower -i $(upower -e | grep BAT)";

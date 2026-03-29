@@ -3,7 +3,7 @@ import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, A
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
-import { timeout } from "ags/time";
+import { openContextMenu } from "../helper/behaviour";
 
 
 export default function MusicPlayer() {
@@ -26,8 +26,7 @@ export default function MusicPlayer() {
     }
     
     function onRightClicked() {
-        timeout(342, () => execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/music-player.tsx --gtk 4`).catch((e) => print(e)))
-        playSound(AudioFile.Granted)
+        openContextMenu("music-player.tsx", AudioFile.Granted, 333);
     }
 
     function getPlaybackStatus(status: AstalMpris.PlaybackStatus) {

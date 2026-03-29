@@ -5,6 +5,7 @@ import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
+import { openContextMenu } from "../../helper/behaviour";
 
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
@@ -82,8 +83,7 @@ export default function FilesystemInfo() {
     }
 
     function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/filesystem-info.tsx --gtk 4`).catch((e) => print(e))
-        playSound(AudioFile.Granted)
+        openContextMenu("filesystem-info.tsx");
     }
 
     interval(1000, () => { changedataGridImage() })
