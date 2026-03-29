@@ -38,7 +38,7 @@ export function panelClicked(stateName: string, setterFunction: (value: boolean)
 }
 
 /**
- * Opens a context-menu AGS window and plays a feedback sound.
+ * Opens a context-menu AGS window.
  *
  * @param menuFileName Context menu filename in `window/context-menu`.
  * @param sound Audio feedback to play (defaults to granted sound).
