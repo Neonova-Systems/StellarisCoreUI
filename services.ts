@@ -28,7 +28,7 @@ const stateKeys = {
     desktopIconsVisible: "DesktopIcons",
     notificationVerbosityState: "NotificationVerbosity",
     notificationDNDState: "NotificationDND",
-    audioControlVerbosityState: "audioControlVerbosity"
+    audioControlVerbosityState: "AudioControlVerbosity"
 } as const;
 
 export type DashboardState = {

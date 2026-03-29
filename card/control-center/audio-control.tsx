@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags"
 import { execAsync } from "ags/process"
 import { interval, timeout } from "ags/time"
 import { Gtk } from "ags/gtk4"
-import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR } from "../../helper"
+import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR, initToggleState } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 import CreateUtilityButton from "../../helper/create-utility-button"
 import CreateValueWatcher from "../../helper/create-value-watcher"
@@ -44,11 +44,11 @@ export default function AudioControl() {
     const [micMuted, setMicMuted] = createState(false)
     let micDebounceRevision = 0
 
-    const [verboseInformation, setVerboseInformation] = createState(true)
-    timeout(333, () => { execAsync('ags request "getAudioControlVerbosityState"').then(out => setVerboseInformation(out === 'true')) });
+    const [verboseInformation, setVerboseInformation] = createState(false)
+    initToggleState("AudioControlVerbosity", setVerboseInformation, 100)
+
     function toggleVerbosity() {
-        setVerboseInformation(!verboseInformation.peek());
-        execAsync(`ags request 'toggleAudioControlVerbosityState'`);
+        execAsync(`ags request "toggleAudioControlVerbosity"`).then((out) => setVerboseInformation(out === "true"))
     }
 
     function pickOrNA(value: unknown) {
