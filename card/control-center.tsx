@@ -1,16 +1,17 @@
 import { createState, For, With } from "ags";
 import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile, Align } from "../helper";
 import { Gtk } from "ags/gtk4"
-import { interval, timeout } from "ags/time";
+import { interval } from "ags/time";
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 import AudioControl from "./control-center/audio-control";
 import HyprlandControl from "./control-center/hyprland-control";
+import { initToggleState } from "../helper/behaviour";
 
 export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
     const [decorationImage, setDecorationImage] = createState(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant1.svg`);
-    timeout(500, () => { execAsync('ags request "getControlCenterState"').then(out => settoggleContentState(out === 'true')) });
+    initToggleState("ControlCenter", settoggleContentState);
     const spacingControlEntry = 3;
 
     function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1}.svg`) }

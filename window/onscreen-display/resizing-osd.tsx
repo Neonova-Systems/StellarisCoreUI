@@ -5,7 +5,7 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import { timeout } from "ags/time";
 import { Align, HOME_DIR } from '../../helper/constants';
 import { AudioFile, CreateEntryContent, playSound } from "../../helper";
-import { execAsync } from "ags/process";
+import { openContextMenu } from "../../helper/behaviour";
 
 const hyprland = AstalHyprland.get_default();
 const focusedClient = hyprland.focusedClient;
@@ -63,10 +63,7 @@ function OSD() {
         marginLeft={Math.round(focusedClientX + (focusedClientWidth / 2) - (osdWidth / 2))}
         namespace={"resizing-osd"}>
         <box cssClasses={["onscreen-display", "with-bg", "shadow"]} css={'margin: 5px;'} valign={Align.FILL} vexpand>
-            <Gtk.GestureClick onPressed={() => {  
-                execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/ratio-preset-selection.tsx --gtk 4`).catch((e) => print(e))
-                playSound(AudioFile.Granted);
-            }} />
+            <Gtk.GestureClick onPressed={() => openContextMenu("ratio-preset-selection.tsx")} />
             <box cssClasses={["contents", "entry"]} valign={Align.FILL} orientation={Gtk.Orientation.VERTICAL} spacing={3} hexpand>
                 <box vexpand/>
                 <CreateEntryContent animation={false} orientation={Gtk.Orientation.HORIZONTAL} name={"SIZE"} value={`${focusedClientWidth}x${focusedClientHeight}`} />

@@ -6,7 +6,7 @@ import NetworkInfo from "../card/data-stream/network-info";
 import FilesystemInfo from "../card/data-stream/filesystem-info";
 import HardwareInfo from "../card/data-stream/hardware-info";
 import { BatteryInfo, BatteryRibbon } from "../card/data-stream/battery-info";
-import { createPoll, timeout } from "ags/time";
+import { createPoll } from "ags/time";
 import { execAsync } from "ags/process";
 import SystemTray from "../modules/trayer";
 import GLib from "gi://GLib?version=2.0";
@@ -21,6 +21,7 @@ import Screen from "./Screen";
 import { Align, HOME_DIR } from '../helper/constants';
 import Gio from "gi://Gio?version=2.0";
 import Adw from "gi://Adw?version=1";
+import { initToggleState } from "../helper/behaviour";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const { LEFT, TOP } = Astal.WindowAnchor
@@ -30,7 +31,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
     const [currentDate, setCurrentDate] = createState("");
     const [notifications, setNotifications] = createState(new Array<AstalNotifd.Notification>(),)
 
-    timeout(500, () => { execAsync('ags request "getDataStreamState"').then((out) => { setDataStreamState(out === 'true'); }) });
+    initToggleState("DataStream", setDataStreamState);
 
     const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
         const notification = notifd.get_notification(id)

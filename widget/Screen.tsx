@@ -3,10 +3,10 @@ import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import Wallpaper from "../modules/wallpaper"
 import { Align, HOME_DIR, SIGNAL_JSON } from "../helper"
-import { execAsync } from "ags/process"
 import { createState, For, With } from 'ags';
 import { interval } from "ags/time"
 import { readJson, writeJson } from '../helper/json';
+import { openContextMenu, watchRequestBoolean } from "../helper/behaviour";
 
 type DesktopEntry = {
     name: string;
@@ -66,11 +66,7 @@ export default function Screen() {
     const [listApps, setListApps] = createState<DesktopEntry[]>([]);
 
     setListApps(parseDesktopFiles(desktopDir));
-    interval(800, () => { execAsync('ags request "getDesktopIconsState"').then(out => {
-            const enabled = out === 'true';
-            setToggleDesktopIconState(enabled);
-        });
-    });
+    watchRequestBoolean("DesktopIcons", 800, setToggleDesktopIconState);
     interval(1000, () => { 
         const signalObj = readJson(SIGNAL_JSON, {})
         if (signalObj !== null && "refreshAppIcon" in signalObj && signalObj.refreshAppIcon === true) {
@@ -79,9 +75,7 @@ export default function Screen() {
             writeJson(SIGNAL_JSON, signalObj);
         }
     })
-    function onRightClicked() {
-        execAsync(`ags run ${HOME_DIR}/.config/ags/window/context-menu/desktop-menu.tsx --gtk 4`).catch((e) => print(e))
-    }
+    function onRightClicked() { openContextMenu("desktop-menu.tsx"); }
 
     return (
         <box cssClasses={["screen"]} hexpand={false} halign={Align.FILL} vexpand={true}>

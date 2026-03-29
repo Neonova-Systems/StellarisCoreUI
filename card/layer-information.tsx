@@ -6,6 +6,7 @@ import { Accessor, createState, For, With } from "ags";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
+import { initToggleState } from "../helper/behaviour";
 
 interface Layer { namespace: string; address: string; pid: number; x: number; y: number; w: number; h: number; }
 function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: { layers: Accessor<Array<Layer>>, layerNumber: string, layerTitle: string, maximumSize: number }) {
@@ -57,7 +58,7 @@ export default function LayerInformation() {
     const [overlayLayerJson, setOverlayLayerJson] = createState<Array<Layer>>([]);
     const [toggleContentState, settoggleContentState] = createState(false);
 
-    timeout(500, () => { execAsync('ags request "getLayerInformationState"').then((out) => { settoggleContentState(out === 'true'); }) });
+    initToggleState("LayerInformation", settoggleContentState);
 
     timeout(500, () => { execAsync('hyprctl layers -j').then((out) => {
             const layerData = JSON.parse(out);
