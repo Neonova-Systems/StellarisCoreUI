@@ -1,7 +1,7 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
-import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, } from "../../helper";
+import { Align, AudioFile, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, playSound, TOOLTIP_TEXT_CONTEXT_MENU, createBindingCommandTableSetter, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
@@ -43,35 +43,39 @@ export function BatteryInfo() {
         playSound(AudioFile.Granted);
     }
 
-    // --- Correctly assign output to the corresponding state variable ---
     const batteryPath = "upower -i $(upower -e | grep BAT)";
+    createBindingCommandTableSetter(
+        {
+            [`${batteryPath} | grep 'native-path' | awk '{print $2}'`]: setNativePath,
+            [`${batteryPath} | grep 'has history' | cut -d: -f2 | sed 's/^ *//'`]: setHasHistory,
+            [`${batteryPath} | grep 'state' | cut -d: -f2 | sed 's/^ *//'`]: setState,
+            [`${batteryPath} | grep 'energy-full:' | cut -d: -f2 | sed 's/^ *//'`]: setEnergyFull,
+            [`${batteryPath} | grep 'time to empty:' | cut -d: -f2 | sed 's/^ *//'`]: setTimeToEmpty,
+            [`${batteryPath} | grep 'vendor' | awk '{print $2}'`]: setVendor,
+            [`${batteryPath} | grep 'has statistics' | cut -d: -f2 | sed 's/^ *//'`]: setHasStatistics,
+            [`${batteryPath} | grep 'warning-level' | cut -d: -f2 | sed 's/^ *//'`]: setWarningLevel,
+            [`${batteryPath} | grep 'energy-full-design:' | cut -d: -f2 | sed 's/^ *//'`]: setEnergyFullDesign,
+            [`${batteryPath} | grep 'percentage:' | cut -d: -f2 | sed 's/^ *//'`]: setPercentage,
+            [`${batteryPath} | grep 'power supply' | awk '{print $3}'`]: setPowerSupply,
+            [`${batteryPath} | grep 'present' | cut -d: -f2 | sed 's/^ *//'`]: setPresent,
+            [`${batteryPath} | grep 'energy:' | cut -d: -f2 | sed 's/^ *//'`]: setEnergy,
+            [`${batteryPath} | grep 'energy-rate:' | cut -d: -f2 | sed 's/^ *//'`]: setEnergyRate,
+            [`${batteryPath} | grep 'capacity:' | cut -d: -f2 | sed 's/^ *//'`]: setCapacity,
+            [`${batteryPath} | grep 'updated' | awk '{print $2, $3, $4, $5, $6, $7, $8}'`]: setUpdated,
+            [`${batteryPath} | grep 'rechargeable' | cut -d: -f2 | sed 's/^ *//'`]: setRechargeable,
+            [`${batteryPath} | grep 'energy-empty:' | cut -d: -f2 | sed 's/^ *//'`]: setEnergyEmpty,
+            [`${batteryPath} | grep 'voltage:' | cut -d: -f2 | sed 's/^ *//'`]: setVoltage,
+            [`${batteryPath} | grep 'technology:' | cut -d: -f2 | sed 's/^ *//'`]: setTechnology,
+            [`powerprofilesctl query-battery-aware | cut -d: -f2 | tr -d ' '`]: setBatteryAware,
+        },
+        {
+            transform: (value) => value.toUpperCase().trim(),
+        },
+    );
 
-    execAsync(`dash -c "${batteryPath} | grep 'native-path' | awk '{print $2}'"`).then(out => setNativePath(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'has history' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setHasHistory(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'state' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setState(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'energy-full:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergyFull(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'time to empty:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setTimeToEmpty(out.toUpperCase()));
-
-    execAsync(`dash -c "${batteryPath} | grep 'vendor' | awk '{print $2}'"`).then(out => setVendor(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'has statistics' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setHasStatistics(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'warning-level' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setWarningLevel(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'energy-full-design:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergyFullDesign(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'percentage:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setPercentage(out.toUpperCase()));
-
-    execAsync(`dash -c "${batteryPath} | grep 'power supply' | awk '{print $3}'"`).then(out => setPowerSupply(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'present' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setPresent(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'energy:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergy(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'energy-rate:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergyRate(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'capacity:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setCapacity(out.toUpperCase()));
-
-    execAsync(`dash -c "${batteryPath} | grep 'updated' | awk '{print $2, $3, $4, $5, $6, $7, $8}'"`).then(out => setUpdated(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'rechargeable' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setRechargeable(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'energy-empty:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setEnergyEmpty(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'voltage:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setVoltage(out.toUpperCase()));
-    execAsync(`dash -c "${batteryPath} | grep 'technology:' | cut -d: -f2 | sed 's/^ *//'"`).then(out => setTechnology(out.toUpperCase()));
-    execAsync(`dash -c "powerprofilesctl query-battery-aware | cut -d: -f2 | tr -d ' '"`).then(out => setBatteryAware(out.toUpperCase()));
-
-    execAsync(`dash -c "${batteryPath}"`).then(out => setFullReport(out));
+    createBindingCommandTableSetter({
+        [batteryPath]: setFullReport,
+    });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
