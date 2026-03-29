@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR} from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { timeout, interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
@@ -89,27 +89,27 @@ export default function HardwareInfo() {
         playSound(AudioFile.Granted)
     }
 
-    // --- CPU Information ---
-    execAsync(`dash -c "lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuName(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuArchitecture(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'Vendor ID:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setvendorName(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | \grep -E 'Thread\\(s\\) per core|Core\\(s\\) per socket' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd 'x' -"`).then((out) => setthreadsCore(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'Socket(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setsockets(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'CPU(s) scaling MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuScaling(out.toUpperCase())) // BUGFIX: Was incorrectly setting vendorName
-
-    // --- GPU Information ---
-    execAsync(`dash -c "glxinfo -B | grep -i 'device:' | awk -F: '{print $2}' | sed 's/(0x[0-9a-fA-F]\\+)//g' | sed 's/^[ \t]*//'"`).then((out) => setgpuDeviceName(out.toUpperCase()))
-    execAsync(`dash -c "glxinfo -B | grep -i 'vendor:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setgpuVendorName(out.toUpperCase()))
-
-    // --- Commands for NEWLY FILLED data ---
-    execAsync(`dash -c "lscpu | grep 'CPU op-mode(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuModes(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'CPU max MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuMaxMhz(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'CPU min MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setcpuMinMhz(out.toUpperCase()))
-    execAsync(`dash -c "lscpu | grep 'Virtualization:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setvirtualization(out.toUpperCase()))
-    execAsync(`dash -c "glxinfo -B | grep -i "memory" | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd \\" \\" -"`).then((out) => setvideoUnifiedMemory(out.toUpperCase())).catch((out) => console.log(out))
-    execAsync(`dash -c "lscpu | grep 'Byte Order:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'"`).then((out) => setbyteOrder(out.toUpperCase()))
-    execAsync(`dash -c "inxi -M --color=0 | grep 'Mobo' | tr -s ' ' | cut -d ' ' -f 3,5"`).then((out) => setMotherboard(out.toUpperCase()))
-    execAsync(`dash -c "inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub(\\"K\\", \\"X\\", $5); print $2, $3 }'"`).then((out) => setbiosInfo(out.toUpperCase()))
+    createBindingCommandTableSetter({
+            [`lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuName,
+            [`lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuArchitecture,
+            [`lscpu | grep 'Vendor ID:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setvendorName,
+            [`lscpu | grep -E 'Thread\\(s\\) per core|Core\\(s\\) per socket' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd 'x' -`]: setthreadsCore,
+            [`lscpu | grep 'Socket(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setsockets,
+            [`lscpu | grep 'CPU(s) scaling MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuScaling,
+            [`glxinfo -B | grep -i 'device:' | awk -F: '{print $2}' | sed 's/(0x[0-9a-fA-F]\\+)//g' | sed 's/^[ \t]*//'`]: setgpuDeviceName,
+            [`glxinfo -B | grep -i 'vendor:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setgpuVendorName,
+            [`lscpu | grep 'CPU op-mode(s):' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuModes,
+            [`lscpu | grep 'CPU max MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuMaxMhz,
+            [`lscpu | grep 'CPU min MHz:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setcpuMinMhz,
+            [`lscpu | grep 'Virtualization:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setvirtualization,
+            [`glxinfo -B | grep -i 'memory' | awk -F: '{print $2}' | sed 's/^[ \t]*//' | paste -sd ' ' -`]: setvideoUnifiedMemory,
+            [`lscpu | grep 'Byte Order:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setbyteOrder,
+            [`inxi -M --color=0 | grep 'Mobo' | tr -s ' ' | cut -d ' ' -f 3,5`]: setMotherboard,
+            [`inxi -M --max-wrap --color=0 | grep 'UEFI\\|BIOS' | awk '{ sub("K", "X", $5); print $2, $3 }'`]: setbiosInfo,
+        }, {
+            transform: (value) => value.toUpperCase().trim(),
+            onError: (_, error) => console.log(error),
+        });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={

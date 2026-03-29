@@ -7,16 +7,7 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import Gio from "gi://Gio";
 import Adw from "gi://Adw";
 
-interface Layer {
-    namespace: string;
-    address: string;
-    pid: number;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}
-
+interface Layer { namespace: string; address: string; pid: number; x: number; y: number; w: number; h: number; }
 function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: { layers: Accessor<Array<Layer>>, layerNumber: string, layerTitle: string, maximumSize: number }) {
     return (
         <box spacing={10} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
