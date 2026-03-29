@@ -45,6 +45,11 @@ export default function AudioControl() {
     let micDebounceRevision = 0
 
     const [verboseInformation, setVerboseInformation] = createState(true)
+    timeout(333, () => { execAsync('ags request "getAudioControlVerbosityState"').then(out => setVerboseInformation(out === 'true')) });
+    function toggleVerbosity() {
+        setVerboseInformation(!verboseInformation.peek());
+        execAsync(`ags request 'toggleAudioControlVerbosityState'`);
+    }
 
     function pickOrNA(value: unknown) {
         let text = ""
@@ -202,7 +207,7 @@ export default function AudioControl() {
                         <label cssClasses={["title"]} label="AUDIO CONTROL"/>
                         <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n<span size='small'>[pavucontrol]</span>"} pixelSize={8} onClicked={openSettings}/>
                         <With value={verboseInformation}>
-                            {(v) => <CreateUtilityButton imageFile={v ? `${ICON_DIR}/mdi--eye.svg` : `${ICON_DIR}/mdi--eye-off.svg`} tooltipText={"Hide detailed audio device information for a cleaner, compact view"} pixelSize={8} onClicked={() => setVerboseInformation(!verboseInformation.peek())}/> }
+                            {(v) => <CreateUtilityButton imageFile={v ? `${ICON_DIR}/mdi--eye.svg` : `${ICON_DIR}/mdi--eye-off.svg`} tooltipText={"Hide detailed audio device information for a cleaner, compact view"} pixelSize={8} onClicked={toggleVerbosity}/> }
                         </With>
                     </box>
                     <CreateValueWatcher value={verboseInformation}>
