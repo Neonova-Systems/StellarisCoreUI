@@ -3,7 +3,7 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { interval, timeout } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
 
 export default function NetworkInfo() {
     const [currentSSID, setcurrentSSID] = createState("");
@@ -37,30 +37,33 @@ export default function NetworkInfo() {
         (currentPath.includes("variant1") ? setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant2.svg`) : setnoiseGridImage(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`))
     }
     interval(500, () => { changeNoiseGridImage() })
-    execAsync(`bash -c "iwconfig wlan0 | grep ESSID | cut -d '\\"' -f 2"`).then((out) => setcurrentSSID(out.toUpperCase()))
-    execAsync(`dash -c "iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2"`).then((out) => setinterfaceMode(out.toUpperCase()))
-    execAsync(`dash -c "iwconfig wlan0 | grep Frequency | tr -s ' ' | cut -d ' ' -f 3-4 | cut -d ':' -f2"`).then((out) => setfrequency(out));
-    execAsync(`dash -c "nmcli device show | grep IP4.DNS | tr -s ' ' | cut -d ' ' -f 2 | paste -d ' ' -s"`).then((out) => setdnsServers(out));
+    createBindingCommandTableSetter({
+            [`iwconfig wlan0 | grep ESSID | cut -d '"' -f 2`]: setcurrentSSID,
+            [`iwconfig wlan0 | grep Mode | tr -s ' ' | cut -d ' ' -f 2`]: setinterfaceMode,
+            [`iwconfig wlan0 | grep Frequency | tr -s ' ' | cut -d ' ' -f 3-4 | cut -d ':' -f2`]: setfrequency,
+            [`nmcli device show | grep IP4.DNS | tr -s ' ' | cut -d ' ' -f 2 | paste -d ' ' -s`]: setdnsServers,
+            [`iwconfig wlan0 | grep Access | tr -s ' ' | cut -d ' ' -f 7`]: setcurrentMAC,
+            [`ip a | grep --after-context 4 wlan0 | grep altname | tr -s ' ' | cut -d ' ' -f 3 | head -n2 | paste -d ',' - -`]: setaltInterfaceName,
+            [`ifconfig wlan0 | grep netmask | tr -s ' ' | cut -d ' ' -f 5`]: setcurrentSubnet,
+            [`lsof -i -P -n | grep LISTEN | wc -l`]: setopenPorts,
+            [`ip address | grep --after-context 1 'enp\|eth\|wl\|wlan' | grep inet | cut -d ' ' -f 6,13 | head -n 1`]: setlocalIp,
+            [`iwconfig wlan0 | grep Bit | tr -s ' ' | cut -d ' ' -f 2-4 | cut -d '=' -f 2`]: setcurrentBitrate,
+            [`ifconfig wlan0 | grep TX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: settransmitByte,
+            [`lsof -i -P | grep TCP | wc -l`]: settcpConnection,
+            [`ip route show | grep default | cut -d ' ' -f3,5 | head -n 1`]: setgatewayIp,
+            [`iwconfig wlan0 | grep Link | tr -s ' ' | cut -d ' ' -f 2-3 | cut -d '=' -f 2`]: setlinkQuality,
+            [`ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setreceiveByte,
+            [`lsof -i -P | grep UDP | wc -l`]: setudpConnection,
+        }, {
+            transform: (value) => value.toUpperCase().trim(),
+            onError: (_, error) => console.log(error),
+        });
 
-    execAsync(`dash -c "iwconfig wlan0 | grep Access | tr -s ' ' | cut -d ' ' -f 7"`).then((out) => setcurrentMAC(out.toUpperCase()));
-    execAsync(`dash -c "ip a | grep --after-context 4 wlan0 | grep altname | tr -s ' ' | cut -d ' ' -f 3 | head -n2 | paste -d \\",\\" - -"`).then((out) => setaltInterfaceName(out.toUpperCase()));
-    execAsync(`dash -c "ifconfig wlan0 | grep netmask | tr -s ' ' | cut -d ' ' -f 5"`).then((out) => setcurrentSubnet(out.toUpperCase()));
-    execAsync(`dash -c "lsof -i -P -n | grep LISTEN | wc -l"`).then((out) => setopenPorts(out.toUpperCase()));
-
-    execAsync(`dash -c "ip address | grep --after-context 1 'enp\\|eth\\|wl\\|wlan' | grep inet | cut -d ' ' -f 6,13 | head -n 1"`).then((out) => setlocalIp(out.toUpperCase())).catch((out) => console.log(out))
-    execAsync(`dash -c "iwconfig wlan0 | grep Bit | tr -s ' ' | cut -d ' ' -f 2-4 | cut -d '=' -f 2"`).then((out) => setcurrentBitrate(out.toUpperCase()));
-    execAsync(`dash -c "ifconfig wlan0 | grep TX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-"`).then((out) => settransmitByte(out.toUpperCase()));
-    execAsync(`dash -c "lsof -i -P | grep TCP | wc -l"`).then((out) => settcpConnection(out.toUpperCase()));
-
-
-    execAsync(`dash -c "ip route show | grep default | cut -d ' ' -f3,5 | head -n 1"`).then((out) => setgatewayIp(out.toUpperCase()));
-    execAsync(`dash -c "iwconfig wlan0 | grep Link | tr -s ' ' | cut -d ' ' -f 2-3 | cut -d '=' -f 2"`).then((out) => setlinkQuality(out.toUpperCase()));
-    execAsync(`dash -c "ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-"`).then((out) => setreceiveByte(out.toUpperCase()));
-    execAsync(`dash -c "lsof -i -P | grep UDP | wc -l"`).then((out) => setudpConnection(out.toUpperCase()));
-
-    execAsync(`dash -c "journalctl -b --grep=network | tail -n 13"`).then((out) => setJournalNetwork(out));
-    execAsync(`dash -c "nmcli dev"`).then((out) => setNetworkDevice(out));
-    execAsync(`dash -c "nmcli dev wifi list | head -n 10"`).then((out) => setwifiList(out));
+    createBindingCommandTableSetter({
+        [`journalctl -b --grep=network | tail -n 13`]: setJournalNetwork,
+        [`nmcli dev`]: setNetworkDevice,
+        [`nmcli dev wifi list | head -n 10`]: setwifiList,
+    });
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>

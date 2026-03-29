@@ -1,7 +1,7 @@
 import { Accessor, createState, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
-import { CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, AudioFile, playSound, Align } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, AudioFile, playSound, Align, createBindingCommandTableSetter } from "../../helper";
 import { interval, timeout } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
@@ -76,23 +76,26 @@ export default function SystemInfo() {
         });
     }
 
-    execAsync('bash -c "{ whoami; hostname; } | paste -d "@" -s"').then((out) => setuserHostname(out.toUpperCase()))
-    execAsync('dash -c "pacman -Qdq | wc -l"').then((out) => setdependecyInstalled(out));
-    execAsync('dash -c "pacman -Quq | wc -l"').then((out) => setavailableUpgrade(out));
+    createBindingCommandTableSetter({
+            [`{ whoami; hostname; } | paste -d '@' -s`]: setuserHostname,
+            [`pacman -Qdq | wc -l`]: setdependecyInstalled,
+            [`pacman -Quq | wc -l`]: setavailableUpgrade,
+            [`uname -sr`]: setkernelInformation,
+            [`pacman -Qdt | wc -l`]: setunneedPackage,
+            [`systemd-analyze | cut -d'=' -f2 | head -n1 | tr -d ' '`]: settotalBootTime,
+            [`id -u $(whoami)`]: setuserId,
+            [`systemd-analyze | cut -d'+' -f2 | head -n1 | cut -d' ' -f2`]: setbootTimeLoader,
+            [`pacman -Qq | wc -l`]: setpackageInstalled,
+            [`pacman -Qeq | wc -l`]: setexplicitInstalled,
+            [`systemd-analyze | cut -d'+' -f4 | head -n1 | cut -d' ' -f2`]: setbootTimeUserspace,
+        }, {
+            transform: (value, command) => command.includes("whoami") ? value.toUpperCase().trim() : value.trim(),
+        });
 
-    execAsync('dash -c "uname -sr"').then((out) => setkernelInformation(out.toUpperCase()));
-    execAsync('dash -c "pacman -Qdt | wc -l"').then((out) => setunneedPackage(out));
-    execAsync(`dash -c "systemd-analyze | cut -d'=' -f2 | head -n1 | tr -d ' '"`).then((out) => settotalBootTime(out));
-
-    execAsync('dash -c "id -u $(whoami)"').then((out) => setuserId(out));
-    execAsync(`dash -c "systemd-analyze | cut -d'+' -f2 | head -n1 | cut -d' ' -f2"`).then((out) => setbootTimeLoader(out));
-
-    execAsync('dash -c "pacman -Qq | wc -l"').then((out) => setpackageInstalled(out));
-    execAsync(`dash -c "pacman -Qeq | wc -l"`).then((out) => setexplicitInstalled(out));
-    execAsync(`dash -c "systemd-analyze | cut -d'+' -f4 | head -n1 | cut -d' ' -f2"`).then((out) => setbootTimeUserspace(out));
-
-    execAsync(`dash -c "journalctl -b -o cat | head -n60"`).then((out) => setjournalHead(out));
-    execAsync(`dash -c "systemd-analyze blame"`).then((out) => setsystemdBlame(out));
+    createBindingCommandTableSetter({
+        [`journalctl -b -o cat | head -n60`]: setjournalHead,
+        [`systemd-analyze blame`]: setsystemdBlame,
+    });
     interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setuptime(out.toUpperCase())))
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>

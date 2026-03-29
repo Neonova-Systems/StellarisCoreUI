@@ -2,7 +2,7 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
-import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
 import { interval, timeout, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 
@@ -87,16 +87,22 @@ export default function FilesystemInfo() {
     }
 
     interval(1000, () => { changedataGridImage() })
-    execAsync(`dash -c "lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2"`).then((out) => setfilesystemName(out.toUpperCase()))
-    execAsync(`dash -c "df -H / | tr -s ' ' | cut -d ' ' -f 2,4 | sed 1d"`).then((out) => settotalSize(out.toUpperCase()))
-    execAsync(`dash -c "df -H / | tr -s ' ' | cut -d ' ' -f 3,5 | sed 1d"`).then((out) => setusedSpace(out));
-    execAsync(`dash -c "df -H -a -t $(lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2) | tr -s ' ' | cut -d ' ' -f 6 | paste -d ' ' -s | sed 's/Mounted //'"`).then((out) => setmountpoint(out));
+    createBindingCommandTableSetter({
+            [`lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2`]: setfilesystemName,
+            [`df -H / | tr -s ' ' | cut -d ' ' -f 2,4 | sed 1d`]: settotalSize,
+            [`df -H / | tr -s ' ' | cut -d ' ' -f 3,5 | sed 1d`]: setusedSpace,
+            [`df -H -a -t $(lsblk -f | grep root | tr -s ' ' | cut -d ' ' -f 2) | tr -s ' ' | cut -d ' ' -f 6 | paste -d ' ' -s | sed 's/Mounted //'`]: setmountpoint,
+            [`lsblk -l -no UUID,LABEL,NAME | sed '/^[[:space:]]*$/d' | tr -s ' ' | sed '/^ /d' | column | head -n2`]: setuuidLabel,
+            [`findmnt -n -o OPTIONS,TARGET -l -t btrfs | tr -s ' '`]: setfilesystemOptions,
+        }, {
+            transform: (value) => value.toUpperCase().trim(),
+            onError: (_, error) => console.log(error),
+        },);
 
-    execAsync(`dash -c " lsblk -l -no UUID,LABEL,NAME | sed '/^[[:space:]]*$/d' | tr -s ' ' | sed '/^ /d' | column | head -n2"`).then((out) => setuuidLabel(out.toUpperCase()));
-    execAsync(`dash -c "findmnt -n -o OPTIONS,TARGET -l -t btrfs | tr -s ' '"`).then((out) => setfilesystemOptions(out.toUpperCase())).catch((out) => console.log(out))
-
-    execAsync(`dash -c "findmnt -l -t btrfs,vfat,proc,efivarfs,tmpfs | head -n 13"`).then((out) => setmountpointList(out));
-    execAsync(`dash -c "lsblk -a --list"`).then((out) => setblockList(out));
+    createBindingCommandTableSetter({
+        [`findmnt -l -t btrfs,vfat,proc,efivarfs,tmpfs | head -n 13`]: setmountpointList,
+        [`lsblk -a --list`]: setblockList,
+    });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", settoggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
