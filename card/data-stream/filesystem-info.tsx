@@ -3,9 +3,9 @@ import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, playSound, AudioFile, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
-import { interval, timeout, Timer } from "ags/time";
+import { interval, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
-import { openContextMenu } from "../../helper/behaviour";
+import { initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
 
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
@@ -30,16 +30,14 @@ export default function FilesystemInfo() {
     let writeDiskOperationInterval: Timer | null = null;
 
     playSound(AudioFile.Panel, 1600)
-    timeout(500, () => { execAsync('ags request "getFilesystemInfoState"').then(out => setToggleContentState(out === 'true')) });
-    interval(800, () => { execAsync('ags request "getFilesystemGraphState"').then(out => {
-            const enabled = out === 'true';
+    initToggleState("FilesystemInfo", setToggleContentState);
+    watchRequestBoolean("FilesystemGraph", 800, (enabled) => {
             setToggleGraphState(enabled);
             if (enabled) {
                 startIntervals();
             } else {
                 stopIntervals();
             }
-        });
     });
 
     function startIntervals() {

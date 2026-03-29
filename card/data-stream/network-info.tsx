@@ -1,9 +1,9 @@
 import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process";
-import { interval, timeout } from "ags/time";
+import { interval } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
+import { initToggleState } from "../../helper/behaviour";
 
 export default function NetworkInfo() {
     const [currentSSID, setCurrentSSID] = createState("");
@@ -30,7 +30,7 @@ export default function NetworkInfo() {
     const [noiseGridImage, setNoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
     playSound(AudioFile.Panel, 1500);
-    timeout(500, () => { execAsync('ags request "getNetworkInfoState"').then(out => setToggleContentState(out === 'true')) });
+    initToggleState("NetworkInfo", setToggleContentState);
 
     function changeNoiseGridImage() {
         const currentPath = noiseGridImage.peek();

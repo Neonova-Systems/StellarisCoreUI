@@ -2,10 +2,10 @@ import { Accessor, createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP_TEXT_CONTEXT_MENU, panelClicked, Align, ICON_DIR, createBindingCommandTableSetter } from "../../helper";
-import { timeout, interval, Timer } from 'ags/time';
+import { interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import GLib from "gi://GLib";
-import { openContextMenu } from "../../helper/behaviour";
+import { initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
 
 export default function HardwareInfo() {
     const [cpuName, setCpuName] = createState("");
@@ -33,16 +33,14 @@ export default function HardwareInfo() {
     let avgCpuInterval: Timer | null = null;
     let perCpuInterval: Timer | null = null;
 
-    timeout(500, () => { execAsync('ags request "getHardwareInfoState"').then(out => setToggleContentState(out === 'true')) });
-    interval(800, () => { execAsync('ags request "getHardwareGraphState"').then(out => {
-            const enabled = out === 'true';
+    initToggleState("HardwareInfo", setToggleContentState);
+    watchRequestBoolean("HardwareGraph", 800, (enabled) => {
             setToggleGraphState(enabled);
             if (enabled) {
                 startIntervals();
             } else {
                 stopIntervals();
             }
-        });
     });
     
     function startIntervals() {

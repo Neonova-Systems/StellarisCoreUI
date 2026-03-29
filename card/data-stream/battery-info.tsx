@@ -1,11 +1,9 @@
 import { createBinding, createState, With } from "ags";
 import { Gtk } from "ags/gtk4";
-import { execAsync } from "ags/process";
 import { Align, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, TOOLTIP_TEXT_CONTEXT_MENU, createBindingCommandTableSetter, } from "../../helper";
 import AstalBattery from "gi://AstalBattery?version=0.1";
-import { timeout } from "ags/time";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
-import { openContextMenu, panelClicked } from '../../helper/behaviour';
+import { initToggleState, openContextMenu, panelClicked } from '../../helper/behaviour';
 
 export function BatteryInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
@@ -36,7 +34,7 @@ export function BatteryInfo() {
     const [batteryAware, setBatteryAware] = createState("");
     const [fullReport, setFullReport] = createState("Loading report...");
     const [toggleContentState, setToggleContentState] = createState(false);
-    timeout(500, () => { execAsync('ags request "getBatteryInfoState"').then(out => setToggleContentState(out === 'true')) });
+    initToggleState("BatteryInfo", setToggleContentState);
 
     function onRightClicked() {
         openContextMenu("battery-info.tsx");

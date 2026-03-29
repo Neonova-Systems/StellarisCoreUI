@@ -2,10 +2,11 @@ import { Accessor, createState, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process";
 import { CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, AudioFile, playSound, Align, createBindingCommandTableSetter } from "../../helper";
-import { interval, timeout } from "ags/time";
+import { interval } from "ags/time";
 import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
 import Adw from "gi://Adw?version=1";
+import { initToggleState } from "../../helper/behaviour";
 
 export default function SystemInfo() {
     const [userHostname, setUserHostname] = createState("");
@@ -25,7 +26,7 @@ export default function SystemInfo() {
     const [toggleContentState, setToggleContentState] = createState(false);
 
     playSound(AudioFile.Panel, 1400);
-    timeout(500, () => { execAsync('ags request "getSystemInfoState"').then(out => setToggleContentState(out === 'true')) });
+    initToggleState("SystemInfo", setToggleContentState);
 
     function changeProfilePicture() {
         const dialog = new Gtk.FileDialog();
