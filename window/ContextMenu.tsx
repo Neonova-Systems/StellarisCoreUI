@@ -2,34 +2,34 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
 import style from "./context-menu/style.scss";
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { createState, For } from 'ags';
+
 import { Align, CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
 import { exec, execAsync } from "ags/process";
 import { interval } from "ags/time";
 
 const hyprland = AstalHyprland.get_default();
-const pointerX = hyprland.cursorPosition.x;
-const pointerY = hyprland.cursorPosition.y;
 const menuWidth = 300;
-const menuHeight = 0;
 
 interface CommandItem {
     name: string;
     description?: string;
     command: string;
     keybind?: string;
-    target?: string;
     dontAsync?: boolean;
 }
 
 export function spawnContextMenu(commandList: CommandItem[]) {
     const id = `context-menu-${Math.random().toString(36).substring(2, 11)}`; // unique id
+    const { x: spawnX, y: spawnY } = hyprland.cursorPosition;
+    
     app.start({
         instanceName: id,
         css: style,
         main() {
-            SpawnContextMenu(commandList, id);
-            const poll = interval(200, () => { DeleteWindowOnOutofBound(hyprland.cursorPosition, id, pointerX, pointerY, poll); })
+            SpawnContextMenu(commandList, id, spawnX, spawnY);
+            const poll = interval(200, () => { 
+                DeleteWindowOnOutofBound(hyprland.cursorPosition, id, spawnX, spawnY, poll);
+            });
         },
     })
 }
@@ -41,9 +41,8 @@ function execCommand(command: CommandItem, windowName: string = "context-menu") 
     app.quit()
 }
 
-function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
+function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawnX: number, spawnY: number) {
     const { LEFT, TOP } = Astal.WindowAnchor;
-    const [user_commands, setUserCommands] = createState(commandsList);
 
     function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
         if (keyval === Gdk.KEY_Escape) {
@@ -71,7 +70,7 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
         const pressedKeybind = [...modifiers, key].join(" + ");
         // print(pressedKeybind); // debug only
 
-        const command = user_commands.get().find(c => c.keybind?.toLowerCase() === pressedKeybind);
+        const command = commandsList.find(c => c.keybind?.toLowerCase() === pressedKeybind);
         if (command && command.command) execCommand(command, windowName)
     }
 
@@ -81,11 +80,10 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
             layer={Astal.Layer.TOP}
             exclusivity={Astal.Exclusivity.IGNORE}
             default_width={menuWidth}
-            default_height={menuHeight}
             application={app}
             anchor={LEFT | TOP}
-            marginLeft={pointerX}
-            margin_top={pointerY}
+            marginLeft={spawnX}
+            margin_top={spawnY}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
             <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
@@ -93,19 +91,17 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string) {
             } />
             <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
                 <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
-                    <For each={user_commands}>
-                        {(command: CommandItem, index) => (
-                            <button onClicked={() => { execCommand(command, windowName) }}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={3}>
-                                    <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
-                                        <label cssClasses={["title"]} label={command.name} halign={Align.LEFT} hexpand />
-                                        {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Align.LEFT} />)}
-                                    </box>
-                                    <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
+                    {commandsList.map((command: CommandItem) => (
+                        <button onClicked={() => { execCommand(command, windowName) }}>
+                            <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={3}>
+                                <box orientation={Gtk.Orientation.HORIZONTAL} homogeneous={false}>
+                                    <label cssClasses={["title"]} label={command.name} halign={Align.LEFT} hexpand />
+                                    {command.keybind && (<label cssClasses={["keybind"]} label={command.keybind} halign={Align.LEFT} />)}
                                 </box>
-                            </button>
-                        )}
-                    </For>
+                                <CreateEntryContent name={"DESC"} value={command.description} css={`text-transform: uppercase;`} orientation={Gtk.Orientation.HORIZONTAL} />
+                            </box>
+                        </button>
+                    ))}
                 </box>
             </box>
         </window>
