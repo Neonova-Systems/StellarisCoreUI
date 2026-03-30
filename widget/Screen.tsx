@@ -2,8 +2,8 @@ import { Gdk, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import Wallpaper from "../modules/wallpaper"
-import { Align, HOME_DIR, SIGNAL_JSON } from "../helper"
-import { createState, For, With } from 'ags';
+import { Align, SIGNAL_JSON } from "../helper"
+import { createState, With } from 'ags';
 import { interval } from "ags/time"
 import { readJson, writeJson } from '../helper/json';
 import { openContextMenu, watchRequestBoolean } from "../helper/behaviour";
@@ -77,6 +77,33 @@ export default function Screen() {
     })
     function onRightClicked() { openContextMenu("desktop-menu.tsx"); }
 
+    function renderDesktopIcons(apps: DesktopEntry[]) {
+        return (
+            <Gtk.Grid css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Align.LEFT} valign={Align.LEFT}
+                $={(grid) => {
+                    const rows = 10;
+                    apps.forEach((app, i) => {
+                        const col = Math.floor(i / rows);
+                        const row = i % rows;
+
+                        const btn = new Gtk.Button() as any;
+                        btn.set_child(
+                            <box cssClasses={["app-icon"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+                                {app.icon && (<Gtk.Image iconName={app.icon} pixelSize={48} />)}
+                                <label label={app.name} cssClasses={["app-name"]} />
+                            </box>
+                        );
+                        btn.connect('clicked', () => {
+                            GLib.spawn_command_line_async(app.exec);
+                        });
+
+                        grid.attach(btn, col, row, 1, 1);
+                    });
+                }}
+            />
+        )
+    }
+
     return (
         <box cssClasses={["screen"]} hexpand={false} halign={Align.FILL} vexpand={true}>
             <Gtk.GestureClick button={3} onPressed={onRightClicked} />
@@ -88,28 +115,7 @@ export default function Screen() {
                             <box visible={v}>
                                 <With value={listApps}>
                                     {(apps) => (
-                                        <Gtk.Grid css="padding: 20px;" cssClasses={["app-grid"]} columnSpacing={15} rowSpacing={15} halign={Align.LEFT} valign={Align.LEFT}
-                                            $={(grid) => {
-                                                const rows = 10;
-                                                apps.forEach((app, i) => {
-                                                    const col = Math.floor(i / rows);
-                                                    const row = i % rows;
-
-                                                    const btn = new Gtk.Button() as any;
-                                                    btn.set_child(
-                                                        <box cssClasses={["app-icon"]} orientation={Gtk.Orientation.VERTICAL} spacing={5} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
-                                                            {app.icon && (<Gtk.Image iconName={app.icon} pixelSize={48} />)}
-                                                            <label label={app.name} cssClasses={["app-name"]} />
-                                                        </box>
-                                                    );
-                                                    btn.connect('clicked', () => {
-                                                        GLib.spawn_command_line_async(app.exec);
-                                                    });
-
-                                                    grid.attach(btn, col, row, 1, 1);
-                                                });
-                                            }}
-                                        />
+                                        renderDesktopIcons(apps)
                                     )}
                                 </With>
                             </box>
