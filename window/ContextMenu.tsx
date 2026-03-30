@@ -27,9 +27,9 @@ export function spawnContextMenu(commandList: CommandItem[]) {
         css: style,
         main() {
             SpawnContextMenu(commandList, id, spawnX, spawnY);
-            const poll = interval(200, () => { 
-                DeleteWindowOnOutofBound(hyprland.cursorPosition, id, spawnX, spawnY, poll);
-            });
+            // const poll = interval(200, () => { 
+            //     DeleteWindowOnOutofBound(hyprland.cursorPosition, id, spawnX, spawnY, poll);
+            // });
         },
     })
 }
@@ -86,6 +86,11 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawn
             margin_top={spawnY}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
+            <Gtk.EventControllerMotion onLeave={() => {
+                const w = app.get_window?.(windowName)
+                if (w) { w.destroy() }
+                app.quit()
+            }} />
             <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
                 handleKeyPress(keyval, keycode, state)
             } />
