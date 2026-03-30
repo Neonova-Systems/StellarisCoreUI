@@ -5,6 +5,7 @@ const commandsList = [
     { name: "Restart", description: "Reboot the system", command: "/usr/bin/poweroff --reboot", keybind: ""},
     { name: "Logout", description: "Exit the current session", command: "/usr/bin/hyprctl dispatch exit", keybind: ""},
     { name: "Suspend", description: "Suspend to RAM", command: "/usr/bin/systemctl suspend", keybind: ""},
+    { name: "Hibernate", description: "Suspend to disk", command: "/usr/bin/systemctl hibernate", keybind: ""},
     { name: "Lockscreen", description: "Lock the screen", command: `zsh -ic 'lock-screen && sleep 1'`, keybind: "", dontAsync: true},
 ]
 spawnContextMenu(commandsList);
