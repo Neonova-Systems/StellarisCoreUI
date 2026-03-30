@@ -3,7 +3,7 @@ import { Astal } from "gi://Astal?version=4.0"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { writeFile } from "ags/file"
 import { readJson, writeJson } from "./helper/json"
-import { WALLPAPER_JSON, SIGNAL_JSON, DASHBOARD_STATE_JSON, HOME_DIR } from "./helper/constants";
+import { WALLPAPER_JSON, SIGNAL_JSON, GLOBAL_BOOLEAN_STATE_JSON, HOME_DIR } from "./helper/constants";
 import { execAsync } from "ags/process"
 
 const hyprland = AstalHyprland.get_default();
@@ -31,25 +31,25 @@ const stateKeys = {
     audioControlVerbosityState: "AudioControlVerbosity"
 } as const;
 
-export type DashboardState = {
+export type GlobalState = {
     [K in keyof typeof stateKeys]: boolean;
 } & {
     [key: string]: boolean;
 }
 
 // Auto-generate defaults (all true)
-const defaultDashboardState: DashboardState = Object.keys(stateKeys).reduce((acc, key) => {
+const defaultDashboardState: GlobalState = Object.keys(stateKeys).reduce((acc, key) => {
     (acc as any)[key] = true;
     return acc;
-}, {} as DashboardState);
+}, {} as GlobalState);
 
-let dashboardState = readJson<DashboardState>(DASHBOARD_STATE_JSON, defaultDashboardState);
+let dashboardState = readJson<GlobalState>(GLOBAL_BOOLEAN_STATE_JSON, defaultDashboardState);
 
 // Auto-generate mappings (inverted: "DataStream" -> "dataStreamVisible")
 const stateMappings = Object.entries(stateKeys).reduce((acc, [key, value]) => {
-    acc[value] = key as keyof DashboardState;
+    acc[value] = key as keyof GlobalState;
     return acc;
-}, {} as { [key: string]: keyof DashboardState });
+}, {} as { [key: string]: keyof GlobalState });
 
 export function applyCurrentDashboardState() {
     const visible = dashboardState.visible;
@@ -95,10 +95,10 @@ export function applyCurrentDashboardState() {
     }
 }
 
-function handleStateChange(key: keyof DashboardState, res: (response: any) => void, toggle = false) {
+function handleStateChange(key: keyof GlobalState, res: (response: any) => void, toggle = false) {
     if (toggle) {
         dashboardState[key] = !dashboardState[key];
-        writeJson(DASHBOARD_STATE_JSON, dashboardState);
+        writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
     }
     return res(String(dashboardState[key]));
 }
@@ -107,7 +107,7 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
     const request = argv.join(" ");
     if (request === "toggleDashboard" || request === "toggle dashboard") {
         (dashboardState as any).visible = !dashboardState.visible;
-        writeJson(DASHBOARD_STATE_JSON, dashboardState);
+        writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
         applyCurrentDashboardState();
         return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
     }
