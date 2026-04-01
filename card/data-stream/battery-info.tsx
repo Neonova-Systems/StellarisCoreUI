@@ -76,9 +76,7 @@ export function BatteryInfo() {
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <Gtk.GestureLongPress />
-            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
-                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
-            }>
+            <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

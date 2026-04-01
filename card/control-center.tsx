@@ -67,10 +67,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
-                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
-            } />
-
+            <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}/>
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>

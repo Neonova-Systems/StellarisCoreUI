@@ -73,9 +73,7 @@ export default function FilesystemInfo() {
         }
     }
 
-    function onRightClicked() {
-        openContextMenu("filesystem-info.tsx");
-    }
+    function onRightClicked() { openContextMenu("filesystem-info.tsx"); }
 
     interval(1000, () => {
         setDataGridImage((currentPath) => cycleAssetVariant(currentPath, [
@@ -102,9 +100,7 @@ export default function FilesystemInfo() {
     });
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
-                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
-            }>
+            <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
             <With value={toggleContentState}>

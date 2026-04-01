@@ -69,6 +69,7 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
                 <label label={name} halign={Align.LEFT} />
                 <box hexpand />
                 {childrenRight}
+                {onRightClick && <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />}
                 {draggable && <image file={`${ICON_DIR}/ri--draggable.svg`} pixelSize={16} cursor={Gdk.Cursor.new_from_name("grab", null)} /> }
             </box>
         )
