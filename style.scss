@@ -403,26 +403,26 @@ tooltip {
   }
 }
 
-.volume-segment-track {
+.slider-segment-track {
   min-height: 20px;
   &.disabled { opacity: 0.5; }
-  .volume-segment-button {
+  .slider-segment-button {
     padding: 0;
     margin: 0;
     min-width: 4px;
     min-height: 20px;
     background: transparent;
     border: none;
-    .volume-segment {
+    .slider-segment {
       margin-top: 10px;
       margin-bottom: 10px;
       margin-right: 0.2px;
       background: #10193f;
-      transition: margin 0.15s ease, background 0.15s ease;
       &.filled {
         margin-top: 6px;
         margin-bottom: 6px;
-        background: #a3addf;
+        background: #afbaef;
+        box-shadow: 0px 0px 2px 1px gtkalpha(#3b4a91, 0.2);
       }
       &.focus {
         margin-top: 5px;
@@ -430,13 +430,32 @@ tooltip {
         min-height: 13px;
         background: #adb7ec;
         box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
-        animation: volume-slider-blink 2s ease infinite;
+        animation: slider-blink 1s ease infinite, motion-slider-base 0.5s ease 0s 1;
       }
     }
   }
 }
+.apply-motion-slider1 { animation: motion-slider-alt1 0.5s ease 0s 1; }
+.apply-motion-slider2 { animation: motion-slider-alt2 0.5s ease 0s 1; }
+.apply-motion-slider3 { animation: motion-slider-alt3 0.5s ease 0s 1; }
+@keyframes motion-slider-base {
+  0% { margin-top: 2px; margin-bottom: 2px; }
+  100% { margin-top: 5px; margin-bottom: 5px; }
+}
+@keyframes motion-slider-alt1 {
+  0% { margin-top: 3px; margin-bottom: 3px; }
+  100% { margin-top: 6px; margin-bottom: 6px; }
+}
+@keyframes motion-slider-alt2 {
+  0% { margin-top: 4px; margin-bottom: 4px; }
+  100% { margin-top: 6px; margin-bottom: 6px; }
+}
+@keyframes motion-slider-alt3 {
+  0% { margin-top: 5px; margin-bottom: 5px; }
+  100% { margin-top: 6px; margin-bottom: 6px; }
+}
 
-@keyframes volume-slider-blink {
+@keyframes slider-blink {
   0% {
     background: #bdc5ea;
     box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);

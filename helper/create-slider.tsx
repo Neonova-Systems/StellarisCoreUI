@@ -107,7 +107,7 @@ export function CreateSlider({ value, onChange, disabled = false }: CreateSlider
                 const isDisabled = resolveDisabled(disabled);
                 return (
         <overlay>
-            <box cssClasses={["volume-segment-track", ...(isDisabled ? ["disabled"] : [])]}
+            <box cssClasses={["slider-segment-track", ...(isDisabled ? ["disabled"] : [])]}
                 spacing={1} halign={Align.FILL} hexpand
                 $={(self) => {
                     trackWidget = self;
@@ -120,17 +120,23 @@ export function CreateSlider({ value, onChange, disabled = false }: CreateSlider
                 <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
                 <For each={segmentIndexes}>
                     {(index) => (
-                        <button cssClasses={["volume-segment-button"]} onClicked={() => !isDisabled && setVolumeFromSegment(index)}>
+                        <button cssClasses={["slider-segment-button"]} onClicked={() => !isDisabled && setVolumeFromSegment(index)}>
                             <With value={value}>
                                 {(v) => {
                                     const count = resolvedSegmentCount.peek();
                                     const filledCount = Math.max(0, Math.ceil((v / 100) * count));
                                     const focusIndex = Math.max(0, filledCount - 1);
+                                    const focusTrailing1 = Math.max(0, filledCount - 2);
+                                    const focusTrailing2 = Math.max(0, filledCount - 3);
+                                    const focusTrailing3 = Math.max(0, filledCount - 4);
                                     return (
                                         <box
                                             cssClasses={[
-                                                "volume-segment",
+                                                "slider-segment",
                                                 (index < filledCount ? "filled" : ""),
+                                                (index === focusTrailing1 && focusTrailing1 !== 0 ? "apply-motion-slider1" : ""),
+                                                (index === focusTrailing2 && focusTrailing2 !== 0 ? "apply-motion-slider2" : ""),
+                                                (index === focusTrailing3 && focusTrailing3 !== 0 ? "apply-motion-slider3" : ""),
                                                 (index === focusIndex ? "focus" : ""),
                                                 (isDraggingSegments.peek() && index === focusIndex ? "dragging" : ""),
                                             ]}
