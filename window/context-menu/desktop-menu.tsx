@@ -2,7 +2,7 @@ import { HOME_DIR } from "../../helper";
 import { spawnContextMenu } from "../ContextMenu"
 
 const commandsList = [
-    { name: "Toggle", description: "Toggle desktop icons visibility", command: "ags request 'toggleDesktopIcons'", keybind: "v"},
+    { name: "Toggle", description: "Toggle desktop icons visibility", command: "ags request 'toggle DesktopIcons'", keybind: "v"},
     { name: "Change Wallpaper", description: "Open wallpaper selector", command: "ags request 'open wallpaper selector'", keybind: ""},
     { name: "Refresh", description: "Reload desktop icons and layout", command: "ags request 'refresh desktop'", keybind: "r"},
     { name: "Terminal", description: "Open terminal in desktop directory", command: "/usr/bin/kitty --directory ~/Desktop", keybind: "t"},
