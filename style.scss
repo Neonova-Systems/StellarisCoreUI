@@ -129,13 +129,17 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
       label { @include apply-stagger-animation; }
       font-family: Kode Mono;
       font-size: 6px;
-      color: #8B91B2;
+      color: #575d83;
       margin-left: 8px;
       margin-right: 8px;
       margin-bottom: 8px;
       padding: 7px;
+      background-color: #09090c3f;
       padding-bottom: 0px;
       border: 1px solid #0B1233;
+      &:hover {
+        color:#7680b8;
+      }
     }
     .NoiseGrid {
       margin: 8px;
