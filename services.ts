@@ -28,7 +28,8 @@ const stateKeys = {
     desktopIconsVisible: "DesktopIcons",
     notificationVerbosityState: "NotificationVerbosity",
     notificationDNDState: "NotificationDND",
-    audioControlVerbosityState: "AudioControlVerbosity"
+    audioControlVerbosityState: "AudioControlVerbosity",
+    controlKeyState: "ControlKey"
 } as const;
 
 export type GlobalState = {
@@ -139,10 +140,10 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
     }
 
     for (const key in stateMappings) {
-        if (request === `get${key}State`) {
+        if (request === `get ${key}`) {
             return handleStateChange(stateMappings[key], res);
         }
-        if (request === `toggle${key}`) {
+        if (request === `toggle ${key}`) {
             return handleStateChange(stateMappings[key], res, true);
         }
     }

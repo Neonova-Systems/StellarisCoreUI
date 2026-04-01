@@ -9,7 +9,7 @@ import { AudioFile, playSound } from "./utility";
  * and plays a sound when the panel becomes visible.
  *
  * @param stateName - The unique name of the state to be toggled in 'ags'.
- * This is used to construct the command `ags request "toggle${stateName}"`.
+ * This is used to construct the command `ags request "toggle ${stateName}"`.
  * @param setterFunction - A callback function, typically a state setter,
  * that will be called with the new visibility status (`true` for visible,
  * `false` for hidden) received from the 'ags' command.
@@ -24,7 +24,7 @@ import { AudioFile, playSound } from "./utility";
  * </CreatePanel>
  */
 export function panelClicked(stateName: string, setterFunction: (value: boolean) => void): void {
-    execAsync(`ags request "toggle${stateName}"`)
+    execAsync(`ags request "toggle ${stateName}"`)
         .then(out => {
             const isVisible = out === 'true';
             setterFunction(isVisible);
@@ -38,16 +38,16 @@ export function panelClicked(stateName: string, setterFunction: (value: boolean)
 }
 
 /**
- * Initializes a boolean panel state by querying `ags request "get${stateName}State"`
+ * Initializes a boolean panel state by querying `ags request "get ${stateName}"`
  * after a delay.
  *
- * @param stateName Name used to build the `get${stateName}State` request.
+ * @param stateName Name used to build the `get ${stateName}` request.
  * @param setterFunction Setter that receives the resolved boolean state.
  * @param delayMs Delay before the first request (defaults to 500ms).
  */
 export function initToggleState(stateName: string, setterFunction: (value: boolean) => void, delayMs = 500): void {
     timeout(delayMs, () => {
-        execAsync(`ags request "get${stateName}State"`)
+        execAsync(`ags request "get ${stateName}"`)
             .then(out => setterFunction(out === "true"))
             .catch(err => console.error(`Failed to initialize ${stateName} state:`, err));
     });
@@ -56,14 +56,14 @@ export function initToggleState(stateName: string, setterFunction: (value: boole
 /**
  * Polls a boolean AGS state and passes updates to a callback.
  *
- * @param stateName Name used to build the `get${stateName}State` request.
+ * @param stateName Name used to build the `get ${stateName}` request.
  * @param intervalMs Polling interval in milliseconds.
  * @param onChange Callback invoked with parsed boolean value.
  * @returns The created AGS timer so callers can cancel if needed.
  */
 export function watchRequestBoolean(stateName: string, intervalMs: number, onChange: (value: boolean) => void): Timer {
     return interval(intervalMs, () => {
-        execAsync(`ags request "get${stateName}State"`)
+        execAsync(`ags request "get ${stateName}"`)
             .then(out => onChange(out === "true"))
             .catch(err => console.error(`Failed to poll ${stateName} state:`, err));
     });
