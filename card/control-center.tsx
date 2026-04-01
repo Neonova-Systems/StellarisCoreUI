@@ -1,17 +1,20 @@
 import { createState, For, With } from "ags";
-import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile, Align } from "../helper";
+import { CreateEntryContent, CreatePanel, createRandomString, HOME_DIR, panelClicked, playSound, AudioFile, Align, TOOLTIP_TEXT_CONTEXT_MENU, ICON_DIR } from "../helper";
 import { Gtk } from "ags/gtk4"
 import { interval } from "ags/time";
 import { execAsync } from "ags/process";
 import Gio from "gi://Gio?version=2.0";
 import AudioControl from "./control-center/audio-control";
 import HyprlandControl from "./control-center/hyprland-control";
-import { initToggleState } from "../helper/behaviour";
+import { initToggleState, openContextMenu, watchRequestBoolean } from "../helper/behaviour";
+import CreateValueWatcher from "../helper/create-value-watcher";
 
 export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () => void, onDragDown?: () => void }) {
     const [toggleContentState, settoggleContentState] = createState(false);
+    const [toggleControlEntryState, setToggleControlEntryState] = createState(true);
     const [decorationImage, setDecorationImage] = createState(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant1.svg`);
     initToggleState("ControlCenter", settoggleContentState);
+    watchRequestBoolean("ControlKey", 100, (value) => setToggleControlEntryState(value));
     const spacingControlEntry = 3;
 
     function cycleDecorationImage() { setDecorationImage(`${HOME_DIR}/.config/ags/assets/dots/Variant=Variant${Math.floor(Math.random() * 15) + 1}.svg`) }
@@ -60,60 +63,70 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     };
 
     setTempArray(chunkArray(controlEntry, 6));
+    function onRightClicked() { openContextMenu("control-center.tsx"); }
 
     return (
         <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown}/>
+            <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+                <image file={`${ICON_DIR}/ph--mouse-right-click-fill.svg`} pixelSize={16} />
+            } />
+
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
                         <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
-                            <box marginBottom={5}>
-                                <With value={decorationImage}> 
-                                    {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Align.FILL} hexpand/> )} 
-                                </With>
-                            </box>
-                            <For each={tempArray}>
-                                {(chunk: any[], chunkIndex) => {
-                                    const currentIndex = chunkIndex.peek();
-                                    const totalChunks = tempArray.peek().length;
-                                    const isFirstChunk = currentIndex === 0;
-                                    const isLastChunk = currentIndex === totalChunks - 1;
-                                    return (
-                                        <box cssClasses={['control-collection']} css={`min-height: 70px;`} homogeneous={true} spacing={spacingControlEntry}>
-                                            {chunk.map((entry: any) => {
-                                                const randomNumber = Math.random() > 0.5;
-                                                const showFirstOverlay = randomNumber && isFirstChunk;
-                                                const showLastOverlay = randomNumber && isLastChunk;
-                                                const showAltFirstOverlay = !randomNumber && isFirstChunk;
-                                                const showAltLastOverlay = !randomNumber && isLastChunk;
-                                                const entryDecoration =
-                                                    (showAltFirstOverlay && render('first', true)) ||
-                                                    (showAltLastOverlay && render('last', true)) ||
-                                                    (showFirstOverlay && render('first', false)) ||
-                                                    (showLastOverlay && render('last', false));
-                                                return (
-                                                    <button onClicked={() => EntryClicked(entry.command)}>
-                                                        <overlay cssClasses={["container", "border"]}>
-                                                            <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Key)} />
-                                                            {entryDecoration || <box hexpand vexpand />}
-                                                            <box $type="overlay" cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} hexpand vexpand>
-                                                                <box orientation={Gtk.Orientation.HORIZONTAL} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} vexpand>
-                                                                    <label label={entry.index.toString() + "."} halign={Align.LEFT} />
-                                                                    <box hexpand />
-                                                                    <label label={"0x" + createRandomString(3).toUpperCase()} halign={Align.RIGHT} />
-                                                                </box>
-                                                                <label cssClasses={["title-content"]} label={entry.name} halign={Align.CENTER} valign={Align.CENTER} vexpand wrap />
-                                                                <label label={createRandomString(13)} cssClasses={["uppercase"]} halign={Align.FILL} valign={Align.RIGHT} vexpand wrap />
-                                                            </box>
-                                                        </overlay>
-                                                    </button>
-                                                );
-                                            })}
-                                        </box>
-                                    );
-                                }}
-                            </For>
+                            <CreateValueWatcher value={toggleControlEntryState}>
+                                {(v) => (
+                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
+                                    <box marginBottom={5}>
+                                        <With value={decorationImage}> 
+                                            {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Align.FILL} hexpand/> )} 
+                                        </With>
+                                    </box>
+                                    <For each={tempArray}>
+                                        {(chunk: any[], chunkIndex) => {
+                                            const currentIndex = chunkIndex.peek();
+                                            const totalChunks = tempArray.peek().length;
+                                            const isFirstChunk = currentIndex === 0;
+                                            const isLastChunk = currentIndex === totalChunks - 1;
+                                            return (
+                                                <box cssClasses={['control-collection']} css={`min-height: 70px;`} homogeneous={true} spacing={spacingControlEntry}>
+                                                    {chunk.map((entry: any) => {
+                                                        const randomNumber = Math.random() > 0.5;
+                                                        const showFirstOverlay = randomNumber && isFirstChunk;
+                                                        const showLastOverlay = randomNumber && isLastChunk;
+                                                        const showAltFirstOverlay = !randomNumber && isFirstChunk;
+                                                        const showAltLastOverlay = !randomNumber && isLastChunk;
+                                                        const entryDecoration =
+                                                            (showAltFirstOverlay && render('first', true)) ||
+                                                            (showAltLastOverlay && render('last', true)) ||
+                                                            (showFirstOverlay && render('first', false)) ||
+                                                            (showLastOverlay && render('last', false));
+                                                        return (
+                                                            <button onClicked={() => EntryClicked(entry.command)}>
+                                                                <overlay cssClasses={["container", "border"]}>
+                                                                    <Gtk.EventControllerMotion onEnter={() => playSound(AudioFile.Key)} />
+                                                                    {entryDecoration || <box hexpand vexpand />}
+                                                                    <box $type="overlay" cssClasses={[(randomNumber ? "entry" : "alt-entry"), (isFirstChunk ? "first-chunk" : "last-chunk")]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} hexpand vexpand>
+                                                                        <box orientation={Gtk.Orientation.HORIZONTAL} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} vexpand>
+                                                                            <label label={entry.index.toString() + "."} halign={Align.LEFT} />
+                                                                            <box hexpand />
+                                                                            <label label={"0x" + createRandomString(3).toUpperCase()} halign={Align.RIGHT} />
+                                                                        </box>
+                                                                        <label cssClasses={["title-content"]} label={entry.name} halign={Align.CENTER} valign={Align.CENTER} vexpand wrap />
+                                                                        <label label={createRandomString(13)} cssClasses={["uppercase"]} halign={Align.FILL} valign={Align.RIGHT} vexpand wrap />
+                                                                    </box>
+                                                                </overlay>
+                                                            </button>
+                                                        );
+                                                    })}
+                                            </box>
+                                        );
+                                    }}
+                                    </For>
+                                </box>
+                                )}
+                            </CreateValueWatcher>
                             <AudioControl />
                             <HyprlandControl />
                         </box>
