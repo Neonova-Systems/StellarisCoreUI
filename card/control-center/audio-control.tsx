@@ -47,7 +47,7 @@ export default function AudioControl() {
     initToggleState("AudioControlVerbosity", setVerboseInformation, 100)
 
     function toggleVerbosity() {
-        execAsync(`ags request "toggleAudioControlVerbosity"`).then((out) => setVerboseInformation(out === "true"))
+        execAsync(`ags request "toggle AudioControlVerbosity"`).then((out) => setVerboseInformation(out === "true"))
     }
 
     function pickOrNA(value: unknown) {
