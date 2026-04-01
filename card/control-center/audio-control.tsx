@@ -189,7 +189,7 @@ export default function AudioControl() {
     interval(1000, () => { refreshSpeakerVolume(); refreshMicVolume() })
     interval(33000, () => { refreshDeviceInfo() })
     return (
-        <box marginTop={10}>
+        <box>
             <overlay>
                 <With value={verboseInformation}>
                     {(v) => {
