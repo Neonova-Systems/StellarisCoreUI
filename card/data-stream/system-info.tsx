@@ -7,6 +7,7 @@ import Gio from 'gi://Gio?version=2.0';
 import CreateUtilityButton from '../../helper/create-utility-button';
 import Adw from "gi://Adw?version=1";
 import { initToggleState } from "../../helper/behaviour";
+import CreateCard from "../../helper/create-card";
 
 export default function SystemInfo() {
     const [userHostname, setUserHostname] = createState("");
@@ -99,7 +100,7 @@ export default function SystemInfo() {
     });
     interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setUptime(out.toUpperCase())))
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <CreateCard>
             <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
@@ -152,6 +153,6 @@ export default function SystemInfo() {
                     </box>
                 )}
             </With>
-        </box>
+        </CreateCard>
     )
 }

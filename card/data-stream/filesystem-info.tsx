@@ -6,6 +6,7 @@ import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP
 import { interval, Timer } from "ags/time";
 import CreateGraph from "../../helper/create-graph";
 import { cycleAssetVariant, initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
+import CreateCard from "../../helper/create-card";
 
 export default function FilesystemInfo() {
     const [avgMemUsage, setAvgMemUsage] = createState([0]);
@@ -99,7 +100,7 @@ export default function FilesystemInfo() {
         [`lsblk -a --list`]: setBlockList,
     });
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <CreateCard>
             <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
@@ -149,6 +150,6 @@ export default function FilesystemInfo() {
                     </box>
                 )}
             </With>
-        </box>
+        </CreateCard>
     )
 }

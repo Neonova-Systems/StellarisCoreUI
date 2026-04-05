@@ -5,6 +5,7 @@ import { CreateEntryContent, CreatePanel, HOME_DIR, updateRollingWindow, TOOLTIP
 import { interval, Timer } from 'ags/time';
 import CreateGraph from "../../helper/create-graph";
 import { initToggleState, openContextMenu, watchRequestBoolean } from "../../helper/behaviour";
+import CreateCard from "../../helper/create-card";
 
 export default function HardwareInfo() {
     const [cpuName, setCpuName] = createState("");
@@ -108,7 +109,7 @@ export default function HardwareInfo() {
             onError: (_, error) => console.log(error),
         });
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <CreateCard>
             <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
@@ -169,6 +170,6 @@ export default function HardwareInfo() {
                     </box>
                 )}
             </With>
-        </box>
+        </CreateCard>
     )
 }

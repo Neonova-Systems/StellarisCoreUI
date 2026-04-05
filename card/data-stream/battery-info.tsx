@@ -4,6 +4,7 @@ import { Align, CreateEntryContent, CreatePanel, HOME_DIR, ICON_DIR, TOOLTIP_TEX
 import AstalBattery from "gi://AstalBattery?version=0.1";
 import AstalPowerProfiles from "gi://AstalPowerProfiles?version=0.1";
 import { initToggleState, openContextMenu, panelClicked } from '../../helper/behaviour';
+import CreateCard from "../../helper/create-card";
 
 export function BatteryInfo() {
     const powerprofiles = AstalPowerProfiles.get_default();
@@ -74,8 +75,7 @@ export function BatteryInfo() {
         [batteryPath]: setFullReport,
     });
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <Gtk.GestureLongPress />
+        <CreateCard>
             <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
@@ -129,7 +129,7 @@ export function BatteryInfo() {
                     </box>
                 )}
             </With>
-        </box>
+        </CreateCard>
     )
 }
 

@@ -4,6 +4,7 @@ import { interval } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
 import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
 import { cycleAssetVariant, initToggleState } from "../../helper/behaviour";
+import CreateCard from '../../helper/create-card';
 
 export default function NetworkInfo() {
     const [currentSSID, setCurrentSSID] = createState("");
@@ -67,7 +68,7 @@ export default function NetworkInfo() {
     });
 
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <CreateCard>
             <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
@@ -119,6 +120,6 @@ export default function NetworkInfo() {
                     </box>
                 )}
             </With>
-        </box>
+        </CreateCard>
     )
 }
