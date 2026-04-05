@@ -13,7 +13,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
     function onRightClicked() { openContextMenu("control-center.tsx"); }
 
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name={"CONTROL CENTER"} onClicked={() => panelClicked("ControlCenter", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}/>
             <With value={toggleContentState}>
                 {(v) => (

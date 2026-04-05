@@ -80,7 +80,7 @@ export default function MusicPlayer() {
     }
 
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             <CreatePanel name="MUSIC PLAYER" onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} />
             <With value={toggleContentState}>
                 {(v) => ( 

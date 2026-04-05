@@ -94,7 +94,7 @@ window.Dashboard { background: linear-gradient(to bottom, #070B1F, #040714); }
   label { text-transform: uppercase;}
 }
 
-.card-component {
+.card {
   .card-content {
     @include apply-start-animation(500ms);
     background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));

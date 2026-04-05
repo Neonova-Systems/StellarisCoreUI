@@ -77,7 +77,7 @@ export default function LayerInformation() {
 
     const masximumSize = hyprland.focused_monitor.height / 4.5;
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false} hexpand={false}>
+        <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false} hexpand={false}>
             <CreatePanel name={"LAYER INFORMATION"} onClicked={() => panelClicked("LayerInformation", settoggleContentState)} />
             <With value={toggleContentState}>
                 {(v) => (

@@ -74,7 +74,7 @@ export default function CreateCard({ children, state, cardContent }: CardProps) 
     }
 
     return (
-        <box cssClasses={["card-component"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
+        <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
             {children}
             {renderWithComponent()}
         </box>
