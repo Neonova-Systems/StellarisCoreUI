@@ -27,9 +27,6 @@ export function spawnContextMenu(commandList: CommandItem[]) {
         css: style,
         main() {
             SpawnContextMenu(commandList, id, spawnX, spawnY);
-            // const poll = interval(200, () => { 
-            //     DeleteWindowOnOutofBound(hyprland.cursorPosition, id, spawnX, spawnY, poll);
-            // });
         },
     })
 }
@@ -42,7 +39,31 @@ function execCommand(command: CommandItem, windowName: string = "context-menu") 
 }
 
 function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawnX: number, spawnY: number) {
-    const { LEFT, TOP } = Astal.WindowAnchor;
+    const { LEFT, RIGHT, TOP, BOTTOM } = Astal.WindowAnchor;
+
+    const monitor = hyprland.get_monitors().find((m) =>
+        spawnX >= m.x &&
+        spawnX < m.x + m.width &&
+        spawnY >= m.y &&
+        spawnY < m.y + m.height,
+    ) ?? hyprland.get_focused_monitor();
+
+    const monitorX = monitor?.x ?? 0;
+    const monitorY = monitor?.y ?? 0;
+    const monitorWidth = monitor?.width ?? 0;
+    const monitorHeight = monitor?.height ?? 0;
+
+    const verticalFlipThreshold = 220;
+    const useRightAnchor = spawnX >= monitorX + monitorWidth - menuWidth;
+    const useBottomAnchor = spawnY >= monitorY + monitorHeight - verticalFlipThreshold;
+
+    const horizontalAnchor = useRightAnchor ? RIGHT : LEFT;
+    const verticalAnchor = useBottomAnchor ? BOTTOM : TOP;
+
+    const marginTop = Math.max(0, spawnY - monitorY);
+    const marginBottom = Math.max(0, monitorY + monitorHeight - spawnY);
+    const marginLeft = Math.max(0, spawnX - monitorX);
+    const marginRight = Math.max(0, monitorX + monitorWidth - spawnX);
 
     function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
         if (keyval === Gdk.KEY_Escape) {
@@ -68,7 +89,6 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawn
         if (state & Gdk.ModifierType.ALT_MASK) modifiers.push("alt");
 
         const pressedKeybind = [...modifiers, key].join(" + ");
-        // print(pressedKeybind); // debug only
 
         const command = commandsList.find(c => c.keybind?.toLowerCase() === pressedKeybind);
         if (command && command.command) execCommand(command, windowName)
@@ -81,9 +101,11 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawn
             exclusivity={Astal.Exclusivity.IGNORE}
             default_width={menuWidth}
             application={app}
-            anchor={LEFT | TOP}
-            marginLeft={spawnX}
-            margin_top={spawnY}
+            anchor={horizontalAnchor | verticalAnchor}
+            marginLeft={!useRightAnchor ? marginLeft : undefined}
+            marginRight={useRightAnchor ? marginRight : undefined}
+            marginTop={!useBottomAnchor ? marginTop : undefined}
+            marginBottom={useBottomAnchor ? marginBottom : undefined}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
             <Gtk.EventControllerMotion onLeave={() => {
