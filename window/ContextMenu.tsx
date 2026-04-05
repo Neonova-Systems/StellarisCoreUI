@@ -3,7 +3,7 @@ import app from "ags/gtk4/app"
 import style from "./context-menu/style.scss";
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 
-import { Align, CreateEntryContent, DeleteWindowOnOutofBound } from "../helper";
+import { Align, CreateEntryContent } from "../helper";
 import { exec, execAsync } from "ags/process";
 import { interval } from "ags/time";
 
@@ -65,11 +65,40 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, curso
     const marginLeft = Math.max(0, cursorPosX - monitorX);
     const marginRight = Math.max(0, monitorX + monitorWidth - cursorPosX);
 
+    const outOfBoundOffset = 15;
+    let poll: ReturnType<typeof interval> | null = null;
+
+    function closeContextMenu() {
+        const w = app.get_window?.(windowName)
+        if (w) { w.destroy() }
+        poll?.cancel();
+        poll = null;
+        app.quit()
+    }
+
+    poll = interval(30, () => {
+        const currentCursorPos = hyprland.cursorPosition;
+        if (!currentCursorPos) return;
+
+        const windowWidth = app.get_window?.(windowName)?.get_width() || menuWidth;
+        const windowHeight = app.get_window?.(windowName)?.get_height() || 0;
+
+        const windowStartX = useRightAnchor ? cursorPosX - windowWidth : cursorPosX;
+        const windowStartY = useBottomAnchor ? cursorPosY - windowHeight : cursorPosY;
+
+        if (
+            currentCursorPos.x < windowStartX - outOfBoundOffset ||
+            currentCursorPos.x > windowStartX + windowWidth + outOfBoundOffset ||
+            currentCursorPos.y < windowStartY - outOfBoundOffset ||
+            currentCursorPos.y > windowStartY + windowHeight + outOfBoundOffset
+        ) {
+            closeContextMenu();
+        }
+    });
+
     function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
         if (keyval === Gdk.KEY_Escape) {
-            const w = app.get_window?.(windowName)
-            if (w) { w.destroy() }
-            app.quit()
+            closeContextMenu();
             return;
         }
 
@@ -108,11 +137,6 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, curso
             marginBottom={useBottomAnchor ? marginBottom : undefined}
             keymode={Astal.Keymode.ON_DEMAND}
             namespace={"context-menu"}>
-            <Gtk.EventControllerMotion onLeave={() => {
-                const w = app.get_window?.(windowName)
-                if (w) { w.destroy() }
-                app.quit()
-            }} />
             <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
                 handleKeyPress(keyval, keycode, state)
             } />
