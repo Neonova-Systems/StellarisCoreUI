@@ -106,33 +106,6 @@ export function formatTime(time: number, format = "%H:%M") {
 }
 
 /**
- * Destroys the specified window and quits the app if the cursor moves outside the defined bounds.
- * 
- * @param currentCursorPos - The current cursor position (AstalHyprland.Position).
- * @param windowName - The name of the window to check bounds for.
- * @param anchorPointerX - The X coordinate of the anchor point.
- * @param anchorPointerY - The Y coordinate of the anchor point.
- * @param poll - The GLib.Source polling object to remove.
- * @param offset - Optional offset for the bounds (default: 15).
- * 
- * Side effects: May destroy the "ContextMenu" window, remove the poll source, and quit the app.
- */
-export function DeleteWindowOnOutofBound(currentCursorPos: AstalHyprland.Position, windowName: string, anchorPointerX: number, anchorPointerY: number, poll: Timer, offset: number = 15) {
-    const windowWidth = app.get_window?.(windowName)?.get_width() || 300;
-    const windowHeight = app.get_window?.(windowName)?.get_height() || 0;
-    if (!currentCursorPos) return;
-    if ( currentCursorPos.x < anchorPointerX - offset ||
-        currentCursorPos.x > anchorPointerX + windowWidth + offset ||
-        currentCursorPos.y < anchorPointerY - offset ||
-        currentCursorPos.y > anchorPointerY + windowHeight + offset) {
-        const w = app.get_window?.("ContextMenu");
-        if (w) { w.destroy() }
-        poll.cancel();
-        app.quit();
-    }
-}
-
-/**
  * Converts a hex color string to Cairo RGBA values
  * @param hex - Hex color string (e.g., "#1a39ed" or "1a39ed")
  * @param alpha - Optional alpha value between 0 and 1 (default: 1.0)
