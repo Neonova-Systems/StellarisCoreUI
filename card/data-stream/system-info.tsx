@@ -141,8 +141,9 @@ export default function SystemInfo() {
                             </box>
                         </box>
                         <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
-                            <scrolledwindow minContentWidth={100} minContentHeight={90} hexpand={true}>
+                            <scrolledwindow minContentWidth={100} minContentHeight={90} hexpand={true} hscrollbarPolicy={Gtk.PolicyType.ALWAYS} vscrollbarPolicy={Gtk.PolicyType.EXTERNAL} cssClasses={["scrollbar"]} >
                                 <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                                    <Gtk.GestureClick />
                                     <label label={journalHead} valign={Align.LEFT} halign={Align.LEFT} />
                                     <label label={systemdBlame} valign={Align.LEFT} halign={Align.LEFT} />
                                 </box>
