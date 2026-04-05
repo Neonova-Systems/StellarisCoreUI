@@ -473,10 +473,10 @@ tooltip {
 .scrollbar scrollbar {
   // trough { background-color: gtkalpha(#111423, 0.5); }
   slider {
-    background-color: #152ab0;
+    background-color: #0c1235;
     min-width: 2.5px;
     min-height: 2.5px;
   }
-  slider:hover { filter: brightness(1.3) }
+  slider:hover { filter: brightness(2) }
   slider:active { background-color: #1A39ED; filter: none;}
 }
