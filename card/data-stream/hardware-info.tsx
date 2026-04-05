@@ -87,6 +87,64 @@ export default function HardwareInfo() {
         openContextMenu("hardware-info.tsx");
     }
 
+    function renderContent() {
+        return (
+            <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+                <box>
+                    <With value={toggleGraphState}>
+                        {(v) => (
+                            <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
+                                <box marginStart={7} marginEnd={7} marginTop={10} marginBottom={5}>
+                                    <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={15} lineWidth={0.9}/>
+                                </box>
+                                <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={7} marginEnd={7} >
+                                    <With value={perCpuUsage}>
+                                        {(cpuData) =>
+                                            <box halign={Align.FILL}>
+                                                {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
+                                                    const coreDataAccessor = cpuData[coreNum] || [0];
+                                                    return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={0.9} height={15}/>);
+                                                })}
+                                            </box>
+                                        }
+                                    </With>
+                                </box>
+                            </box>
+                        )}
+                    </With>
+                </box>
+                <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                    <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="CPU NAME" value={cpuName} important allowCopy/>
+                            <CreateEntryContent name="VENDOR NAME" value={vendorName} important allowCopy/>
+                            <CreateEntryContent name="THREAD[S]/CORE & CORE[S]/SOCKET" value={threadsCore} />
+                            <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} important allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} allowCopy/>
+                            <CreateEntryContent name="CPU SCALING [MHZ]" value={cpuScaling} />
+                            <CreateEntryContent name="SOCKET[S]" value={sockets} />
+                            <CreateEntryContent name="GPU VENDOR NAME" value={gpuVendorName} allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="CPU MODES" value={cpuModes} allowCopy/>
+                            <CreateEntryContent name="CPU MAX MHZ" value={cpuMaxMhz} allowCopy/>
+                            <CreateEntryContent name="VIRTUALIZATION" value={virtualization} allowCopy/>
+                            <CreateEntryContent name="VIDEO & UNIFIED MEMORY" value={videoUnifiedMemory} allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                            <CreateEntryContent name="BYTE ORDER" value={byteOrder} allowCopy/>
+                            <CreateEntryContent name="CPU MIN MHZ" value={cpuMinMhz} />
+                            <CreateEntryContent name="BIOS/UEFI" value={biosInfo} allowCopy/>
+                            <CreateEntryContent name="MOTHERBOARD" value={motherboard} allowCopy/>
+                        </box>
+                    </box>
+                </box>
+            </box>
+        )
+    }
+
     createBindingCommandTableSetter({
             [`lscpu | grep 'Model name:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuName,
             [`lscpu | grep 'Architecture:' | awk -F: '{print $2}' | sed 's/^[ \t]*//'`]: setCpuArchitecture,
@@ -109,67 +167,10 @@ export default function HardwareInfo() {
             onError: (_, error) => console.log(error),
         });
     return (
-        <CreateCard>
+        <CreateCard state={toggleContentState} cardContent={renderContent()}>
             <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
-            <With value={toggleContentState}>
-                {(v) => (
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box>
-                            <With value={toggleGraphState}>
-                                {(v) => (
-                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL}>
-                                        <box marginStart={7} marginEnd={7} marginTop={10} marginBottom={5}>
-                                            <CreateGraph title={"AVERAGE LOAD CPU USAGE"} valueToWatch={avgCpuUsage} threshold={0.7} height={15} lineWidth={0.9}/>
-                                        </box>
-                                        <box orientation={Gtk.Orientation.HORIZONTAL} marginStart={7} marginEnd={7} >
-                                            <With value={perCpuUsage}>
-                                                {(cpuData) =>
-                                                    <box halign={Align.FILL}>
-                                                        {Object.keys(cpuData).sort((a, b) => parseInt(a) - parseInt(b)).map((coreNum) => {
-                                                            const coreDataAccessor = cpuData[coreNum] || [0];
-                                                            return ( <CreateGraph title={`CPU-CORE ${coreNum}`} valueToWatch={coreDataAccessor} threshold={0.7} fontSize={7} lineWidth={0.9} height={15}/>);
-                                                        })}
-                                                    </box>
-                                                }
-                                            </With>
-                                        </box>
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU NAME" value={cpuName} important allowCopy/>
-                                    <CreateEntryContent name="VENDOR NAME" value={vendorName} important allowCopy/>
-                                    <CreateEntryContent name="THREAD[S]/CORE & CORE[S]/SOCKET" value={threadsCore} />
-                                    <CreateEntryContent name="GPU DEVICE NAME" value={gpuDeviceName} important allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU ARCHITECTURE" value={cpuArchitecture} allowCopy/>
-                                    <CreateEntryContent name="CPU SCALING [MHZ]" value={cpuScaling} />
-                                    <CreateEntryContent name="SOCKET[S]" value={sockets} />
-                                    <CreateEntryContent name="GPU VENDOR NAME" value={gpuVendorName} allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CPU MODES" value={cpuModes} allowCopy/>
-                                    <CreateEntryContent name="CPU MAX MHZ" value={cpuMaxMhz} allowCopy/>
-                                    <CreateEntryContent name="VIRTUALIZATION" value={virtualization} allowCopy/>
-                                    <CreateEntryContent name="VIDEO & UNIFIED MEMORY" value={videoUnifiedMemory} allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                                    <CreateEntryContent name="BYTE ORDER" value={byteOrder} allowCopy/>
-                                    <CreateEntryContent name="CPU MIN MHZ" value={cpuMinMhz} />
-                                    <CreateEntryContent name="BIOS/UEFI" value={biosInfo} allowCopy/>
-                                    <CreateEntryContent name="MOTHERBOARD" value={motherboard} allowCopy/>
-                                </box>
-                            </box>
-                        </box>
-                    </box>
-                )}
-            </With>
         </CreateCard>
     )
 }

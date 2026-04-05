@@ -76,6 +76,53 @@ export default function FilesystemInfo() {
 
     function onRightClicked() { openContextMenu("filesystem-info.tsx"); }
 
+    function renderContent() {
+        return (
+            <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Align.LEFT} vexpand={false}>
+                <box>
+                    <With value={toggleGraphState}>
+                        {(v) => (
+                            <box visible={v} marginStart={7} marginEnd={7} marginTop={10} >
+                                <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={13} lineWidth={0.8}/>
+                                <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={13} lineWidth={0.8} />
+                                <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={13} lineWidth={0.8} />
+                            </box>
+                        )}
+                    </With>
+                </box>
+                <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
+                    <box valign={Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
+                        <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Align.FILL} vexpand>
+                            <CreateEntryContent name="FILESYSTEM NAME" value={filesystemName} />
+                            <CreateEntryContent name="TOTAL SIZE & FREE SPACE" value={totalSize} allowCopy/>
+                            <CreateEntryContent name="USED SPACE & PERCENTAGE" value={usedSpace} allowCopy/>
+                            <CreateEntryContent name="MOUNTPOINT" value={mountpoint} allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} vexpand>
+                            <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' important allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                            <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' important allowCopy/>
+                        </box>
+                    </box>
+                    <box>
+                        <With value={dataGridImage}> 
+                            {(path) => ( <Gtk.Picture canShrink={false} file={Gio.File.new_for_path(path)}/> )} 
+                        </With>
+                    </box>
+                </box>
+                <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
+                    <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
+                        <box valign={Align.TOP} homogeneous={false} spacing={20}>
+                            <label label={mountpointList} valign={Align.TOP} halign={Align.LEFT} />
+                            <label label={blockList} valign={Align.TOP} halign={Align.LEFT} />
+                        </box>
+                    </scrolledwindow>
+                </box>
+            </box>
+        )
+    }
+
     interval(1000, () => {
         setDataGridImage((currentPath) => cycleAssetVariant(currentPath, [
             `${HOME_DIR}/.config/ags/assets/DataGrid-variant1.svg`,
@@ -100,56 +147,10 @@ export default function FilesystemInfo() {
         [`lsblk -a --list`]: setBlockList,
     });
     return (
-        <CreateCard>
+        <CreateCard state={toggleContentState} cardContent={renderContent()}>
             <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
-            <With value={toggleContentState}>
-                {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL} valign={Align.LEFT} vexpand={false}>
-                        <box>
-                            <With value={toggleGraphState}>
-                                {(v) => (
-                                    <box visible={v} marginStart={7} marginEnd={7} marginTop={10} >
-                                        <CreateGraph title={"MEMORY USAGE"} valueToWatch={avgMemUsage} threshold={0.7} height={13} lineWidth={0.8}/>
-                                        <CreateGraph title={"READ OPERATION"} valueToWatch={readDiskOperation} height={13} lineWidth={0.8} />
-                                        <CreateGraph title={"WRITE OPERATION"} valueToWatch={writeDiskOperation} height={13} lineWidth={0.8} />
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <box cssClasses={["content"]} spacing={0} homogeneous={false} hexpand={false} vexpand={false}>
-                            <box valign={Align.FILL} spacing={0} orientation={Gtk.Orientation.VERTICAL} homogeneous={false} hexpand>
-                                <box cssClasses={["entry"]} homogeneous={false} spacing={10} halign={Align.FILL} vexpand>
-                                    <CreateEntryContent name="FILESYSTEM NAME" value={filesystemName} />
-                                    <CreateEntryContent name="TOTAL SIZE & FREE SPACE" value={totalSize} allowCopy/>
-                                    <CreateEntryContent name="USED SPACE & PERCENTAGE" value={usedSpace} allowCopy/>
-                                    <CreateEntryContent name="MOUNTPOINT" value={mountpoint} allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} vexpand>
-                                    <CreateEntryContent name="UUID & LABEL" value={uuidLabel} css='font-size: 8px;' important allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                                    <CreateEntryContent name="FILESYSTEM OPTIONS" value={filesystemOptions} css='font-size: 8px;' important allowCopy/>
-                                </box>
-                            </box>
-                            <box>
-                                <With value={dataGridImage}> 
-                                    {(path) => ( <Gtk.Picture canShrink={false} file={Gio.File.new_for_path(path)}/> )} 
-                                </With>
-                            </box>
-                        </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
-                            <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Align.TOP} homogeneous={false} spacing={20}>
-                                    <label label={mountpointList} valign={Align.TOP} halign={Align.LEFT} />
-                                    <label label={blockList} valign={Align.TOP} halign={Align.LEFT} />
-                                </box>
-                            </scrolledwindow>
-                        </box>
-                    </box>
-                )}
-            </With>
         </CreateCard>
     )
 }

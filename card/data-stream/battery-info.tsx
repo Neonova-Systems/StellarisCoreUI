@@ -74,61 +74,61 @@ export function BatteryInfo() {
     createBindingCommandTableSetter({
         [batteryPath]: setFullReport,
     });
+
+    function renderContent() {
+        return (
+        <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+            <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                        <CreateEntryContent name="NATIVE PATH" value={nativePath} allowCopy/>
+                        <CreateEntryContent name="HAS HISTORY" value={hasHistory} />
+                        <CreateEntryContent name="STATE" value={state} />
+                        <CreateEntryContent name="ENERGY-FULL" value={energyFull} />
+                        <CreateEntryContent name="TIME-TO-EMPTY" value={timeToEmpty} />
+                        <CreateEntryContent name="ACTIVE PROFILE" value={activeProfiles} allowCopy/>
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                        <CreateEntryContent name="VENDOR" value={vendor} allowCopy/>
+                        <CreateEntryContent name="HAS STATISTICS" value={hasStatistics} />
+                        <CreateEntryContent name="WARNING LEVEL" value={warningLevel} />
+                        <CreateEntryContent name="ENERGY-FULL-DESIGN" value={energyFullDesign} allowCopy/>
+                        <CreateEntryContent name="PERCENTAGE" value={percentage} />
+                        <CreateEntryContent name="PERFORMANCE DEGRADED" value={performanceDegraded} />
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                        <CreateEntryContent name="POWER SUPPLY" value={powerSupply} />
+                        <CreateEntryContent name="PRESENT" value={present} />
+                        <CreateEntryContent name="ENERGY" value={energy} />
+                        <CreateEntryContent name="ENERGY-RATE" value={energyRate} />
+                        <CreateEntryContent name="CAPACITY" value={capacity} />
+                        <CreateEntryContent name="POWERPROFILE VERSION" value={powerprofilesVersion} />
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                        <CreateEntryContent name="UPDATED" value={updated} allowCopy/>
+                        <CreateEntryContent name="RECHARGEABLE" value={rechargeable} />
+                        <CreateEntryContent name="ENERGY-EMPTY" value={energyEmpty} />
+                        <CreateEntryContent name="VOLTAGE" value={voltage} allowCopy/>
+                        <CreateEntryContent name="TECHNOLOGY" value={technology} allowCopy/>
+                        <CreateEntryContent name="BATTERY AWARE" value={batteryAware} />
+                    </box>
+                </box>
+            </box>
+            <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
+                <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
+                    <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                        <label label={fullReport} valign={Align.LEFT} halign={Align.LEFT} />
+                    </box>
+                </scrolledwindow>
+            </box>
+        </box>
+        )
+    }
     return (
-        <CreateCard>
+        <CreateCard state={toggleContentState} cardContent={renderContent()}>
             <CreatePanel name="BATTERY" onClicked={() => panelClicked("BatteryInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
-            <With value={toggleContentState}>
-                {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
-                                {/* --- Corrected state variables for each value --- */}
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="NATIVE PATH" value={nativePath} allowCopy/>
-                                    <CreateEntryContent name="HAS HISTORY" value={hasHistory} />
-                                    <CreateEntryContent name="STATE" value={state} />
-                                    <CreateEntryContent name="ENERGY-FULL" value={energyFull} />
-                                    <CreateEntryContent name="TIME-TO-EMPTY" value={timeToEmpty} />
-                                    <CreateEntryContent name="ACTIVE PROFILE" value={activeProfiles} allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="VENDOR" value={vendor} allowCopy/>
-                                    <CreateEntryContent name="HAS STATISTICS" value={hasStatistics} />
-                                    <CreateEntryContent name="WARNING LEVEL" value={warningLevel} />
-                                    <CreateEntryContent name="ENERGY-FULL-DESIGN" value={energyFullDesign} allowCopy/>
-                                    <CreateEntryContent name="PERCENTAGE" value={percentage} />
-                                    <CreateEntryContent name="PERFORMANCE DEGRADED" value={performanceDegraded} />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="POWER SUPPLY" value={powerSupply} />
-                                    <CreateEntryContent name="PRESENT" value={present} />
-                                    <CreateEntryContent name="ENERGY" value={energy} />
-                                    <CreateEntryContent name="ENERGY-RATE" value={energyRate} />
-                                    <CreateEntryContent name="CAPACITY" value={capacity} />
-                                    <CreateEntryContent name="POWERPROFILE VERSION" value={powerprofilesVersion} />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                                    <CreateEntryContent name="UPDATED" value={updated} allowCopy/>
-                                    <CreateEntryContent name="RECHARGEABLE" value={rechargeable} />
-                                    <CreateEntryContent name="ENERGY-EMPTY" value={energyEmpty} />
-                                    <CreateEntryContent name="VOLTAGE" value={voltage} allowCopy/>
-                                    <CreateEntryContent name="TECHNOLOGY" value={technology} allowCopy/>
-                                    <CreateEntryContent name="BATTERY AWARE" value={batteryAware} />
-                                </box>
-                            </box>
-                        </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
-                            <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
-                                    <label label={fullReport} valign={Align.LEFT} halign={Align.LEFT} />
-                                </box>
-                            </scrolledwindow>
-                        </box>
-                    </box>
-                )}
-            </With>
         </CreateCard>
     )
 }

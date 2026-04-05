@@ -1,4 +1,4 @@
-import { Accessor, createState, With } from "ags";
+import { createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { interval } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
@@ -67,59 +67,60 @@ export default function NetworkInfo() {
         [`nmcli dev wifi list | head -n 10`]: setWifiList,
     });
 
+    function renderContent() {
+        return (
+            <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+                <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                    <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="CURRENT SSID" value={currentSSID} important allowCopy/>
+                            <CreateEntryContent name="INTERFACE MODE" value={interfaceMode} allowCopy/>
+                            <CreateEntryContent name="FREQUENCY" value={frequency} allowCopy/>
+                            <CreateEntryContent name="DNS SERVERS" value={dnsServers} allowCopy/>
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="CURRENT MAC" value={currentMAC} important allowCopy/>
+                            <CreateEntryContent name="ALT INTERFACE NAME" value={altInterfaceName} />
+                            <CreateEntryContent name="CURRENT SUBNET" value={currentSubnet} />
+                            <CreateEntryContent name="OPEN PORTS" value={openPorts} important />
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
+                            <CreateEntryContent name="LOCAL IP" value={localIp} important allowCopy/>
+                            <CreateEntryContent name="CURRENT BITRATE" value={currentBitrate} />
+                            <CreateEntryContent name="TRANSMIT BYTE" value={transmitByte} />
+                            <CreateEntryContent name="TCP CONNECTION" value={tcpConnection} />
+                        </box>
+                        <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                            <CreateEntryContent name="GATEWAY IP" value={gatewayIp} important allowCopy/>
+                            <CreateEntryContent name="LINK QUALITY" value={linkQuality} />
+                            <CreateEntryContent name="RECEIVE BYTE" value={receiveByte} />
+                            <CreateEntryContent name="UDP CONNECTION" value={udpConnection} />
+                        </box>
+                    </box>
+                </box>
+                <box cssClasses={["NoiseGrid"]}>
+                    <With value={noiseGridImage}>
+                        {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} halign={Align.FILL} /> )}
+                    </With>
+                </box>
+                <box cssClasses={["extended-content"]} css={"font-size: 4px;"} hexpand={false} halign={Align.FILL}>
+                    <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
+                        <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                            <label label={journalNetwork} valign={Align.LEFT} halign={Align.LEFT} />
+                            <label label={networkDevice} valign={Align.LEFT} halign={Align.LEFT} />
+                            <label label={wifiList} valign={Align.LEFT} halign={Align.LEFT} />
+                        </box>
+                    </scrolledwindow>
+                </box>
+            </box>
+        )
+    }
+
     return (
-        <CreateCard>
+        <CreateCard state={toggleContentState} cardContent={renderContent()}>
             <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
-            <With value={toggleContentState}>
-                {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
-                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CURRENT SSID" value={currentSSID} important allowCopy/>
-                                    <CreateEntryContent name="INTERFACE MODE" value={interfaceMode} allowCopy/>
-                                    <CreateEntryContent name="FREQUENCY" value={frequency} allowCopy/>
-                                    <CreateEntryContent name="DNS SERVERS" value={dnsServers} allowCopy/>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="CURRENT MAC" value={currentMAC} important allowCopy/>
-                                    <CreateEntryContent name="ALT INTERFACE NAME" value={altInterfaceName} />
-                                    <CreateEntryContent name="CURRENT SUBNET" value={currentSubnet} />
-                                    <CreateEntryContent name="OPEN PORTS" value={openPorts} important />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
-                                    <CreateEntryContent name="LOCAL IP" value={localIp} important allowCopy/>
-                                    <CreateEntryContent name="CURRENT BITRATE" value={currentBitrate} />
-                                    <CreateEntryContent name="TRANSMIT BYTE" value={transmitByte} />
-                                    <CreateEntryContent name="TCP CONNECTION" value={tcpConnection} />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                                    <CreateEntryContent name="GATEWAY IP" value={gatewayIp} important allowCopy/>
-                                    <CreateEntryContent name="LINK QUALITY" value={linkQuality} />
-                                    <CreateEntryContent name="RECEIVE BYTE" value={receiveByte} />
-                                    <CreateEntryContent name="UDP CONNECTION" value={udpConnection} />
-                                </box>
-                            </box>
-                        </box>
-                        <box cssClasses={["NoiseGrid"]}>
-                            <With value={noiseGridImage}> 
-                                {(path) => ( <Gtk.Picture file={Gio.File.new_for_path(path)} halign={Align.FILL} /> )} 
-                            </With>
-                        </box>
-                        <box cssClasses={["extended-content"]} css={"font-size: 4px;"} hexpand={false} halign={Align.FILL}>
-                            <scrolledwindow minContentWidth={100} minContentHeight={55} hexpand={true}>
-                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
-                                    <label label={journalNetwork} valign={Align.LEFT} halign={Align.LEFT} />
-                                    <label label={networkDevice} valign={Align.LEFT} halign={Align.LEFT} />
-                                    <label label={wifiList} valign={Align.LEFT} halign={Align.LEFT} />
-                                </box>
-                            </scrolledwindow>
-                        </box>
-                    </box>
-                )}
-            </With>
         </CreateCard>
     )
 }

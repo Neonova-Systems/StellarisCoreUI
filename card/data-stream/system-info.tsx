@@ -99,60 +99,62 @@ export default function SystemInfo() {
         [`systemd-analyze blame`]: setSystemdBlame,
     });
     interval(60000, () => execAsync(`dash -c "uptime -p | cut -d ' ' -f 2-"`).then((out) => setUptime(out.toUpperCase())))
+
+    function renderContent() {
+        return (
+        <box  cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+            <box cssClasses={["content"]} spacing={5} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                <box orientation={Gtk.Orientation.VERTICAL} homogeneous={false}>
+                    <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"} cursor={Gdk.Cursor.new_from_name("pointer", null)} vexpand>
+                        <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Align.LEFT} cssClasses={["profile-picture"]}></image>
+                    </button>
+                    <Adw.Clamp maximumSize={33} vexpand>
+                        <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament2.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                </box>
+                <box homogeneous={false} halign={Align.FILL} hexpand={true}>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                        <CreateEntryContent name="USER & HOSTNAME" value={userHostname} important allowCopy={true} />
+                        <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
+                        <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
+                            <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Check for system updates"} pixelSize={8} onClicked={checkSystemUpdates} />
+                        </CreateEntryContent>
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                        <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} important allowCopy={true} />
+                        <CreateEntryContent name="UNNEEDED PACKAGE" value={unneededPackage} />
+                        <CreateEntryContent name="TOTAL BOOT TIME" important value={totalBootTime} />
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
+                        <CreateEntryContent name="CURRENT USER ID" value={userId} allowCopy/>
+                        <CreateEntryContent name="UPTIME" value={uptime} allowCopy/>
+                        <CreateEntryContent name="BOOT TIME LOADER" value={bootTimeLoader} />
+                    </box>
+                    <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
+                        <CreateEntryContent name="PACKAGE INSTALLED" value={packageInstalled} />
+                        <CreateEntryContent name="EXPLICITLY INSTALLED" value={explicitInstalled} />
+                        <CreateEntryContent name="BOOT TIME USERSPACE" value={bootTimeUserspace} />
+                    </box>
+                </box>
+            </box>
+            <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
+                <scrolledwindow minContentWidth={100} minContentHeight={90} hexpand={true} hscrollbarPolicy={Gtk.PolicyType.ALWAYS} vscrollbarPolicy={Gtk.PolicyType.EXTERNAL} cssClasses={["scrollbar"]} >
+                    <box valign={Align.LEFT} homogeneous={false} spacing={20}>
+                        <Gtk.GestureClick />
+                        <label label={journalHead} valign={Align.LEFT} halign={Align.LEFT} />
+                        <label label={systemdBlame} valign={Align.LEFT} halign={Align.LEFT} />
+                    </box>
+                </scrolledwindow>
+            </box>
+        </box>
+        )
+    }
+
     return (
-        <CreateCard>
+        <CreateCard state={toggleContentState} cardContent={renderContent()}>
             <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
-            <With value={toggleContentState}>
-                {(v) => ( 
-                    <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["content"]} spacing={5} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
-                            <box orientation={Gtk.Orientation.VERTICAL} homogeneous={false}>
-                                <button onClicked={changeProfilePicture} tooltipText={"Click to change your profile picture"} cursor={Gdk.Cursor.new_from_name("pointer", null)} vexpand>
-                                    <image file={`${HOME_DIR}/.face.icon`} pixelSize={33} valign={Align.LEFT} cssClasses={["profile-picture"]}></image>
-                                </button>
-                                <Adw.Clamp maximumSize={33} vexpand>
-                                    <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament2.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-                                </Adw.Clamp>
-                            </box>
-                            <box homogeneous={false} halign={Align.FILL} hexpand={true}>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                                    <CreateEntryContent name="USER & HOSTNAME" value={userHostname} important allowCopy={true} />
-                                    <CreateEntryContent name="DEPENDENCY PACKAGE:" value={dependecyInstalled} />
-                                    <CreateEntryContent name="AVAILABLE UPGRADE" value={availableUpgrade}>
-                                        <CreateUtilityButton imageFile={`${ICON_DIR}/tabler--refresh.svg`} tooltipText={"Check for system updates"} pixelSize={8} onClicked={checkSystemUpdates} />
-                                    </CreateEntryContent>
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                                    <CreateEntryContent name="KERNEL INFORMATION" value={kernelInformation} important allowCopy={true} />
-                                    <CreateEntryContent name="UNNEEDED PACKAGE" value={unneededPackage} />
-                                    <CreateEntryContent name="TOTAL BOOT TIME" important value={totalBootTime} />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
-                                    <CreateEntryContent name="CURRENT USER ID" value={userId} allowCopy/>
-                                    <CreateEntryContent name="UPTIME" value={uptime} allowCopy/>
-                                    <CreateEntryContent name="BOOT TIME LOADER" value={bootTimeLoader} />
-                                </box>
-                                <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL}>
-                                    <CreateEntryContent name="PACKAGE INSTALLED" value={packageInstalled} />
-                                    <CreateEntryContent name="EXPLICITLY INSTALLED" value={explicitInstalled} />
-                                    <CreateEntryContent name="BOOT TIME USERSPACE" value={bootTimeUserspace} />
-                                </box>
-                            </box>
-                        </box>
-                        <box cssClasses={["extended-content"]} hexpand={false} halign={Align.FILL}>
-                            <scrolledwindow minContentWidth={100} minContentHeight={90} hexpand={true} hscrollbarPolicy={Gtk.PolicyType.ALWAYS} vscrollbarPolicy={Gtk.PolicyType.EXTERNAL} cssClasses={["scrollbar"]} >
-                                <box valign={Align.LEFT} homogeneous={false} spacing={20}>
-                                    <Gtk.GestureClick />
-                                    <label label={journalHead} valign={Align.LEFT} halign={Align.LEFT} />
-                                    <label label={systemdBlame} valign={Align.LEFT} halign={Align.LEFT} />
-                                </box>
-                            </scrolledwindow>
-                        </box>
-                    </box>
-                )}
-            </With>
         </CreateCard>
     )
 }
