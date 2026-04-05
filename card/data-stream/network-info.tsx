@@ -117,7 +117,7 @@ export default function NetworkInfo() {
     }
 
     return (
-        <CreateCard state={toggleContentState} cardContent={renderContent()}>
+        <CreateCard state={toggleContentState} cardContent={() => renderContent()}>
             <CreatePanel name="NETWORK" onClicked={() => panelClicked("NetworkInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>

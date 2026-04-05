@@ -151,7 +151,7 @@ export default function SystemInfo() {
     }
 
     return (
-        <CreateCard state={toggleContentState} cardContent={renderContent()}>
+        <CreateCard state={toggleContentState} cardContent={() => renderContent()}>
             <CreatePanel name="SYSTEM" onClicked={() => panelClicked("SystemInfo", setToggleContentState)}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>

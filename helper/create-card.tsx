@@ -10,10 +10,10 @@ type CardProps = {
      */
     children?: JSX.Element | JSX.Element[];
     /**
-     * Main card body to show when {@link CardProps.state} is true.
+        * Main card body renderer shown when {@link CardProps.state} is true.
      * This prop is required.
      */
-    cardContent: JSX.Element | JSX.Element[];
+        cardContent: () => JSX.Element | JSX.Element[];
     /**
      * Visibility accessor used to toggle the card body.
      * This prop is required.
@@ -58,17 +58,13 @@ function asElement(content?: JSX.Element | JSX.Element[]): JSX.Element {
  * @returns A card component container.
  */
 export default function CreateCard({ children, state, cardContent }: CardProps) {
-    const normalizedCardContent = asElement(cardContent);
-
     /**
-        * Renders card content with reactive state gating.
+     * Renders card content with reactive state gating.
      */
     function renderWithComponent() {
-        if (!state) return normalizedCardContent;
-
         return (
             <With value={state}>
-                {(v) => (v ? normalizedCardContent : <HiddenBox />)}
+                {(v) => (v ? asElement(cardContent()) : <HiddenBox />)}
             </With>
         )
     }

@@ -147,7 +147,7 @@ export default function FilesystemInfo() {
         [`lsblk -a --list`]: setBlockList,
     });
     return (
-        <CreateCard state={toggleContentState} cardContent={renderContent()}>
+        <CreateCard state={toggleContentState} cardContent={() => renderContent()}>
             <CreatePanel name="FILESYSTEM" onClicked={() => panelClicked("FilesystemInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>

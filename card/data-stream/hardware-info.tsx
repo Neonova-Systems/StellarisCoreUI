@@ -167,7 +167,7 @@ export default function HardwareInfo() {
             onError: (_, error) => console.log(error),
         });
     return (
-        <CreateCard state={toggleContentState} cardContent={renderContent()}>
+        <CreateCard state={toggleContentState} cardContent={() => renderContent()}>
             <CreatePanel name="HARDWARE" onClicked={() => panelClicked("HardwareInfo", setToggleContentState)} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU}>
                 <image file={`${HOME_DIR}/.config/ags/assets/decoration.svg`} pixelSize={16}/>
             </CreatePanel>
