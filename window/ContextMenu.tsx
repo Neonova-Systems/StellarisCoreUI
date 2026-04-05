@@ -38,14 +38,14 @@ function execCommand(command: CommandItem, windowName: string = "context-menu") 
     app.quit()
 }
 
-function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawnX: number, spawnY: number) {
+function SpawnContextMenu(commandsList: CommandItem[], windowName: string, cursorPosX: number, cursorPosY: number) {
     const { LEFT, RIGHT, TOP, BOTTOM } = Astal.WindowAnchor;
 
     const monitor = hyprland.get_monitors().find((m) =>
-        spawnX >= m.x &&
-        spawnX < m.x + m.width &&
-        spawnY >= m.y &&
-        spawnY < m.y + m.height,
+        cursorPosX >= m.x &&
+        cursorPosX < m.x + m.width &&
+        cursorPosY >= m.y &&
+        cursorPosY < m.y + m.height,
     ) ?? hyprland.get_focused_monitor();
 
     const monitorX = monitor?.x ?? 0;
@@ -54,16 +54,16 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, spawn
     const monitorHeight = monitor?.height ?? 0;
 
     const verticalFlipThreshold = 220;
-    const useRightAnchor = spawnX >= monitorX + monitorWidth - menuWidth;
-    const useBottomAnchor = spawnY >= monitorY + monitorHeight - verticalFlipThreshold;
+    const useRightAnchor = cursorPosX >= monitorX + monitorWidth - menuWidth;
+    const useBottomAnchor = cursorPosY >= monitorY + monitorHeight - verticalFlipThreshold;
 
     const horizontalAnchor = useRightAnchor ? RIGHT : LEFT;
     const verticalAnchor = useBottomAnchor ? BOTTOM : TOP;
 
-    const marginTop = Math.max(0, spawnY - monitorY);
-    const marginBottom = Math.max(0, monitorY + monitorHeight - spawnY);
-    const marginLeft = Math.max(0, spawnX - monitorX);
-    const marginRight = Math.max(0, monitorX + monitorWidth - spawnX);
+    const marginTop = Math.max(0, cursorPosY - monitorY);
+    const marginBottom = Math.max(0, monitorY + monitorHeight - cursorPosY);
+    const marginLeft = Math.max(0, cursorPosX - monitorX);
+    const marginRight = Math.max(0, monitorX + monitorWidth - cursorPosX);
 
     function handleKeyPress(keyval: number, keycode: number, state: Gdk.ModifierType) {
         if (keyval === Gdk.KEY_Escape) {
