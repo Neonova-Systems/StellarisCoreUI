@@ -44,10 +44,12 @@ function initHandler(self: Gtk.Box, mute: boolean) {
 
 interface NotificationProps {
   notification: AstalNotifd.Notification,
-  mute: boolean
+  mute: boolean,
+  stackCount?: number,
+  onDismiss?: () => void,
 }
 
-export default function Notification({ notification: n, mute}: NotificationProps) {
+export default function Notification({ notification: n, mute, stackCount = 1, onDismiss }: NotificationProps) {
   const [toggleVerbosityState, setToggleVerbosityState] = createState(false);
   timeout(50, () => { execAsync('ags request "getNotificationVerbosityState"').then(out => setToggleVerbosityState(out === 'true')) });
 
@@ -61,7 +63,11 @@ export default function Notification({ notification: n, mute}: NotificationProps
         <box hexpand halign={Align.FILL}>
           <label cssClasses={["title"]} justify={Gtk.Justification.LEFT} halign={Align.FILL} hexpand xalign={0} label={n.summary || "NO SUMMARY"} wrap={false} singleLineMode ellipsize={Pango.EllipsizeMode.END} />
         </box>
-        <button onClicked={() => n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Align.RIGHT} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
+        <box cssClasses={["entry"]} spacing={5} valign={Align.BOTTOM}>
+          <CreateEntryContent name="TIME" value={formatTime(n.time)?.toUpperCase() || "UNKNOWN"} orientation={Gtk.Orientation.HORIZONTAL}/>
+          <CreateEntryContent visible={stackCount > 1} name="STACKING" value={stackCount} orientation={Gtk.Orientation.HORIZONTAL}/>
+        </box>
+        <button onClicked={() => onDismiss ? onDismiss() : n.dismiss()} cssClasses={["close-button"]} hexpand={false} halign={Align.RIGHT} cursor={Gdk.Cursor.new_from_name("pointer", null)}>
           <image file={`${ICON_DIR}/vaadin--close-small.svg`} pixelSize={13} />
         </button>
       </box>
