@@ -59,7 +59,7 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
 
     return (
         <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="NOTIFICATION" onClicked={() => panelClicked("Notification", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
+            <CreatePanel name="NOTIFICATION" isActive={toggleContentState} onClicked={() => panelClicked("Notification", settoggleContentState)} draggable onDragUp={onDragUp} onDragDown={onDragDown} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} childrenRight={
                 <button onClicked={dismissAllNotifications} cssClasses={["clickable"]} tooltipText={"Dismiss all notifications"}>
                     <image file={`${ICON_DIR}/material-symbols--clear-all.svg`} pixelSize={16} />
                 </button>

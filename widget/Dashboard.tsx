@@ -72,7 +72,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                 <scrolledwindow vexpand={true}>
                     <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
                         <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12} css={'margin-bottom: 2px;'}>
-                            <CreatePanel name={"DATA STREAM"} onClicked={() => panelClicked("DataStream", setDataStreamState)} 
+                            <CreatePanel name={"DATA STREAM"} isActive={dataStreamState} onClicked={() => panelClicked("DataStream", setDataStreamState)} 
                                 overlay={ 
                                     <>
                                         <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={15} valign={Align.LEFT} halign={Align.RIGHT}>
