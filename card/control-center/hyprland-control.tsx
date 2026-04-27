@@ -1,8 +1,11 @@
 import { Gtk } from "ags/gtk4"
-import { Align, HOME_DIR } from "../../helper"
+import { Align, HOME_DIR, ICON_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
+import CreateUtilityButton from "../../helper/create-utility-button"
+import { execAsync } from "ags/process"
 
 export default function HyprlandControl() {
+    const openWev = () => execAsync(`foot -e wev`)
     return (
         <box marginTop={10}>
             <overlay>
@@ -13,6 +16,7 @@ export default function HyprlandControl() {
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
                         <label cssClasses={["title"]} label="HYPRLAND CONTROL"/>
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/mdi--keyboard.svg`} tooltipText={"Open wev event viewer\n\nDisplay keyboard inputs, keycodes,\nand key bindings in real-time"} pixelSize={8} onClicked={openWev}/>
                     </box>
                 </box>
             </overlay>
