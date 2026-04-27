@@ -5,7 +5,7 @@ import CreateUtilityButton from "../../helper/create-utility-button"
 import { execAsync } from "ags/process"
 
 export default function BluetoothControl() {
-    const openBlueman = () => execAsync(`foot -e blueman-manager`)
+    const openBlueman = () => execAsync(`/usr/bin/env blueman-manager`)
     return (
         <box marginTop={10}>
             <overlay>
