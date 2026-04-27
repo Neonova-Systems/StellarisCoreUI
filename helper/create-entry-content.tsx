@@ -79,9 +79,10 @@ export default function CreateEntryContent({ name, value, css, visible = true, h
             css={css} 
             label={String(labelValue) + (addPercentSuffix ? "%" : "")} 
             halign={Align.LEFT} 
-            valign={Align.LEFT}
+            valign={Align.TOP}
+            justify={Gtk.Justification.FILL}
             wrap 
-            wrapMode={Gtk.WrapMode.CHAR} 
+            wrapMode={Gtk.WrapMode.WORD} 
             ellipsize={ellipsize}
             cursor={allowCopy ? Gdk.Cursor.new_from_name("pointer", null) : undefined} hexpand />
     )
@@ -94,11 +95,11 @@ export default function CreateEntryContent({ name, value, css, visible = true, h
                 <Gtk.GestureClick onPressed={() => { copyToClipboard(String(valueStr)); }} />
                 </>
             )}
-            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Align.FILL} valign={Align.CENTER}>
+            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={2} halign={Align.LEFT} valign={Align.TOP}>
                 {important && ( <image cssClasses={["filter-bright"]} file={`${HOME_DIR}/.config/ags/assets/ornament/ornament5.svg`} pixelSize={9} valign={Align.CENTER} halign={Align.LEFT} /> )}
-                <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={[animation ?"alt-start-animation" : ""]} valign={Align.CENTER}/>
+                <label label={`${name}:`} css={css} halign={Align.LEFT} cssClasses={[animation ?"alt-start-animation" : ""]} valign={Align.TOP}/>
             </box>
-            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Align.FILL} valign={Align.LEFT}>
+            <box orientation={Gtk.Orientation.HORIZONTAL} spacing={4} halign={Align.LEFT} valign={Align.TOP}>
                 {children}
                 {watchValue && typeof value !== "string" && typeof value !== "number" && value ? (
                     <With value={value}>
