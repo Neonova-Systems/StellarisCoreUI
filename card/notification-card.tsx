@@ -3,7 +3,6 @@ import { Accessor, With, For, createState } from "ags"
 import { Align, AudioFile, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, playSound, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
 import { Astal, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
-import CreateUtilityButton from "../helper/create-utility-button";
 import { initToggleState, openContextMenu, watchRequestBoolean } from "../helper/behaviour";
 
 interface NotificationStack {
