@@ -1,13 +1,13 @@
 import { Gdk, Gtk } from "ags/gtk4"
-import { Accessor, createState } from "ags"
-import { Align, HOME_DIR, ICON_DIR } from "./constants";
+import { Accessor, createState, With } from "ags"
+import { Align, ICON_DIR } from "./constants";
 import { AudioFile, playSound } from "./utility";
 import { Corner, drawChamferedBackground } from "./draw-function";
 
 type PanelProps = {
     name?: string | Accessor<string> | undefined;
     onClicked?: ((source: Gtk.GestureClick) => void) | undefined;
-    $?: ((self: Gtk.Button) => void) | undefined;
+    $?: ((self: Gtk.Box) => void) | undefined;
     children?: JSX.Element | Array<JSX.Element>;
     childrenRight?: JSX.Element | Array<JSX.Element>;
     overlay?: JSX.Element | Array<JSX.Element>;
@@ -15,10 +15,13 @@ type PanelProps = {
     onDragUp?: (() => void) | undefined;
     onDragDown?: (() => void) | undefined;
     onRightClick?: (() => void) | undefined;
+    isActive?: Accessor<boolean>;
     tooltipText?: string | Accessor<string> | undefined;
 };
 
-export default function CreatePanel({ name, onClicked, $, children, childrenRight, overlay, draggable = false, onDragUp, onDragDown, onRightClick, tooltipText }: PanelProps) {
+export default function CreatePanel({ name, onClicked, $, children, childrenRight, overlay, draggable = false, onDragUp, onDragDown, onRightClick, isActive, tooltipText }: PanelProps) {
+    const [defaultActive] = createState(true);
+    const activeState = isActive ?? defaultActive;
     let lastY: number | null = null;
     let dragDirection: 'up' | 'down' | null = null;
     let lastOutputY: number | null = null;
@@ -76,9 +79,14 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
     }
 
     return (
-        <box cssClasses={["panel"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText}>
+        <box cssClasses={["panel"]} cursor={Gdk.Cursor.new_from_name("pointer", null)} tooltipText={tooltipText} $={$}>
             {onClicked && (<Gtk.GestureClick button={1} onPressed={onClicked} />)}
             {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
+            <box>
+                <With value={activeState}>
+                    {(active) => <box css={`min-width: 5px; background-color: ${active ? "#3353F3" : "#0A102E"};`} />}
+                </With>
+            </box>
             <overlay>
                 <box>
                     <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand css={"min-width: 33px; min-height: 33px;"} $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height: (height + 21), notchSize: 13, backgroundColor: "#0A102E", backgroundAlpha: 1.0, borderAlpha: 0, notchPlacements: [{corner: Corner.TopRight}], }))} />
