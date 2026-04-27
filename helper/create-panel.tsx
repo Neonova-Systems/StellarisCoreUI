@@ -84,7 +84,7 @@ export default function CreatePanel({ name, onClicked, $, children, childrenRigh
             {onRightClick && (<Gtk.GestureClick button={3} onPressed={() => onRightClick()} />)}
             <box>
                 <With value={activeState}>
-                    {(active) => <box css={`min-width: 5px; background-color: ${active ? "#3353F3" : "#0A102E"};`} />}
+                    {(active) => <box css={`min-width: 5px; background-color: ${active ? "#3353F3" : "#0f1b4f"};`} />}
                 </With>
             </box>
             <overlay>
