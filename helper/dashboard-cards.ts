@@ -3,6 +3,7 @@ import { DASHBOARD_CARDS_ORDER_JSON, moveToFirst, moveToLast, readJson, writeJso
 import { NotificationCard } from "../card/notification-card";
 import ControlCenter from "../card/control-center";
 import ExploitDeck from "../card/exploit-deck";
+import RecentlyUsed from "../card/recently-used";
 import AstalNotifd from "gi://AstalNotifd";
 
 export interface DashboardCard {
@@ -10,15 +11,16 @@ export interface DashboardCard {
     component: () => any;
 }
 
-export type CardId = 'notification' | 'control-center' | 'exploit-deck';
+export type CardId = 'notification' | 'control-center' | 'exploit-deck' | 'recently-used';
 
 /**
  * Create and manage dashboard cards with persistence
  */
 export function createDashboardCards(notifications: Accessor<AstalNotifd.Notification[]>) {
-    const DEFAULT_ORDER: CardId[] = ['notification', 'control-center', 'exploit-deck'];
+    const DEFAULT_ORDER: CardId[] = ['notification', 'control-center', 'exploit-deck', 'recently-used'];
     const savedCardOrder = readJson<CardId[]>(DASHBOARD_CARDS_ORDER_JSON, DEFAULT_ORDER); // Load saved card order from JSON file
-    
+    // Note: in case you added new window to the list, you need to remove the old json file at .cache/ags/dashboard-cards-order.json    
+
     // Create component map for easy lookup
     const componentMap = {
         'notification': (onDragUp: () => void, onDragDown: () => void) => 
@@ -26,7 +28,9 @@ export function createDashboardCards(notifications: Accessor<AstalNotifd.Notific
         'control-center': (onDragUp: () => void, onDragDown: () => void) => 
             ControlCenter({ onDragUp, onDragDown }),
         'exploit-deck': (onDragUp: () => void, onDragDown: () => void) => 
-            ExploitDeck({ onDragUp, onDragDown })
+            ExploitDeck({ onDragUp, onDragDown }),
+        'recently-used': (onDragUp: () => void, onDragDown: () => void) =>
+            RecentlyUsed({ onDragUp, onDragDown })
     };
     
     // Save card order to JSON file

@@ -23,6 +23,8 @@ const stateKeys = {
     notificationVisible: "Notification",
     layerInformationVisible: "LayerInformation",
     ControlCenterVisible: "ControlCenter",
+    recentlyUsedVisible: "RecentlyUsed",
+    exploitDeckVisible: "ExploitDeck",
     hardwareGraphState: "HardwareGraph",
     filesystemGraphState: "FilesystemGraph",
     desktopIconsVisible: "DesktopIcons",
