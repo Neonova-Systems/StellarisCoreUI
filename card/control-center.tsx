@@ -20,7 +20,7 @@ export default function ControlCenter({ onDragUp, onDragDown }: { onDragUp?: () 
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
-                        <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 10px;`} hexpand>
+                        <box cssClasses={["content"]} orientation={Gtk.Orientation.VERTICAL} hexpand>
                             <ControlKey />
                             <AudioControl />
                             <HyprlandControl />
