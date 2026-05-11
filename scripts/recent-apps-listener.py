@@ -6,6 +6,7 @@ import socket
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 MAX_ITEMS = 10
@@ -86,6 +87,19 @@ def exec_path_for(app_class: str) -> str:
     return first_line or app_class
 
 
+def compute_score(launch_count: int, last_access_str: str) -> float:
+    """Compute frequency-recency hybrid score.
+    Score = (frequency * 0.5) + (1 / hours_since_last_used)
+    """
+    try:
+        last_access = datetime.strptime(last_access_str, "%Y-%m-%d %H:%M:%S")
+        now = datetime.now()
+        hours_since = max((now - last_access).total_seconds() / 3600, 0.01)  # min 0.01h to avoid inf
+        return (launch_count * 0.5) + (1.0 / hours_since)
+    except Exception:
+        return 0.0
+
+
 def upsert_recent(entries: list[dict], entry: dict) -> list[dict]:
     now = time.strftime("%Y-%m-%d %H:%M:%S")
     filtered = [item for item in entries if item.get("class") != entry["class"]]
@@ -93,12 +107,19 @@ def upsert_recent(entries: list[dict], entry: dict) -> list[dict]:
     existing = next((item for item in entries if item.get("class") == entry["class"]), None)
     launch_count = int((existing or {}).get("launchCount", 0) or 0) + 1
 
-    filtered.insert(0, {
+    new_entry = {
         **entry,
         "launchCount": launch_count,
         "lastAccess": now,
         "execPath": exec_path_for(entry["class"]),
-    })
+    }
+    new_entry["score"] = compute_score(launch_count, now)
+    
+    filtered.insert(0, new_entry)
+    
+    # Sort by score descending, then by launchCount (secondary sort for ties)
+    filtered.sort(key=lambda x: (-x.get("score", 0), -x.get("launchCount", 0)))
+    
     return filtered[:MAX_ITEMS]
 
 
