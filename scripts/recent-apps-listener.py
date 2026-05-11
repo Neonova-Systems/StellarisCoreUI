@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
+import shlex
 import socket
 import subprocess
 import sys
@@ -60,19 +61,44 @@ def normalize_entry(data: dict) -> dict | None:
     if not app_class:
         return None
     title = (data.get("title") or data.get("initialTitle") or app_class).strip()
-    icon = app_class
     desktop_entry = (data.get("initialClass") or data.get("class") or app_class).strip()
+    pid = data.get("pid")
     return {
         "class": app_class,
         "desktopEntry": desktop_entry,
         "title": title,
-        "icon": icon,
+        "pid": pid,
     }
 
 
+def exec_path_for(app_class: str) -> str:
+    result = subprocess.run(
+        ["sh", "-lc", f"command -v {shlex.quote(app_class)}"],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        return app_class
+
+    first_line = result.stdout.splitlines()[0].strip()
+    return first_line or app_class
+
+
 def upsert_recent(entries: list[dict], entry: dict) -> list[dict]:
+    now = time.strftime("%Y-%m-%d %H:%M:%S")
     filtered = [item for item in entries if item.get("class") != entry["class"]]
-    filtered.insert(0, entry)
+
+    existing = next((item for item in entries if item.get("class") == entry["class"]), None)
+    launch_count = int((existing or {}).get("launchCount", 0) or 0) + 1
+
+    filtered.insert(0, {
+        **entry,
+        "launchCount": launch_count,
+        "lastAccess": now,
+        "execPath": exec_path_for(entry["class"]),
+    })
     return filtered[:MAX_ITEMS]
 
 
