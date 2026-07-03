@@ -87,14 +87,14 @@ export function applyCurrentDashboardState() {
         hyprland.get_monitors().forEach((monitor) => {
             const bottom_space = monitor.height / 4;
             const left_space = monitor.width / 4 - 10;
-            writeFile(`${HOME_DIR}/.config/hypr/reserved-space.conf`, `monitor=${monitor.name}, addreserved, 10, ${bottom_space}, ${left_space}, 10`);
+            writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
         });
     } else {
         if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
         if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
         if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
         if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
-        hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.conf`, `monitor=${monitor.name}, addreserved, 0, 0, 0, 0`); });
+        hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
     }
 }
 
