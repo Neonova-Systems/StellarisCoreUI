@@ -6,19 +6,20 @@ import { BottomRightCorner, TopRightCorner, BottomLeftCorner, TopLeftCorner } fr
 import { applyCurrentDashboardState, requestHandler } from "./services"
 
 app.start({
-    css: style,
-    main() {
-        app.get_monitors().map(Dashboard)
-        app.get_monitors().map(TopRightCorner)
-        app.get_monitors().map(BottomRightCorner)
-        app.get_monitors().map(TopLeftCorner)
-        app.get_monitors().map(BottomLeftCorner)
+  css: style,
+  main() {
+    // execAsync(`bash -lc 'nohup python ${HOME_DIR}/.config/ags/scripts/recent-apps-listener.py >/dev/null 2>&1 &'`)
+    app.get_monitors().map(Dashboard)
+    app.get_monitors().map(TopRightCorner)
+    app.get_monitors().map(BottomRightCorner)
+    app.get_monitors().map(TopLeftCorner)
+    app.get_monitors().map(BottomLeftCorner)
 
-        // Apply initial state. A timeout is good practice to ensure windows are ready.
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
-            applyCurrentDashboardState();
-            return GLib.SOURCE_REMOVE;
-        });
-    },
-    requestHandler: requestHandler,
+    // Apply initial state. A timeout is good practice to ensure windows are ready.
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+      applyCurrentDashboardState();
+      return GLib.SOURCE_REMOVE;
+    });
+  },
+  requestHandler: requestHandler,
 })
