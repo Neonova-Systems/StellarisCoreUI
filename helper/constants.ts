@@ -6,6 +6,7 @@ export const CACHE_DIR = `${GLib.get_user_cache_dir()}/ags`;
 export const WALLPAPER_JSON = "wallpaper.json";
 export const SIGNAL_JSON = "signal.json";
 export const GLOBAL_BOOLEAN_STATE_JSON = "global-state.json";
+export const DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON = "visible-on-workspace.json";
 export const DASHBOARD_CARDS_ORDER_JSON = "dashboard-cards-order.json";
 export const TOOLTIP_TEXT_CONTEXT_MENU = "Right click to open context menu";
 
@@ -31,16 +32,16 @@ export const TOOLTIP_TEXT_CONTEXT_MENU = "Right click to open context menu";
  * type compatibility when passed to GTK props like `halign` and `valign`.
  */
 export const Align: Record<
-    "FILL" | "CENTER" | "LEFT" | "RIGHT" | "TOP" | "BOTTOM" | "BASELINE" | "BASELINE_FILL" | "BASELINE_CENTER",
-    Gtk.Align
+  "FILL" | "CENTER" | "LEFT" | "RIGHT" | "TOP" | "BOTTOM" | "BASELINE" | "BASELINE_FILL" | "BASELINE_CENTER",
+  Gtk.Align
 > = {
-    FILL: Gtk.Align.FILL,
-    CENTER: Gtk.Align.CENTER,
-    LEFT: Gtk.Align.START,
-    TOP: Gtk.Align.START,
-    RIGHT: Gtk.Align.END,
-    BOTTOM: Gtk.Align.END,
-    BASELINE: Gtk.Align.BASELINE,
-    BASELINE_FILL: Gtk.Align.BASELINE_FILL,
-    BASELINE_CENTER: Gtk.Align.BASELINE_CENTER,
+  FILL: Gtk.Align.FILL,
+  CENTER: Gtk.Align.CENTER,
+  LEFT: Gtk.Align.START,
+  TOP: Gtk.Align.START,
+  RIGHT: Gtk.Align.END,
+  BOTTOM: Gtk.Align.END,
+  BASELINE: Gtk.Align.BASELINE,
+  BASELINE_FILL: Gtk.Align.BASELINE_FILL,
+  BASELINE_CENTER: Gtk.Align.BASELINE_CENTER,
 };
