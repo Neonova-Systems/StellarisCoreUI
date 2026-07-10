@@ -23,11 +23,11 @@ const defaultSchema: State = {
 
 let visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultSchema);
 const hyprland = AstalHyprland.get_default();
-const focusedWorkspace = hyprland.focusedWorkspace;
-const workspaceId = `${focusedWorkspace.id}`;
 
-export function applyCurrentDashboardState() {
-  const isDashboardVisible = visibleState[workspaceId]?.visible ?? false;
+export function applyCurrentDashboardState(targetWorkspaceId?: string) {
+  const currentWorkspaceId = targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
+
+  const isDashboardVisible = !!(visibleState[currentWorkspaceId]?.visible ?? false);
   const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
   const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
   const topRightCorner = app.get_window("TopRightCorner") as Astal.Window | undefined;
@@ -70,19 +70,6 @@ export function applyCurrentDashboardState() {
   }
 }
 
-// Fix: Use GObject property notification syntax
-hyprland.connect("notify::focused-workspace", () => {
-  applyCurrentDashboardState();
-});
-import { monitorFile } from "ags/file"; // or the Astal equivalent file monitor
-
-// Remove setInterval entirely for this.
-monitorFile(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, () => {
-  // Reload your state and re-apply changes when the file updates on disk
-  visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultStateFallback);
-  applyCurrentDashboardState();
-});
-
 export function serviceCallback(res: (response: any) => void) {
   const currentWorkspaceId = `${hyprland.focusedWorkspace.id}`;
   // Get current status or default to false
@@ -92,6 +79,6 @@ export function serviceCallback(res: (response: any) => void) {
   visibleState[currentWorkspaceId] = { visible: newStatus };
   writeJson(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, visibleState);
 
-  applyCurrentDashboardState();
+  applyCurrentDashboardState(currentWorkspaceId);
   res(`Workspace ${currentWorkspaceId} Dashboard: ${newStatus ? "Visible" : "Hidden"}`);
 }
