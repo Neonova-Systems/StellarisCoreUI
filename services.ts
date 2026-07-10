@@ -114,11 +114,7 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
   }, res)
 
   for (const key in stateMappings) {
-    if (request === `get ${key}`) {
-      return handleStateChange(stateMappings[key], res);
-    }
-    if (request === `toggle ${key}`) {
-      return handleStateChange(stateMappings[key], res, true);
-    }
+    addService(request, `State-${key}`, [`get ${key}`], (serviceRes) => handleStateChange(stateMappings[key], serviceRes), res);
+    addService(request, `Toggle-${key}`, [`toggle ${key}`], (serviceRes) => handleStateChange(stateMappings[key], serviceRes, true), res);
   }
 }

@@ -24,7 +24,7 @@ import { AudioFile, playSound } from "./utility";
  * </CreatePanel>
  */
 export function panelClicked(stateName: string, setterFunction: (value: boolean) => void): void {
-  execAsync(`ags request toggle ${stateName}`)
+  execAsync(`ags request "toggle ${stateName}"`)
     .then(out => {
       const isVisible = out === 'true';
       setterFunction(isVisible);
@@ -47,7 +47,7 @@ export function panelClicked(stateName: string, setterFunction: (value: boolean)
  */
 export function initToggleState(stateName: string, setterFunction: (value: boolean) => void, delayMs = 500): void {
   timeout(delayMs, () => {
-    execAsync(`ags request get ${stateName}`)
+    execAsync(`ags request "get ${stateName}"`)
       .then(out => setterFunction(out === "true"))
       .catch(err => console.error(`Failed to initialize ${stateName} state:`, err));
   });
@@ -63,7 +63,7 @@ export function initToggleState(stateName: string, setterFunction: (value: boole
  */
 export function watchRequestBoolean(stateName: string, intervalMs: number, onChange: (value: boolean) => void): Timer {
   return interval(intervalMs, () => {
-    execAsync(`ags request get ${stateName}`)
+    execAsync(`ags request "get ${stateName}"`)
       .then(out => onChange(out === "true"))
       .catch(err => console.error(`Failed to poll ${stateName} state:`, err));
   });
