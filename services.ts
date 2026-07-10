@@ -3,6 +3,7 @@ import { WALLPAPER_JSON, SIGNAL_JSON } from "./helper/constants";
 import { execAsync } from "ags/process"
 import { serviceCallback } from "./service/dashboard-service";
 import { handleStateChange, stateMappings } from "./service/global-state-mapping-service";
+import { callbackGetWallpaper } from "./modules/wallpaper";
 
 /**
  * Registers an application service action by matching a CLI `ags request` string 
@@ -36,31 +37,39 @@ export function requestHandler(argv: string[], res: (response: any) => void) {
   const request = argv.join(" ");
 
   addService(request, "dasboardToggle", ["toggle dashboard", "toggledashboard"], serviceCallback, res);
-  addService(request, "wallpaper", ["updateWallpaper", "update wallpaper"], () => {
-    const path = request.substring("updateWallpaper".length).trim();
+  if (request.startsWith("updatewallpaper")) {
+    const path = request.substring("updatewallpaper".length).trim();
     if (path) {
       writeJson(WALLPAPER_JSON, { path });
       return res(`Wallpaper path updated to: ${path}`);
     }
-  }, res)
-  addService(request, "wallpaper", ["getWallpaperPath", "get wallpaper path"], () => {
-    const wallpaperObj = readJson(WALLPAPER_JSON, {});
-    return res(typeof wallpaperObj === "object" && wallpaperObj !== null && "path" in wallpaperObj ? String(wallpaperObj.path) : "");
-  }, res)
+  }
+  addService(request, "wallpaper", ["getwallpaperpath", "get wallpaper path"], callbackGetWallpaper, res)
   addService(request, "wallpaper", ["open wallpaper selector"], () => {
-    execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
+    execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`)
+      .then(() => execAsync("ags request 'refresh desktop'"))
+      .catch((err) => console.error("Selector error:", err));
+    res("Wallpaper selector opened");
   }, res)
 
   addService(request, "utility", ["refresh desktop"], () => {
-    let signal = readJson(SIGNAL_JSON, {
-      refreshAppIcon: false,
-    })
-    execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
-      execAsync(`ags request "updateWallpaper ${out}"`);
-    })
+    interface SignalConfig {
+      refreshAppIcon: boolean;
+      [key: string]: boolean;
+    }
+    const fallbackSignal: SignalConfig = { refreshAppIcon: false };
+    const signal = readJson<SignalConfig>(SIGNAL_JSON, fallbackSignal);
+
+    execAsync(`dash -c "awww query | sed 's/.*image: //'"`)
+      .then((out) => {
+        const cleanPath = out.trim();
+        return execAsync(`ags request "updatewallpaper ${cleanPath}"`);
+      })
+      .catch((err) => console.error("Awww query failed:", err));
+
     signal.refreshAppIcon = true;
-    writeJson(SIGNAL_JSON, signal);
-    return res("Desktop Refreshed");
+    writeJson<SignalConfig>(SIGNAL_JSON, signal);
+    res("Desktop Refreshed");
   }, res)
 
   for (const key in stateMappings) {
