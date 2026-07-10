@@ -42,7 +42,7 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
   const [toggleContentState, settoggleContentState] = createState(false);
   const [notifcationDNDState, setNotificationDND] = createState(false)
   const stackedNotifications = notifications((notificationList) => stackNotifications(notificationList));
-  // watchRequestBoolean("NotificationDND", 1000, setNotificationDND);
+  watchRequestBoolean("NotificationDND", 1000, setNotificationDND);
   initToggleState("Notification", settoggleContentState);
 
   function onRightClicked() {

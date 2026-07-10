@@ -66,7 +66,7 @@ export default function Screen() {
   const [listApps, setListApps] = createState<DesktopEntry[]>([]);
 
   setListApps(parseDesktopFiles(desktopDir));
-  // watchRequestBoolean("DesktopIcons", 800, setToggleDesktopIconState);
+  watchRequestBoolean("DesktopIcons", 800, setToggleDesktopIconState);
   interval(1000, () => {
     const signalObj = readJson(SIGNAL_JSON, {})
     if (signalObj !== null && "refreshAppIcon" in signalObj && signalObj.refreshAppIcon === true) {

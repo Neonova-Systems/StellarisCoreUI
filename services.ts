@@ -83,7 +83,7 @@ function addService(requestArgv: string, serviceName: string, trigger: string[],
 }
 
 export function requestHandler(argv: string[], res: (response: any) => void) {
-  const request = argv.join(" ").toLowerCase();
+  const request = argv.join(" ");
 
   addService(request, "dasboardToggle", ["toggle dashboard", "toggledashboard"], serviceCallback, res);
   addService(request, "wallpaper", ["updateWallpaper", "update wallpaper"], () => {
