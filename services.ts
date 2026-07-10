@@ -8,145 +8,159 @@ import { execAsync } from "ags/process"
 
 const hyprland = AstalHyprland.get_default();
 let signal = readJson(SIGNAL_JSON, {
-    refreshAppIcon: false,
+  refreshAppIcon: false,
 })
 
 // State management
 const stateKeys = {
-    visible: "Dashboard",
-    dataStreamVisible: "DataStream",
-    systemInfoVisible: "SystemInfo",
-    networkInfoVisible: "NetworkInfo",
-    filesystemInfoVisible: "FilesystemInfo",
-    hardwareInfoVisible: "HardwareInfo",
-    batteryInfoVisible: "BatteryInfo",
-    notificationVisible: "Notification",
-    layerInformationVisible: "LayerInformation",
-    ControlCenterVisible: "ControlCenter",
-    recentlyUsedVisible: "RecentlyUsed",
-    exploitDeckVisible: "ExploitDeck",
-    hardwareGraphState: "HardwareGraph",
-    filesystemGraphState: "FilesystemGraph",
-    desktopIconsVisible: "DesktopIcons",
-    notificationVerbosityState: "NotificationVerbosity",
-    notificationDNDState: "NotificationDND",
-    audioControlVerbosityState: "AudioControlVerbosity",
-    controlKeyState: "ControlKey"
+  visible: "Dashboard",
+  dataStreamVisible: "DataStream",
+  systemInfoVisible: "SystemInfo",
+  networkInfoVisible: "NetworkInfo",
+  filesystemInfoVisible: "FilesystemInfo",
+  hardwareInfoVisible: "HardwareInfo",
+  batteryInfoVisible: "BatteryInfo",
+  notificationVisible: "Notification",
+  layerInformationVisible: "LayerInformation",
+  ControlCenterVisible: "ControlCenter",
+  recentlyUsedVisible: "RecentlyUsed",
+  exploitDeckVisible: "ExploitDeck",
+  hardwareGraphState: "HardwareGraph",
+  filesystemGraphState: "FilesystemGraph",
+  desktopIconsVisible: "DesktopIcons",
+  notificationVerbosityState: "NotificationVerbosity",
+  notificationDNDState: "NotificationDND",
+  audioControlVerbosityState: "AudioControlVerbosity",
+  controlKeyState: "ControlKey"
 } as const;
 
 export type GlobalState = {
-    [K in keyof typeof stateKeys]: boolean;
+  [K in keyof typeof stateKeys]: boolean;
 } & {
-    [key: string]: boolean;
+  [key: string]: boolean;
 }
 
 // Auto-generate defaults (all true)
 const defaultDashboardState: GlobalState = Object.keys(stateKeys).reduce((acc, key) => {
-    (acc as any)[key] = true;
-    return acc;
+  (acc as any)[key] = true;
+  return acc;
 }, {} as GlobalState);
 
 let dashboardState = readJson<GlobalState>(GLOBAL_BOOLEAN_STATE_JSON, defaultDashboardState);
 
 // Auto-generate mappings (inverted: "DataStream" -> "dataStreamVisible")
 const stateMappings = Object.entries(stateKeys).reduce((acc, [key, value]) => {
-    acc[value] = key as keyof GlobalState;
-    return acc;
+  acc[value] = key as keyof GlobalState;
+  return acc;
 }, {} as { [key: string]: keyof GlobalState });
 
 export function applyCurrentDashboardState() {
-    const visible = dashboardState.visible;
-    const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
-    const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
-    const topRightCorner = app.get_window("TopRightCorner") as Astal.Window | undefined;
-    const bottomLeftCorner = app.get_window("BottomLeftCorner") as Astal.Window | undefined;
-    const bottomRightCorner = app.get_window("BottomRightCorner") as Astal.Window | undefined;
+  const visible = dashboardState.visible;
+  const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
+  const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
+  const topRightCorner = app.get_window("TopRightCorner") as Astal.Window | undefined;
+  const bottomLeftCorner = app.get_window("BottomLeftCorner") as Astal.Window | undefined;
+  const bottomRightCorner = app.get_window("BottomRightCorner") as Astal.Window | undefined;
 
-    if (dashboard) { dashboard.visible = visible; }
+  if (dashboard) { dashboard.visible = visible; }
 
-    if (visible) {
-        const marginBottom = hyprland.get_focused_monitor().height / 4;
-        const marginLeft = hyprland.get_focused_monitor().width / 4 - 10;
+  if (visible) {
+    const marginBottom = hyprland.get_focused_monitor().height / 4;
+    const marginLeft = hyprland.get_focused_monitor().width / 4 - 10;
 
-        if (topLeftCorner) {
-            topLeftCorner.marginLeft = marginLeft;
-            topLeftCorner.marginTop = 10;
-        }
-        if (topRightCorner) {
-            topRightCorner.marginRight = 10;
-            topRightCorner.marginTop = 10;
-        }
-        if (bottomLeftCorner) {
-            bottomLeftCorner.marginBottom = marginBottom;
-            bottomLeftCorner.marginLeft = marginLeft;
-        }
-        if (bottomRightCorner) {
-            bottomRightCorner.marginRight = 10;
-            bottomRightCorner.marginBottom = marginBottom;
-        }
-        hyprland.get_monitors().forEach((monitor) => {
-            const bottom_space = monitor.height / 4;
-            const left_space = monitor.width / 4 - 10;
-            writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
-        });
-    } else {
-        if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
-        if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
-        if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
-        if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
-        hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
+    if (topLeftCorner) {
+      topLeftCorner.marginLeft = marginLeft;
+      topLeftCorner.marginTop = 10;
     }
+    if (topRightCorner) {
+      topRightCorner.marginRight = 10;
+      topRightCorner.marginTop = 10;
+    }
+    if (bottomLeftCorner) {
+      bottomLeftCorner.marginBottom = marginBottom;
+      bottomLeftCorner.marginLeft = marginLeft;
+    }
+    if (bottomRightCorner) {
+      bottomRightCorner.marginRight = 10;
+      bottomRightCorner.marginBottom = marginBottom;
+    }
+    hyprland.get_monitors().forEach((monitor) => {
+      const bottom_space = monitor.height / 4;
+      const left_space = monitor.width / 4 - 10;
+      writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
+    });
+  } else {
+    if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
+    if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
+    if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
+    if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
+    hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
+  }
 }
 
 function handleStateChange(key: keyof GlobalState, res: (response: any) => void, toggle = false) {
-    if (toggle) {
-        dashboardState[key] = !dashboardState[key];
-        writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
-    }
-    return res(String(dashboardState[key]));
+  if (toggle) {
+    dashboardState[key] = !dashboardState[key];
+    writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
+  }
+  return res(String(dashboardState[key]));
 }
 
 export function requestHandler(argv: string[], res: (response: any) => void) {
-    const request = argv.join(" ");
-    if (request === "toggleDashboard" || request === "toggle dashboard") {
-        (dashboardState as any).visible = !dashboardState.visible;
-        writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
-        applyCurrentDashboardState();
-        return res(dashboardState.visible ? "Dashboard Activated" : "Dashboard Deactivated");
-    }
+  const request = argv.join(" ");
+  if (request === "toggleDashboard" || request === "toggle dashboard") {
+    (dashboardState as any).visible = !dashboardState.visible;
+    writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
 
-    if (request.startsWith("updateWallpaper")) {
-        const path = request.substring("updateWallpaper".length).trim();
-        if (path) {
-            writeJson(WALLPAPER_JSON, { path });
-            return res(`Wallpaper path updated to: ${path}`);
-        }
+function addService(
+  requestArgv: string,
+  serviceName: string,
+  trigger: string[],
+  callback: (res: (response: string) => void) => void,
+  res: (response: string) => void
+): void {
+  try {
+    if (trigger.includes(requestArgv)) {
+      callback(res);
+      res(`${serviceName}-${Date.now()}: Done`);
     }
+  } catch (error) {
+    res(`${serviceName}-${Date.now()}: ${error}`);
+  }
+}
 
-    if (request === "getWallpaperPath" || request === "get wallpaper path") {
-        const wallpaperObj = readJson(WALLPAPER_JSON, {});
-        return res(typeof wallpaperObj === "object" && wallpaperObj !== null && "path" in wallpaperObj ? String(wallpaperObj.path) : "");
+  if (request.startsWith("updateWallpaper")) {
+    const path = request.substring("updateWallpaper".length).trim();
+    if (path) {
+      writeJson(WALLPAPER_JSON, { path });
+      return res(`Wallpaper path updated to: ${path}`);
     }
+  }
 
-    if (request === "refresh desktop") {
-        execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
-            execAsync(`ags request "updateWallpaper ${out}"`);
-        })
-        signal.refreshAppIcon = true;
-        writeJson(SIGNAL_JSON, signal);
-        return res("Desktop Refreshed");
-    }
+  if (request === "getWallpaperPath" || request === "get wallpaper path") {
+    const wallpaperObj = readJson(WALLPAPER_JSON, {});
+    return res(typeof wallpaperObj === "object" && wallpaperObj !== null && "path" in wallpaperObj ? String(wallpaperObj.path) : "");
+  }
 
-    if (request === "open wallpaper selector") {
-        execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
-    }
+  if (request === "refresh desktop") {
+    execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
+      execAsync(`ags request "updateWallpaper ${out}"`);
+    })
+    signal.refreshAppIcon = true;
+    writeJson(SIGNAL_JSON, signal);
+    return res("Desktop Refreshed");
+  }
 
-    for (const key in stateMappings) {
-        if (request === `get ${key}`) {
-            return handleStateChange(stateMappings[key], res);
-        }
-        if (request === `toggle ${key}`) {
-            return handleStateChange(stateMappings[key], res, true);
-        }
+  if (request === "open wallpaper selector") {
+    execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
+  }
+
+  for (const key in stateMappings) {
+    if (request === `get ${key}`) {
+      return handleStateChange(stateMappings[key], res);
     }
+    if (request === `toggle ${key}`) {
+      return handleStateChange(stateMappings[key], res, true);
+    }
+  }
 }
