@@ -209,7 +209,7 @@ export default function AudioControl() {
                         </With>
                     </box>
                     <CreateValueWatcher value={verboseInformation}>
-                        {(v) => <box visible={v} cssClasses={["entry"]} halign={Align.FILL} marginStart={5} marginEnd={5} spacing={5}>
+                        {(v) => <box visible={v} cssClasses={["entry"]} halign={Align.FILL} marginStart={3} marginEnd={3} spacing={5}>
                             <box orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand>
                                 <CreateEntryContent name={"SINK NAME"} animation={false} value={sinkName} watchValue />
                                 <CreateEntryContent name={"SINK CLASS"} animation={false} value={sinkMediaClass} watchValue vexpand/>

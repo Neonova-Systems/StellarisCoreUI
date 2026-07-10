@@ -32,31 +32,31 @@ export default function FilesystemInfo() {
 
   playSound(AudioFile.Panel, 1600)
   initToggleState("FilesystemInfo", setToggleContentState);
-  // watchRequestBoolean("FilesystemGraph", 800, (enabled) => {
-  //   setToggleGraphState(enabled);
-  //   if (enabled) {
-  //     startIntervals();
-  //   } else {
-  //     stopIntervals();
-  //   }
-  // });
+  watchRequestBoolean("FilesystemGraph", 800, (enabled) => {
+    setToggleGraphState(enabled);
+    if (enabled) {
+      startIntervals();
+    } else {
+      stopIntervals();
+    }
+  });
 
   function startIntervals() {
-    // if (avgMemUsageInterval !== null) return; // Already running
-    // avgMemUsageInterval = interval(1000, () => execAsync(`awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
-    //   const usage = parseFloat(out);
-    //   setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
-    // }))
+    if (avgMemUsageInterval !== null) return; // Already running
+    avgMemUsageInterval = interval(1000, () => execAsync(`awk '/^MemTotal:/ { total=$2 } /^MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.2f\\n", (total - avail) / total }' /proc/meminfo`).then((out) => {
+      const usage = parseFloat(out);
+      setAvgMemUsage((prev) => updateRollingWindow(prev, usage, 20));
+    }))
 
-    // readDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
-    //     const usage = parseFloat(out);
-    //     setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
-    // }))
-    //
-    // writeDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
-    //     const usage = parseFloat(out);
-    //     setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
-    // }))
+    readDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/read_ratio.py`).then((out) => {
+      const usage = parseFloat(out);
+      setReadDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
+    }))
+
+    writeDiskOperationInterval = interval(1000, () => execAsync(`python ${HOME_DIR}/.config/ags/scripts/write_ratio.py`).then((out) => {
+      const usage = parseFloat(out);
+      setWriteDiskOperation((prev) => updateRollingWindow(prev, usage, 40));
+    }))
   }
 
   function stopIntervals() {

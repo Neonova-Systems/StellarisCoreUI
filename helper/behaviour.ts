@@ -24,17 +24,17 @@ import { AudioFile, playSound } from "./utility";
  * </CreatePanel>
  */
 export function panelClicked(stateName: string, setterFunction: (value: boolean) => void): void {
-    execAsync(`ags request "toggle ${stateName}"`)
-        .then(out => {
-            const isVisible = out === 'true';
-            setterFunction(isVisible);
-            if (isVisible) {
-                playSound(AudioFile.Panel, 500);
-            }
-        })
-        .catch(err => {
-            console.error(`Failed to toggle ${stateName}:`, err);
-        });
+  execAsync(`ags request toggle ${stateName}`)
+    .then(out => {
+      const isVisible = out === 'true';
+      setterFunction(isVisible);
+      if (isVisible) {
+        playSound(AudioFile.Panel, 500);
+      }
+    })
+    .catch(err => {
+      console.error(`Failed to toggle ${stateName}:`, err);
+    });
 }
 
 /**
@@ -46,11 +46,11 @@ export function panelClicked(stateName: string, setterFunction: (value: boolean)
  * @param delayMs Delay before the first request (defaults to 500ms).
  */
 export function initToggleState(stateName: string, setterFunction: (value: boolean) => void, delayMs = 500): void {
-    timeout(delayMs, () => {
-        execAsync(`ags request "get ${stateName}"`)
-            .then(out => setterFunction(out === "true"))
-            .catch(err => console.error(`Failed to initialize ${stateName} state:`, err));
-    });
+  timeout(delayMs, () => {
+    execAsync(`ags request get ${stateName}`)
+      .then(out => setterFunction(out === "true"))
+      .catch(err => console.error(`Failed to initialize ${stateName} state:`, err));
+  });
 }
 
 /**
@@ -62,11 +62,11 @@ export function initToggleState(stateName: string, setterFunction: (value: boole
  * @returns The created AGS timer so callers can cancel if needed.
  */
 export function watchRequestBoolean(stateName: string, intervalMs: number, onChange: (value: boolean) => void): Timer {
-    return interval(intervalMs, () => {
-        execAsync(`ags request "get ${stateName}"`)
-            .then(out => onChange(out === "true"))
-            .catch(err => console.error(`Failed to poll ${stateName} state:`, err));
-    });
+  return interval(intervalMs, () => {
+    execAsync(`ags request get ${stateName}`)
+      .then(out => onChange(out === "true"))
+      .catch(err => console.error(`Failed to poll ${stateName} state:`, err));
+  });
 }
 
 /**
@@ -77,16 +77,16 @@ export function watchRequestBoolean(stateName: string, intervalMs: number, onCha
  * @param delayMs Optional delay before launching the menu.
  */
 export function openContextMenu(menuFileName: string, sound: AudioFile | string = AudioFile.Granted, delayMs = 0): void {
-    const command = `ags run ${HOME_DIR}/.config/ags/window/context-menu/${menuFileName} --gtk 4`;
-    const runMenu = () => execAsync(command).catch((e) => print(e));
+  const command = `ags run ${HOME_DIR}/.config/ags/window/context-menu/${menuFileName} --gtk 4`;
+  const runMenu = () => execAsync(command).catch((e) => print(e));
 
-    if (delayMs > 0) {
-        timeout(delayMs, runMenu);
-    } else {
-        runMenu();
-    }
+  if (delayMs > 0) {
+    timeout(delayMs, runMenu);
+  } else {
+    runMenu();
+  }
 
-    playSound(sound);
+  playSound(sound);
 }
 
 /**
@@ -99,10 +99,10 @@ export function openContextMenu(menuFileName: string, sound: AudioFile | string 
  * @returns The next variant path.
  */
 export function cycleAssetVariant(currentPath: string, variants: string[]): string {
-    if (variants.length === 0) return currentPath;
+  if (variants.length === 0) return currentPath;
 
-    const currentIndex = variants.indexOf(currentPath);
-    if (currentIndex === -1) return variants[0];
+  const currentIndex = variants.indexOf(currentPath);
+  if (currentIndex === -1) return variants[0];
 
-    return variants[(currentIndex + 1) % variants.length];
+  return variants[(currentIndex + 1) % variants.length];
 }
