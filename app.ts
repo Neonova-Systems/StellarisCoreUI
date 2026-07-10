@@ -3,7 +3,8 @@ import style from "./style.scss"
 import Dashboard from "./widget/Dashboard"
 import GLib from "gi://GLib?version=2.0"
 import { BottomRightCorner, TopRightCorner, BottomLeftCorner, TopLeftCorner } from "./widget/Corners"
-import { applyCurrentDashboardState, requestHandler } from "./services"
+import { requestHandler } from "./services"
+import { applyCurrentDashboardState } from "./service/dashboard-service"
 
 app.start({
   css: style,

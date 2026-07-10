@@ -1,15 +1,7 @@
-import app from "ags/gtk4/app"
-import { Astal } from "gi://Astal?version=4.0"
-import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { writeFile } from "ags/file"
 import { readJson, writeJson } from "./helper/json"
-import { WALLPAPER_JSON, SIGNAL_JSON, GLOBAL_BOOLEAN_STATE_JSON, HOME_DIR } from "./helper/constants";
+import { WALLPAPER_JSON, SIGNAL_JSON, GLOBAL_BOOLEAN_STATE_JSON } from "./helper/constants";
 import { execAsync } from "ags/process"
-
-const hyprland = AstalHyprland.get_default();
-let signal = readJson(SIGNAL_JSON, {
-  refreshAppIcon: false,
-})
+import { serviceCallback } from "./service/dashboard-service";
 
 // State management
 const stateKeys = {
@@ -54,49 +46,6 @@ const stateMappings = Object.entries(stateKeys).reduce((acc, [key, value]) => {
   return acc;
 }, {} as { [key: string]: keyof GlobalState });
 
-export function applyCurrentDashboardState() {
-  const visible = dashboardState.visible;
-  const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
-  const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
-  const topRightCorner = app.get_window("TopRightCorner") as Astal.Window | undefined;
-  const bottomLeftCorner = app.get_window("BottomLeftCorner") as Astal.Window | undefined;
-  const bottomRightCorner = app.get_window("BottomRightCorner") as Astal.Window | undefined;
-
-  if (dashboard) { dashboard.visible = visible; }
-
-  if (visible) {
-    const marginBottom = hyprland.get_focused_monitor().height / 4;
-    const marginLeft = hyprland.get_focused_monitor().width / 4 - 10;
-
-    if (topLeftCorner) {
-      topLeftCorner.marginLeft = marginLeft;
-      topLeftCorner.marginTop = 10;
-    }
-    if (topRightCorner) {
-      topRightCorner.marginRight = 10;
-      topRightCorner.marginTop = 10;
-    }
-    if (bottomLeftCorner) {
-      bottomLeftCorner.marginBottom = marginBottom;
-      bottomLeftCorner.marginLeft = marginLeft;
-    }
-    if (bottomRightCorner) {
-      bottomRightCorner.marginRight = 10;
-      bottomRightCorner.marginBottom = marginBottom;
-    }
-    hyprland.get_monitors().forEach((monitor) => {
-      const bottom_space = monitor.height / 4;
-      const left_space = monitor.width / 4 - 10;
-      writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
-    });
-  } else {
-    if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
-    if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
-    if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
-    if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
-    hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
-  }
-}
 
 function handleStateChange(key: keyof GlobalState, res: (response: any) => void, toggle = false) {
   if (toggle) {
@@ -134,6 +83,10 @@ function addService(requestArgv: string, serviceName: string, trigger: string[],
   }
 }
 
+export function requestHandler(argv: string[], res: (response: any) => void) {
+  const request = argv.join(" ").toLowerCase();
+
+  addService(request, "dasboardToggle", ["toggle dashboard", "toggledashboard"], serviceCallback, res);
   addService(request, "wallpaper", ["updateWallpaper", "update wallpaper"], () => {
     const path = request.substring("updateWallpaper".length).trim();
     if (path) {
@@ -150,6 +103,9 @@ function addService(requestArgv: string, serviceName: string, trigger: string[],
   }, res)
 
   addService(request, "utility", ["refresh desktop"], () => {
+    let signal = readJson(SIGNAL_JSON, {
+      refreshAppIcon: false,
+    })
     execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
       execAsync(`ags request "updateWallpaper ${out}"`);
     })
