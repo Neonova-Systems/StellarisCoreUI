@@ -4,13 +4,24 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, writeJson, readJson, HOME_DIR } from "../helper";
 import { writeFile } from "ags/file";
 
-type WorkspaceState = {
-  visible: boolean;
-};
+type WorkspaceState = { visible: boolean; };
 
 // Key is the workspace ID string, value is the visibility state object
 type State = Record<string, WorkspaceState>;
-let visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, {});
+
+const defaultSchema: State = {
+  "1": { visible: false },
+  "2": { visible: true },
+  "3": { visible: false },
+  "4": { visible: true },
+  "5": { visible: true },
+  "6": { visible: true },
+  "7": { visible: true },
+  "8": { visible: true },
+  "9": { visible: true },
+};
+
+let visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultSchema);
 const hyprland = AstalHyprland.get_default();
 const focusedWorkspace = hyprland.focusedWorkspace;
 const workspaceId = `${focusedWorkspace.id}`;
@@ -58,6 +69,19 @@ export function applyCurrentDashboardState() {
     hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
   }
 }
+
+// Fix: Use GObject property notification syntax
+hyprland.connect("notify::focused-workspace", () => {
+  applyCurrentDashboardState();
+});
+import { monitorFile } from "ags/file"; // or the Astal equivalent file monitor
+
+// Remove setInterval entirely for this.
+monitorFile(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, () => {
+  // Reload your state and re-apply changes when the file updates on disk
+  visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultStateFallback);
+  applyCurrentDashboardState();
+});
 
 export function serviceCallback(res: (response: any) => void) {
   const currentWorkspaceId = `${hyprland.focusedWorkspace.id}`;
