@@ -7,22 +7,24 @@ import { Align, WALLPAPER_JSON } from "../helper/constants";
 import { interval } from "ags/time";
 
 type Props = {
-    $type: string | undefined;
+  $type: string | undefined;
 }
-export default function Wallpaper({ $type } : Props) {
-    const [wallpaperPath, setWallpaperPath] = createState(readJson(WALLPAPER_JSON, { path: "" }).path);
-    execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => {
-        execAsync(`ags request "updateWallpaper ${out}"`);
-        setWallpaperPath(out)
-    })
-    interval(1000, () => { execAsync('ags request "get wallpaper path"').then(out => { setWallpaperPath(out) })});
+export default function Wallpaper({ $type }: Props) {
+  const constPath = readJson<{ path: string }>(WALLPAPER_JSON, { path: "" }).path;
+  const [wallpaperPath, setWallpaperPath] = createState(constPath);
+  execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => {
+    const cleanPath = out.trim();
+    execAsync(`ags request "updateWallpaper ${cleanPath}"`);
+    setWallpaperPath(cleanPath);
+  }).catch(print);
+  // interval(1000, () => { execAsync('ags request "get wallpaper path"').then(out => { setWallpaperPath(out) }) });
 
-    return (
-        <With value={wallpaperPath}>
-            {(v) => v ? (
-                <Gtk.Picture $type={$type} contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Align.FILL} valign={Align.FILL} hexpand />
-            ) : ( <box $type={$type} />)
-            }
-        </With>
-    )
+  return (
+    <With value={wallpaperPath}>
+      {(v) => v ? (
+        <Gtk.Picture $type={$type} contentFit={Gtk.ContentFit.COVER} file={Gio.File.new_for_path(v)} canShrink={true} halign={Align.FILL} valign={Align.FILL} hexpand />
+      ) : (<box $type={$type} />)
+      }
+    </With>
+  )
 }
