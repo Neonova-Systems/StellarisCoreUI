@@ -106,16 +106,21 @@ function handleStateChange(key: keyof GlobalState, res: (response: any) => void,
   return res(String(dashboardState[key]));
 }
 
-export function requestHandler(argv: string[], res: (response: any) => void) {
-  const request = argv.join(" ");
-  if (request === "toggleDashboard" || request === "toggle dashboard") {
-    (dashboardState as any).visible = !dashboardState.visible;
-    writeJson(GLOBAL_BOOLEAN_STATE_JSON, dashboardState);
-
-function addService(
-  requestArgv: string,
-  serviceName: string,
-  trigger: string[],
+/**
+ * Registers an application service action by matching a CLI `ags request` string 
+ * against an array of valid trigger keywords.
+ * @param requestArgv - The joined, normalized CLI request string from the user.
+ * @param serviceName - The name identifier used for response logging and error tracing.
+ * @param trigger - An array of accepted string commands that activate this service.
+ * @param callback - The core execution logic to run when a trigger matches. 
+ * Receives the standard IPC response channel.
+ * @param res - The IPC response callback used to return status messages back to the CLI.
+ * @example
+ * ```ts 
+ * addService( request, "cool-service", ["abc", "ab c"], (actionRes) => { console.log("hello") }, res);
+ * ```
+ */
+function addService(requestArgv: string, serviceName: string, trigger: string[],
   callback: (res: (response: string) => void) => void,
   res: (response: string) => void
 ): void {
