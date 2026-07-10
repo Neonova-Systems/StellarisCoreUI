@@ -134,31 +134,29 @@ function addService(requestArgv: string, serviceName: string, trigger: string[],
   }
 }
 
-  if (request.startsWith("updateWallpaper")) {
+  addService(request, "wallpaper", ["updateWallpaper", "update wallpaper"], () => {
     const path = request.substring("updateWallpaper".length).trim();
     if (path) {
       writeJson(WALLPAPER_JSON, { path });
       return res(`Wallpaper path updated to: ${path}`);
     }
-  }
-
-  if (request === "getWallpaperPath" || request === "get wallpaper path") {
+  }, res)
+  addService(request, "wallpaper", ["getWallpaperPath", "get wallpaper path"], () => {
     const wallpaperObj = readJson(WALLPAPER_JSON, {});
     return res(typeof wallpaperObj === "object" && wallpaperObj !== null && "path" in wallpaperObj ? String(wallpaperObj.path) : "");
-  }
+  }, res)
+  addService(request, "wallpaper", ["open wallpaper selector"], () => {
+    execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
+  }, res)
 
-  if (request === "refresh desktop") {
+  addService(request, "utility", ["refresh desktop"], () => {
     execAsync(`dash -c "awww query | sed 's/.*image: //'"`).then((out) => { // update wallpaper
       execAsync(`ags request "updateWallpaper ${out}"`);
     })
     signal.refreshAppIcon = true;
     writeJson(SIGNAL_JSON, signal);
     return res("Desktop Refreshed");
-  }
-
-  if (request === "open wallpaper selector") {
-    execAsync(`zsh -ic "cd ~/Pictures/Wallpaper && wallpaper-handler --choose"`).then(() => { execAsync("ags request 'refresh desktop'"); })
-  }
+  }, res)
 
   for (const key in stateMappings) {
     if (request === `get ${key}`) {
