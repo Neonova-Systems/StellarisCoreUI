@@ -27,6 +27,7 @@ const hyprland = AstalHyprland.get_default();
 export function applyCurrentDashboardState(targetWorkspaceId?: string) {
   const currentWorkspaceId = targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
 
+  const hyprlandGaps = 10
   const isDashboardVisible = !!(visibleState[currentWorkspaceId]?.visible ?? false);
   const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
   const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
@@ -56,17 +57,20 @@ export function applyCurrentDashboardState(targetWorkspaceId?: string) {
       bottomRightCorner.marginRight = 10;
       bottomRightCorner.marginBottom = marginBottom;
     }
-    hyprland.get_monitors().forEach((monitor) => {
-      const bottom_space = monitor.height / 4;
-      const left_space = monitor.width / 4 - 10;
-      writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
-    });
+    // hyprland.get_monitors().forEach((monitor) => {
+    //   const bottom_space = monitor.height / 4;
+    //   const left_space = monitor.width / 4 - 10;
+    //   writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
+    // });
+    hyprland.message(`eval hl.config({ general = { gaps_out = { top = ${10 + hyprlandGaps}, right = ${10 + hyprlandGaps}, bottom = ${marginBottom + hyprlandGaps}, left = ${marginLeft + hyprlandGaps}} } })`);
   } else {
     if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
     if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
     if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
     if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
-    hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
+    // hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
+
+    hyprland.message(`eval hl.config({ general = { gaps_out = ${hyprlandGaps} } })`);
   }
 }
 
