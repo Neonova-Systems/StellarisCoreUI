@@ -5,7 +5,6 @@ import { serviceCallback } from "./service/dashboard-service";
 
 // State management
 const stateKeys = {
-  visible: "Dashboard",
   dataStreamVisible: "DataStream",
   systemInfoVisible: "SystemInfo",
   networkInfoVisible: "NetworkInfo",
