@@ -1,3 +1,1 @@
-<svg id="triangle" viewBox="0 0 128 111" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="64,0 128,111 0,111" fill="#a3addf"></polygon>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" id="triangle" viewBox="0 0 128 111"><polygon fill="#a3addf" points="64 0 128 111 0 111"/></svg>
