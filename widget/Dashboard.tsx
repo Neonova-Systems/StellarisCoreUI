@@ -13,7 +13,6 @@ import GLib from "gi://GLib?version=2.0";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 import MusicPlayer from "../card/music-player";
 import app from "ags/gtk4/app";
-import Wallpaper from "../modules/wallpaper";
 import Ornaments from "../decoration/Ornaments";
 import AstalNotifd from "gi://AstalNotifd"
 import ExtraPane from "./ExtraPane";
@@ -24,111 +23,111 @@ import Adw from "gi://Adw?version=1";
 import { initToggleState } from "../helper/behaviour";
 
 export default function Dashboard(gdkmonitor: Gdk.Monitor) {
-    const { LEFT, TOP } = Astal.WindowAnchor
-    const notifd = AstalNotifd.get_default()
-    const hyprland = AstalHyprland.get_default();
-    const [dataStreamState, setDataStreamState] = createState(true);
-    const [currentDate, setCurrentDate] = createState("");
-    const [notifications, setNotifications] = createState(new Array<AstalNotifd.Notification>(),)
+  const { LEFT, TOP } = Astal.WindowAnchor
+  const notifd = AstalNotifd.get_default()
+  const hyprland = AstalHyprland.get_default();
+  const [dataStreamState, setDataStreamState] = createState(true);
+  const [currentDate, setCurrentDate] = createState("");
+  const [notifications, setNotifications] = createState(new Array<AstalNotifd.Notification>(),)
 
-    initToggleState("DataStream", setDataStreamState);
+  initToggleState("DataStream", setDataStreamState);
 
-    const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
-        const notification = notifd.get_notification(id)
-        if (replaced && notifications.peek().some((n) => n.id === id)) {
-            setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
-        } else {
-            setNotifications((ns) => [notification, ...ns])
-        }
-    })
+  const notifiedHandler = notifd.connect("notified", (_, id, replaced) => {
+    const notification = notifd.get_notification(id)
+    if (replaced && notifications.peek().some((n) => n.id === id)) {
+      setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
+    } else {
+      setNotifications((ns) => [notification, ...ns])
+    }
+  })
 
-    const resolvedHandler = notifd.connect("resolved", (_, id) => {
-        setNotifications((ns) => ns.filter((n) => n.id !== id))
-    })
+  const resolvedHandler = notifd.connect("resolved", (_, id) => {
+    setNotifications((ns) => ns.filter((n) => n.id !== id))
+  })
 
-    const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
-    execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
-    
-    // Initialize dashboard cards with persistence
-    const { dashboardCards } = createDashboardCards(notifications);
-    return ( <window visible
-        $={(self) => onCleanup(() => {
-            notifd.disconnect(notifiedHandler)
-            notifd.disconnect(resolvedHandler)
-            self.destroy()
-        })}
-        name="Dashboard"
-        layer={Astal.Layer.BACKGROUND}
-        cssClasses={["Dashboard"]}
-        gdkmonitor={gdkmonitor}
-        exclusivity={Astal.Exclusivity.IGNORE}
-        default_width={hyprland.focused_monitor.width}
-        default_height={hyprland.focused_monitor.height}
-        application={app}
-        namespace={"dashboard"}
-        anchor={ LEFT | TOP }>
-        <box css="margin: 10px;" spacing={9} >
-            <box cssClasses={["side-left"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                <scrolledwindow vexpand={true}>
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                        <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12} css={'margin-bottom: 2px;'}>
-                            <CreatePanel name={"DATA STREAM"} isActive={dataStreamState} onClicked={() => panelClicked("DataStream", setDataStreamState)} 
-                                overlay={ 
-                                    <>
-                                        <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={15} valign={Align.LEFT} halign={Align.RIGHT}>
-                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament1.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-                                        </Adw.Clamp>
-                                        <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Align.RIGHT} halign={Align.RIGHT}/>
-                                        <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Align.LEFT} halign={Align.LEFT}/>
-                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Align.LEFT} halign={Align.RIGHT}>
-                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament3.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-                                        </Adw.Clamp>
-                                        <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={200} valign={Align.RIGHT} halign={Align.RIGHT}>
-                                            <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament4.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-                                        </Adw.Clamp>
-                                    </>
-                                } />
-                            <With value={dataStreamState}>
-                                {(v) => (
-                                    <box visible={v} orientation={Gtk.Orientation.VERTICAL} spacing={11.8}>
-                                        <SystemInfo />
-                                        <NetworkInfo />
-                                        <FilesystemInfo />
-                                        <HardwareInfo />
-                                        <BatteryInfo />
-                                    </box>
-                                )}
-                            </With>
-                        </box>
-                        <Ornaments />
-                        <For each={dashboardCards}>
-                            {(card) => <card.component />}
-                        </For>
-                    </box>
-                </scrolledwindow>
-                <MusicPlayer />
-                <box homogeneous={true}>
-                    <SystemTray />
-                    <box cssClasses={["special-entry"]} spacing={2}>
-                        <label label="CURRENT DATE:" halign={Align.LEFT} />
-                        <label cssClasses={["value"]} label={currentDate} halign={Align.LEFT} />
-                    </box>
-                    <menubutton>
-                        <box cssClasses={["special-entry"]} spacing={2} halign={Align.RIGHT}>
-                            <label label="CURRENT TIME:" halign={Align.LEFT} />
-                            <label cssClasses={["value"]} label={currentTime} halign={Align.LEFT} />
-                        </box>
-                        <popover>
-                            <Gtk.Calendar showWeekNumbers={true}/>
-                        </popover>
-                    </menubutton>
-                </box>
+  const currentTime = createPoll("", 1000, () => { return GLib.DateTime.new_now_local().format("%H:%M:%S %Z")! })
+  execAsync(`date '+%B, %d/%m/%y'`).then((out) => setCurrentDate(out.toUpperCase()));
+
+  // Initialize dashboard cards with persistence
+  const { dashboardCards } = createDashboardCards(notifications);
+  return (<window visible
+    $={(self) => onCleanup(() => {
+      notifd.disconnect(notifiedHandler)
+      notifd.disconnect(resolvedHandler)
+      self.destroy()
+    })}
+    name="Dashboard"
+    layer={Astal.Layer.BACKGROUND}
+    cssClasses={["Dashboard"]}
+    gdkmonitor={gdkmonitor}
+    exclusivity={Astal.Exclusivity.IGNORE}
+    default_width={hyprland.focused_monitor.width}
+    default_height={hyprland.focused_monitor.height}
+    application={app}
+    namespace={"dashboard"}
+    anchor={LEFT | TOP}>
+    <box css="margin: 10px;" spacing={9} >
+      <box cssClasses={["side-left"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+        <scrolledwindow vexpand={true}>
+          <box orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+            <box name={"dataStream"} orientation={Gtk.Orientation.VERTICAL} spacing={12} css={'margin-bottom: 2px;'}>
+              <CreatePanel name={"DATA STREAM"} isActive={dataStreamState} onClicked={() => panelClicked("DataStream", setDataStreamState)}
+                overlay={
+                  <>
+                    <Adw.Clamp maximumSize={13} $type="overlay" marginEnd={15} valign={Align.LEFT} halign={Align.RIGHT}>
+                      <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament1.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                    <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Align.RIGHT} halign={Align.RIGHT} />
+                    <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Align.LEFT} halign={Align.LEFT} />
+                    <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Align.LEFT} halign={Align.RIGHT}>
+                      <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament3.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                    <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={200} valign={Align.RIGHT} halign={Align.RIGHT}>
+                      <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament4.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                  </>
+                } />
+              <With value={dataStreamState}>
+                {(v) => (
+                  <box visible={v} orientation={Gtk.Orientation.VERTICAL} spacing={11.8}>
+                    <SystemInfo />
+                    <NetworkInfo />
+                    <FilesystemInfo />
+                    <HardwareInfo />
+                    <BatteryInfo />
+                  </box>
+                )}
+              </With>
             </box>
-            <box hexpand cssClasses={["side-right"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                <Screen />
-                <ExtraPane />
-                <BatteryRibbon />
+            <Ornaments />
+            <For each={dashboardCards}>
+              {(card) => <card.component />}
+            </For>
+          </box>
+        </scrolledwindow>
+        <MusicPlayer />
+        <box homogeneous={true}>
+          <SystemTray />
+          <box cssClasses={["special-entry"]} spacing={2}>
+            <label label="CURRENT DATE:" halign={Align.LEFT} />
+            <label cssClasses={["value"]} label={currentDate} halign={Align.LEFT} />
+          </box>
+          <menubutton>
+            <box cssClasses={["special-entry"]} spacing={2} halign={Align.RIGHT}>
+              <label label="CURRENT TIME:" halign={Align.LEFT} />
+              <label cssClasses={["value"]} label={currentTime} halign={Align.LEFT} />
             </box>
+            <popover>
+              <Gtk.Calendar showWeekNumbers={true} />
+            </popover>
+          </menubutton>
         </box>
-    </window>)
+      </box>
+      <box hexpand cssClasses={["side-right"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+        <Screen />
+        <ExtraPane />
+        <BatteryRibbon />
+      </box>
+    </box>
+  </window>)
 }
