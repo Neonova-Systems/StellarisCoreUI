@@ -1,3 +1,4 @@
+import AstalNotifd from "gi://AstalNotifd";
 import { GLOBAL_BOOLEAN_STATE_JSON, readJson, writeJson } from "../helper";
 
 const stateKeys = {
@@ -31,6 +32,15 @@ const defaultDashboardState = Object.keys(stateKeys).reduce((acc, key) => {
 
 let state = readJson<GlobalState>(GLOBAL_BOOLEAN_STATE_JSON, defaultDashboardState);
 
+try {
+  const notifd = AstalNotifd.get_default();
+  if (typeof state.notificationDNDState === "boolean") {
+    notifd.dontDisturb = state.notificationDNDState;
+  }
+} catch (e) {
+  console.error("Failed to initialize AstalNotifd dontDisturb state:", e);
+}
+
 // Auto-generate mappings (inverted: "DataStream" -> "dataStreamVisible")
 export const stateMappings = Object.entries(stateKeys).reduce((acc, [key, value]) => {
   acc[value] = key as keyof GlobalState;
@@ -41,6 +51,13 @@ export function handleStateChange(key: keyof GlobalState, res: (response: string
   if (toggle) {
     state[key] = !state[key];
     writeJson(GLOBAL_BOOLEAN_STATE_JSON, state);
+    if (key === "notificationDNDState") {
+      try {
+        AstalNotifd.get_default().dontDisturb = state[key];
+      } catch (e) {
+        console.error("Failed to sync AstalNotifd dontDisturb state:", e);
+      }
+    }
   }
   res(String(state[key]));
 }
