@@ -1,9 +1,9 @@
 import Notification from "../modules/notifications";
-import { Accessor, With, For, createState } from "ags"
+import { Accessor, With, For, createState, onCleanup } from "ags"
 import { Align, AudioFile, CreatePanel, HOME_DIR, ICON_DIR, panelClicked, playSound, TOOLTIP_TEXT_CONTEXT_MENU } from "../helper";
 import { Astal, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
-import { initToggleState, openContextMenu, watchRequestBoolean } from "../helper/behaviour";
+import { initToggleState, openContextMenu } from "../helper/behaviour";
 
 interface NotificationStack {
   key: string;
@@ -39,10 +39,18 @@ function stackNotifications(notificationList: AstalNotifd.Notification[]) {
 }
 
 export function NotificationCard({ notifications, onDragUp, onDragDown }: { notifications: Accessor<AstalNotifd.Notification[]>, onDragUp?: () => void, onDragDown?: () => void }) {
+  const notifd = AstalNotifd.get_default();
   const [toggleContentState, settoggleContentState] = createState(false);
-  const [notifcationDNDState, setNotificationDND] = createState(false)
+  const [notifcationDNDState, setNotificationDND] = createState(notifd.dontDisturb);
   const stackedNotifications = notifications((notificationList) => stackNotifications(notificationList));
-  watchRequestBoolean("NotificationDND", 1000, setNotificationDND);
+
+  const dndHandler = notifd.connect("notify::dont-disturb", () => {
+    setNotificationDND(notifd.dontDisturb);
+  });
+  onCleanup(() => {
+    notifd.disconnect(dndHandler);
+  });
+
   initToggleState("Notification", settoggleContentState);
 
   function onRightClicked() {
@@ -72,7 +80,7 @@ export function NotificationCard({ notifications, onDragUp, onDragDown }: { noti
                 {(notificationStack) => (
                   <Notification
                     notification={notificationStack.primary}
-                    mute={notifcationDNDState.peek()}
+                    mute={notifcationDNDState()}
                     stackCount={notificationStack.count}
                     onDismiss={() => notificationStack.notifications.forEach((notification) => notification.dismiss())}
                   />
