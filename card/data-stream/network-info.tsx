@@ -81,29 +81,29 @@ export default function NetworkInfo() {
             <Gtk.Picture cssClasses={["min-h-48"]} file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/sattelite.png`)} halign={Align.FILL} contentFit={Gtk.ContentFit.FILL} canShrink={true} />
           </Adw.Clamp>
 
-          <box $type="overlay" halign={Align.LEFT} cssClasses={["mt-3", "ml-2"]} hexpand spacing={5} orientation={Gtk.Orientation.VERTICAL}>
+          <box $type="overlay" halign={Align.LEFT} cssClasses={["mt-3", "ml-2"]} hexpand spacing={3} orientation={Gtk.Orientation.VERTICAL}>
             <CreateEntryContent type="overlay" name="CURRENT SSID" value={currentSSID} orientation={Gtk.Orientation.HORIZONTAL} important allowCopy hexpand />
             <CreateEntryContent name="CURRENT SUBNET" value={currentSubnet} />
           </box>
-          <box $type="overlay" halign={Align.RIGHT} cssClasses={["mt-3", "mr-2",]} hexpand spacing={5} orientation={Gtk.Orientation.VERTICAL}>
+          <box $type="overlay" halign={Align.RIGHT} cssClasses={["mt-3", "mr-2",]} hexpand orientation={Gtk.Orientation.VERTICAL}>
             <CreateEntryContent name="CURRENT MAC" value={currentMAC} important allowCopy orientation={Gtk.Orientation.HORIZONTAL} hexpand />
           </box>
-          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mt-3", "mr-2"]} spacing={8}>
+          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mt-3", "mr-2"]} spacing={5}>
             <CreateEntryContent name="OPEN PORTS" value={openPorts} important orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="TCP CONNECTION" value={tcpConnection} orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="UDP CONNECTION" value={udpConnection} orientation={Gtk.Orientation.HORIZONTAL} />
           </box>
-          <box $type="overlay" halign={Align.LEFT} valign={Align.BOTTOM} cssClasses={["mt-3", "ml-2"]} spacing={5} orientation={Gtk.Orientation.VERTICAL}>
+          <box $type="overlay" halign={Align.LEFT} valign={Align.BOTTOM} cssClasses={["mt-3", "ml-2"]} spacing={3} orientation={Gtk.Orientation.VERTICAL}>
             <CreateEntryContent name="LOCAL IP" value={localIp} important allowCopy orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="GATEWAY IP" value={gatewayIp} important allowCopy orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="DNS SERVERS" value={dnsServers} allowCopy orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="LINK QUALITY" value={linkQuality} orientation={Gtk.Orientation.HORIZONTAL} />
           </box>
-          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mb-5", "mr-2"]} spacing={5}>
+          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mb-3", "mr-2"]} spacing={3}>
             <CreateEntryContent name="TRANSMIT BYTE" value={transmitByte} orientation={Gtk.Orientation.HORIZONTAL} />
             <CreateEntryContent name="RECEIVE BYTE" value={receiveByte} orientation={Gtk.Orientation.HORIZONTAL} />
           </box>
-          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mb-10", "mr-2"]} spacing={5}>
+          <box $type="overlay" halign={Align.RIGHT} valign={Align.BOTTOM} cssClasses={["mb-6", "mr-2"]}>
             <CreateEntryContent name="CURRENT BITRATE" value={currentBitrate} orientation={Gtk.Orientation.HORIZONTAL} />
           </box>
           <box $type="overlay" halign={Align.CENTER} valign={Align.TOP} cssClasses={["mt-8"]} spacing={5}>
