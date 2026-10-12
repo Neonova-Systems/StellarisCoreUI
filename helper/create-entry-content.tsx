@@ -83,7 +83,7 @@ export default function CreateEntryContent({ name, value, css, visible = true, h
       valign={Align.TOP}
       justify={Gtk.Justification.FILL}
       wrap
-      wrapMode={Gtk.WrapMode.WORD}
+      wrapMode={Gtk.WrapMode.WORD_CHAR}
       ellipsize={ellipsize}
       cursor={allowCopy ? Gdk.Cursor.new_from_name("pointer", null) : undefined} hexpand />
   )
