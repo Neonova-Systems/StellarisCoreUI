@@ -1,7 +1,7 @@
 @use "sass:string";
 @use 'sass:list';
-// @use 'animation';
 @use 'animation' as *;
+@use 'utility' as *;
 
 @function gtkalpha($color, $alpha) {
   @return string.unquote("alpha(#{$color},#{$alpha})");
@@ -29,6 +29,7 @@
     text-decoration: underline;
   }
 }
+
 
 .debug {
   background-color: red;
@@ -265,11 +266,6 @@ window.Dashboard {
       }
     }
 
-    .NoiseGrid {
-      margin: 8px;
-      margin-top: 0px;
-      min-height: 45px;
-    }
   }
 }
 

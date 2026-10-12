@@ -1,9 +1,9 @@
 import { createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { interval } from "ags/time";
+import Adw from "gi://Adw?version=1";
 import Gio from "gi://Gio?version=2.0";
-import NM from 'gi://NM';
-import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
+import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter, getLocalIP, getNMGatewayIP } from "../../helper";
 import { cycleAssetVariant, initToggleState } from "../../helper/behaviour";
 import CreateCard from '../../helper/create-card';
 
@@ -66,50 +66,15 @@ export default function NetworkInfo() {
     [`nmcli dev wifi list | head -n 10`]: setWifiList,
   });
 
-  function getLocalIP(): string {
-    try {
-      // Create a socket connection to a public IP (doesn't send data)
-      const client = new Gio.SocketClient();
-      const conn = client.connect(
-        new Gio.InetSocketAddress({
-          address: Gio.InetAddress.new_from_string("1.1.1.1"),
-          port: 80
-        }),
-        null
-      );
-
-      // Retrieve the local interface address used for the route
-      const localAddr = conn.get_local_address() as Gio.InetSocketAddress;
-      const ip = localAddr.get_address().to_string();
-      conn.close(null);
-
-      return ip;
-    } catch (e) {
-      return "Disconnected";
-    }
-  }
-
-  function getNMGatewayIP(): string {
-    try {
-      const client = NM.Client.new(null);
-      const primaryConn = client.get_primary_connection();
-      if (!primaryConn) return "Disconnected";
-
-      const ip4Config = primaryConn.get_ip4_config();
-      if (ip4Config) {
-        const gateway = ip4Config.get_gateway();
-        if (gateway) return gateway;
-      }
-    } catch (e) {
-      console.error("NM Error:", e);
-    }
-    return "Unknown";
-  }
-
   setGatewayIp(() => getNMGatewayIP())
+  setLocalIp(() => getLocalIP())
   function renderContent() {
     return (
       <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
+
+        <Adw.Clamp maximumSize={400}>
+          <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/sattelite.png`)} halign={Align.FILL} contentFit={Gtk.ContentFit.CONTAIN} canShrink={true} />
+        </Adw.Clamp>
         <box cssClasses={["content"]} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
           <box homogeneous={false} halign={Align.FILL} hexpand={true}>
             <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} spacing={8} halign={Align.FILL} hexpand={true}>
@@ -138,7 +103,7 @@ export default function NetworkInfo() {
             </box>
           </box>
         </box>
-        <box cssClasses={["NoiseGrid"]}>
+        <box cssClasses={["mx-2", "mt-0", "mb-2", "min-h-12"]}>
           <With value={noiseGridImage}>
             {(path) => (<Gtk.Picture file={Gio.File.new_for_path(path)} halign={Align.FILL} />)}
           </With>

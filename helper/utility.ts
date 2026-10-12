@@ -1,9 +1,9 @@
 import { execAsync } from "ags/process";
-import { timeout, Timer } from "ags/time";
+import { timeout} from "ags/time";
 import { HOME_DIR } from "./constants";
 import { Gdk } from "ags/gtk4";
-import AstalHyprland from "gi://AstalHyprland?version=0.1";
-import app from "ags/gtk4/app";
+import Gio from "gi://Gio?version=2.0";
+import NM from "gi://NM";
 import GLib from "gi://GLib?version=2.0";
 import giCairo from "cairo";
 
@@ -11,30 +11,37 @@ import giCairo from "cairo";
  * Enum for available audio files
  */
 export enum AudioFile {
-    Panel = "panels.wav",
-    Error = "error.wav",
-    Granted = "granted.wav",
-    Notification = "notification.wav",
-    Enter = "enter.wav",
-    Key = "key.wav",
-    Hover = "hover-panel.wav"
+  Panel = "panels.wav",
+  Error = "error.wav",
+  Granted = "granted.wav",
+  Notification = "notification.wav",
+  Enter = "enter.wav",
+  Key = "key.wav",
+  Hover = "hover-panel.wav",
 }
 
 /**
  * Plays an audio file using aplay after a specified timeout.
- * 
+ *
  * @param audioFileName - The name of the audio file in ~/.config/ags/assets/audio/
  * @param timeoutMs - Delay in milliseconds before playing the sound (default: 100)
- * 
+ *
  * @example
  * playSound(AudioFile.Panel, 500);
  * playSound(AudioFile.Notification); // Uses default 100ms timeout
  */
-export function playSound(audioFileName: AudioFile | string, timeoutMs: number = 100): void {
-    timeout(timeoutMs, () => {
-        execAsync(['aplay', `${HOME_DIR}/.config/ags/assets/audio/${audioFileName}`])
-            .catch(err => console.error(`Error playing sound ${audioFileName}:`, err));
-    });
+export function playSound(
+  audioFileName: AudioFile | string,
+  timeoutMs: number = 100,
+): void {
+  timeout(timeoutMs, () => {
+    execAsync([
+      "aplay",
+      `${HOME_DIR}/.config/ags/assets/audio/${audioFileName}`,
+    ]).catch((err) =>
+      console.error(`Error playing sound ${audioFileName}:`, err),
+    );
+  });
 }
 
 /**
@@ -52,12 +59,12 @@ export function playSound(audioFileName: AudioFile | string, timeoutMs: number =
  * formatBytes(1234567, 3);
  */
 export function formatBytes(bytes: number, decimals = 2): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
 /**
@@ -72,20 +79,22 @@ export function formatBytes(bytes: number, decimals = 2): string {
  * createRandomString(10);
  */
 export function createRandomString(length: number): string {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
 
 export function copyToClipboard(text: string) {
-    const clipboard = (Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null);
-    if (clipboard && text) {
-        clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
-        playSound(AudioFile.Granted)
-    }
+  const clipboard =
+    Gdk.Display.get_default()?.get_clipboard() as Gdk.Clipboard | null;
+  if (clipboard && text) {
+    clipboard.set_content(Gdk.ContentProvider.new_for_value(text));
+    playSound(AudioFile.Granted);
+  }
 }
 
 /**
@@ -102,7 +111,7 @@ export function copyToClipboard(text: string) {
  * formatTime(Date.now() / 1000, "%Y-%m-%d %I:%M %p"); // e.g., "2023-10-27 02:30 PM"
  */
 export function formatTime(time: number, format = "%H:%M") {
-  return GLib.DateTime.new_from_unix_local(time).format(format)!
+  return GLib.DateTime.new_from_unix_local(time).format(format)!;
 }
 
 /**
@@ -114,16 +123,19 @@ export function formatTime(time: number, format = "%H:%M") {
  * const { r, g, b, a } = hexToRGBA("#1a39ed", 0.5);
  * cr.setSourceRGBA(r, g, b, a);
  */
-export function hexToRGBA(hex: string, alpha: number = 1.0): { r: number; g: number; b: number; a: number } {
-    // Remove # if present
-    const cleanHex = hex.replace(/^#/, '');
-    
-    // Parse RGB values
-    const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
-    const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
-    const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
-    
-    return { r, g, b, a: Math.max(0, Math.min(1, alpha)) };
+export function hexToRGBA(
+  hex: string,
+  alpha: number = 1.0,
+): { r: number; g: number; b: number; a: number } {
+  // Remove # if present
+  const cleanHex = hex.replace(/^#/, "");
+
+  // Parse RGB values
+  const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+
+  return { r, g, b, a: Math.max(0, Math.min(1, alpha)) };
 }
 
 /**
@@ -134,9 +146,13 @@ export function hexToRGBA(hex: string, alpha: number = 1.0): { r: number; g: num
  * @example
  * setSourceRGBAFromHex(cr, "#1a39ed", 0.17);
  */
-export function setSourceRGBAFromHex(cr: giCairo.Context, hex: string, alpha: number = 1.0): void {
-    const { r, g, b, a } = hexToRGBA(hex, alpha);
-    cr.setSourceRGBA(r, g, b, a);
+export function setSourceRGBAFromHex(
+  cr: giCairo.Context,
+  hex: string,
+  alpha: number = 1.0,
+): void {
+  const { r, g, b, a } = hexToRGBA(hex, alpha);
+  cr.setSourceRGBA(r, g, b, a);
 }
 
 /**
@@ -156,7 +172,51 @@ export function setSourceRGBAFromHex(cr: giCairo.Context, hex: string, alpha: nu
  * const window2 = [1, 2, 3, 4, 5];
  * updateRollingWindow(window2, 6, 5); // Returns [2, 3, 4, 5, 6]
  */
-export function updateRollingWindow(prev: number[], newValue: number, maxPoints: number = 20): number[] {
-    const newPoints = [...prev, newValue];
-    return newPoints.length > maxPoints ? newPoints.slice(-maxPoints) : newPoints;
+export function updateRollingWindow(
+  prev: number[],
+  newValue: number,
+  maxPoints: number = 20,
+): number[] {
+  const newPoints = [...prev, newValue];
+  return newPoints.length > maxPoints ? newPoints.slice(-maxPoints) : newPoints;
+}
+
+export function getLocalIP(): string {
+  try {
+    // Create a socket connection to a public IP (doesn't send data)
+    const client = new Gio.SocketClient();
+    const conn = client.connect(
+      new Gio.InetSocketAddress({
+        address: Gio.InetAddress.new_from_string("1.1.1.1"),
+        port: 80,
+      }),
+      null,
+    );
+
+    // Retrieve the local interface address used for the route
+    const localAddr = conn.get_local_address() as Gio.InetSocketAddress;
+    const ip = localAddr.get_address().to_string();
+    conn.close(null);
+
+    return ip;
+  } catch (e) {
+    return "Disconnected";
+  }
+}
+
+export function getNMGatewayIP(): string {
+  try {
+    const client = NM.Client.new(null);
+    const primaryConn = client.get_primary_connection();
+    if (!primaryConn) return "Disconnected";
+
+    const ip4Config = primaryConn.get_ip4_config();
+    if (ip4Config) {
+      const gateway = ip4Config.get_gateway();
+      if (gateway) return gateway;
+    }
+  } catch (e) {
+    console.error("NM Error:", e);
+  }
+  return "Unknown";
 }
