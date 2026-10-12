@@ -2,6 +2,7 @@ import { createState, With } from "ags";
 import { Gtk } from "ags/gtk4"
 import { interval } from "ags/time";
 import Gio from "gi://Gio?version=2.0";
+import NM from 'gi://NM';
 import { CreateEntryContent, CreatePanel, HOME_DIR, panelClicked, playSound, AudioFile, Align, createBindingCommandTableSetter } from "../../helper";
 import { cycleAssetVariant, initToggleState } from "../../helper/behaviour";
 import CreateCard from '../../helper/create-card';
@@ -48,11 +49,9 @@ export default function NetworkInfo() {
     [`ip a | grep --after-context 4 wlan0 | grep altname | tr -s ' ' | cut -d ' ' -f 3 | head -n2 | paste -d ',' - -`]: setAltInterfaceName,
     [`ifconfig wlan0 | grep netmask | tr -s ' ' | cut -d ' ' -f 5`]: setCurrentSubnet,
     [`lsof -i -P -n | grep LISTEN | wc -l`]: setOpenPorts,
-    [`ip address | grep --after-context 1 'enp|eth|wl|wlan' | grep inet | cut -d ' ' -f 6,13 | head -n 1`]: setLocalIp,
     [`iwconfig wlan0 | grep Bit | tr -s ' ' | cut -d ' ' -f 2-4 | cut -d '=' -f 2`]: setCurrentBitrate,
     [`ifconfig wlan0 | grep TX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setTransmitByte,
     [`lsof -i -P | grep TCP | wc -l`]: setTcpConnection,
-    [`ip route show | grep default | cut -d ' ' -f3,5 | head -n 1`]: setGatewayIp,
     [`iwconfig wlan0 | grep Link | tr -s ' ' | cut -d ' ' -f 2-3 | cut -d '=' -f 2`]: setLinkQuality,
     [`ifconfig wlan0 | grep RX | head -n1 | tr -s ' ' | cut -d ' ' -f 7-`]: setReceiveByte,
     [`lsof -i -P | grep UDP | wc -l`]: setUdpConnection,
@@ -90,7 +89,24 @@ export default function NetworkInfo() {
     }
   }
 
-  setLocalIp(() => getLocalIP())
+  function getNMGatewayIP(): string {
+    try {
+      const client = NM.Client.new(null);
+      const primaryConn = client.get_primary_connection();
+      if (!primaryConn) return "Disconnected";
+
+      const ip4Config = primaryConn.get_ip4_config();
+      if (ip4Config) {
+        const gateway = ip4Config.get_gateway();
+        if (gateway) return gateway;
+      }
+    } catch (e) {
+      console.error("NM Error:", e);
+    }
+    return "Unknown";
+  }
+
+  setGatewayIp(() => getNMGatewayIP())
   function renderContent() {
     return (
       <box cssClasses={["card-content"]} orientation={Gtk.Orientation.VERTICAL}>
