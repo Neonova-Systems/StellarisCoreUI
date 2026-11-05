@@ -45,7 +45,7 @@ type CreateSliderProps = {
  * @param props - Slider configuration and bindings.
  * @returns A JSX element representing the custom segmented slider.
  */
-export function CreateSlider({ value, onChange, disabled = false }: CreateSliderProps) {
+export default function CreateSlider({ value, onChange, disabled = false }: CreateSliderProps) {
     const [resolvedSegmentCount, setResolvedSegmentCount] = createState(0);
     const [segmentIndexes, setSegmentIndexes] = createState<number[]>([]);
     const [isDraggingSegments, setIsDraggingSegments] = createState(false);
