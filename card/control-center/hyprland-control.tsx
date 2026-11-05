@@ -81,7 +81,9 @@ export default function HyprlandControl() {
                 </box>
               </box>
             ) : (
-              <CreateEntryContent name={"FOCUSED"} animation={false} value={"NO CLIENT"} />
+              <box cssClasses={["entry"]}>
+                <CreateEntryContent name={"FOCUSED"} animation={false} value={"NO CLIENT"} />
+              </box>
             )}
           </With>
           <With value={focusedWorkspace}>

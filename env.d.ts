@@ -58,6 +58,9 @@ declare module "ags/gtk4" {
     type Picture = any
     type ContentFit = any
     type EventController = any
+    type EventControllerMotion = any
+    type EventControllerKey = any
+    type IconTheme = any
     type Allocation = any
     type Window = any
     type Application = any
@@ -92,6 +95,16 @@ declare module "ags/gtk4" {
     type EventButton = any
     type EventKey = any
     type ScrollEvent = any
+    type Monitor = any
+    type Display = any
+    type Clipboard = any
+    type ContentProvider = any
+    type ModifierType = any
+    const KEY_Escape: number
+    const KEY_Return: number
+    const KEY_KP_Enter: number
+    const KEY_space: number
+    function keyval_to_lower(keyval: number): number
   }
 }
 
