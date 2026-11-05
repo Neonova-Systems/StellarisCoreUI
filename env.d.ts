@@ -22,13 +22,14 @@ declare module "*.css" {
 
 // AGS core modules
 declare module "ags" {
-  // AGS accessor type — matches the real AGS runtime API where accessors
+  // AGS accessor — matches the real AGS runtime API where accessors
   // are objects with peek/set/subscribe, not plain functions.
-  export type Accessor<T> = {
+  export class Accessor<T> {
     peek(): T
     set(value: T): void
     subscribe(callback: (value: T) => void): () => void
     get(): T
+    constructor(get: () => T, subscribe?: (callback: () => void) => () => void)
   }
 
   export function createState<T>(initial: T): [Accessor<T>, (value: T) => void]
