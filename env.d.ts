@@ -72,6 +72,21 @@ declare module "ags/time" {
   export function timeout(ms: number, callback: () => void): any
 }
 
+// Gtk namespace for type references like Gtk.Box, Gtk.Orientation, Gtk.GestureDrag
+declare namespace Gtk {
+  type Box = any
+  type Orientation = any
+  type GestureDrag = any
+  type DrawingArea = any
+  type Overlay = any
+  type Label = any
+  type Image = any
+  type Button = any
+  type Widget = any
+  type Align = any
+  type CairoContext = any
+}
+
 // JSX namespace for AGS/gtk4 elements
 declare namespace JSX {
   interface IntrinsicElements {
