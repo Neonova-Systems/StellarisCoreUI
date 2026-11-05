@@ -11,40 +11,43 @@ import { initToggleState } from "../helper/behaviour";
 interface Layer { namespace: string; address: string; pid: number; x: number; y: number; w: number; h: number; }
 function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: { layers: Accessor<Array<Layer>>, layerNumber: string, layerTitle: string, maximumSize: number }) {
     return (
-        <box spacing={10} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
-            <Adw.Clamp maximumSize={maximumSize}>
-                <box css="min-width: 245px;" halign={Align.FILL} homogeneous={false} hexpand={false}>
-                    <overlay>
-                        <Gtk.Picture 
-                            $type="overlay" 
-                            cssClasses={["layer-image"]} 
-                            file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer${layerNumber}.svg`)} 
-                            canShrink={false} 
-                            contentFit={Gtk.ContentFit.FILL} 
-                        />
-                    </overlay>
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={3} halign={Align.FILL} valign={Align.CENTER} css={'padding-top: 12px; padding-bottom: 11px;'} hexpand>
-                        <label cssClasses={["layer-title"]} label={layerTitle} />
-                        <label cssClasses={["layer-number"]} label={`LAYER ${layerNumber.padStart(2, '0')}`} />
-                        <label cssClasses={["layer-title"]} label={layerTitle} />
-                    </box>
-                </box>
-            </Adw.Clamp>
-            <With value={layers}>
-                {(_) => (
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={true} valign={Align.CENTER} halign={Align.FILL}>
-                        <For each={layers}>
-                            {(item) => (
-                                <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                    <label cssClasses={["layer-namespace", "uppercase"]} label={`${item.namespace}`} halign={Align.LEFT} />
-                                    <label cssClasses={["entry", "uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Align.LEFT} />
+        <With value={layers}>
+            {(layerList) => {
+                if (layerList.length === 0) return null;
+                return (
+                    <box spacing={10} halign={Align.FILL} valign={Align.LEFT} homogeneous={false} hexpand={false}>
+                        <Adw.Clamp maximumSize={maximumSize}>
+                            <box css="min-width: 245px;" halign={Align.FILL} homogeneous={false} hexpand={false}>
+                                <overlay>
+                                    <Gtk.Picture
+                                        $type="overlay"
+                                        cssClasses={["layer-image"]}
+                                        file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/layer${layerNumber}.svg`)}
+                                        canShrink={false}
+                                        contentFit={Gtk.ContentFit.FILL}
+                                    />
+                                </overlay>
+                                <box orientation={Gtk.Orientation.VERTICAL} spacing={3} halign={Align.FILL} valign={Align.CENTER} css={'padding-top: 12px; padding-bottom: 11px;'} hexpand>
+                                    <label cssClasses={["layer-title"]} label={layerTitle} />
+                                    <label cssClasses={["layer-number"]} label={`LAYER ${layerNumber.padStart(2, '0')}`} />
+                                    <label cssClasses={["layer-title"]} label={layerTitle} />
                                 </box>
-                            )}
-                        </For>
+                            </box>
+                        </Adw.Clamp>
+                        <box orientation={Gtk.Orientation.VERTICAL} spacing={5} homogeneous={false} hexpand={true} valign={Align.CENTER} halign={Align.FILL}>
+                            <For each={layers}>
+                                {(item) => (
+                                    <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
+                                        <label cssClasses={["layer-namespace", "uppercase"]} label={`${item.namespace}`} halign={Align.LEFT} />
+                                        <label cssClasses={["entry", "uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Align.LEFT} />
+                                    </box>
+                                )}
+                            </For>
+                        </box>
                     </box>
-                )}
-            </With>
-        </box>
+                );
+            }}
+        </With>
     );
 }
 
