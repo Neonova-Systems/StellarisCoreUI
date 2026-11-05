@@ -7,7 +7,6 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 import CreateUtilityButton from "../../helper/create-utility-button"
-import GapSlider from "../../helper/create-gap-slider"
 
 const hyprland = AstalHyprland.get_default()
 const SCRIPT_DIR = `${HOME_DIR}/.config/ags/scripts`
@@ -101,7 +100,12 @@ export default function HyprlandControl() {
               );
             }}
           </With>
-          <GapSlider value={innerGap} onChange={applyGaps} />
+          <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+            <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
+              <CreateEntryContent name={"INNER GAP"} animation={false} value={innerGap} watchValue />
+            </box>
+            <CreateSlider value={innerGap} onChange={applyGaps} />
+          </box>
         </box>
       </overlay>
     </box>
