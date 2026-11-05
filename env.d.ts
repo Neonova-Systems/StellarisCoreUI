@@ -32,6 +32,7 @@ declare module "ags" {
     constructor(props: { each: Accessor<T[]>; children: (item: T, index: number) => JSX.Element })
   }
   export type Accessor<T> = {
+    (transform: (value: T) => any): Accessor<any>
     peek(): T
     set(value: T): void
     subscribe(callback: (value: T) => void): () => void

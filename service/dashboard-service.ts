@@ -1,11 +1,14 @@
-import app from "ags/gtk4/app"
-import { Astal } from "gi://Astal?version=4.0"
-import AstalHyprland from "gi://AstalHyprland?version=0.1"
-import { DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, writeJson, readJson, HOME_DIR } from "../helper";
+import app from "ags/gtk4/app";
+import { Astal } from "gi://Astal?version=4.0";
+import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import {
+  DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON,
+  writeJson,
+  readJson,
+} from "../helper";
 import { execAsync } from "ags/process";
-import { writeFile } from "ags/file";
 
-type WorkspaceState = { visible: boolean; };
+type WorkspaceState = { visible: boolean };
 
 // Key is the workspace ID string, value is the visibility state object
 type State = Record<string, WorkspaceState>;
@@ -22,7 +25,10 @@ const defaultSchema: State = {
   "9": { visible: true },
 };
 
-let visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultSchema);
+let visibleState = readJson<State>(
+  DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON,
+  defaultSchema,
+);
 const hyprland = AstalHyprland.get_default();
 
 // Read the current base gap from hyprctl (first token of gaps_out CSS string)
@@ -39,17 +45,26 @@ async function getBaseGap(): Promise<number> {
 }
 
 export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
-  const currentWorkspaceId = targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
+  const currentWorkspaceId =
+    targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
 
   const hyprlandGaps = await getBaseGap();
-  const isDashboardVisible = !!(visibleState[currentWorkspaceId]?.visible ?? false);
+  const isDashboardVisible = !!(
+    visibleState[currentWorkspaceId]?.visible ?? false
+  );
   const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
-  const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
-  const topRightCorner = app.get_window("TopRightCorner") as Astal.Window | undefined;
-  const bottomLeftCorner = app.get_window("BottomLeftCorner") as Astal.Window | undefined;
-  const bottomRightCorner = app.get_window("BottomRightCorner") as Astal.Window | undefined;
+  const topLeftCorner = app.get_window("TopLeftCorner") as
+    Astal.Window | undefined;
+  const topRightCorner = app.get_window("TopRightCorner") as
+    Astal.Window | undefined;
+  const bottomLeftCorner = app.get_window("BottomLeftCorner") as
+    Astal.Window | undefined;
+  const bottomRightCorner = app.get_window("BottomRightCorner") as
+    Astal.Window | undefined;
 
-  if (dashboard) { dashboard.visible = isDashboardVisible; }
+  if (dashboard) {
+    dashboard.visible = isDashboardVisible;
+  }
 
   if (isDashboardVisible) {
     const marginBottom = hyprland.get_focused_monitor().height / 4;
@@ -71,14 +86,26 @@ export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
       bottomRightCorner.marginRight = 10;
       bottomRightCorner.marginBottom = marginBottom;
     }
-    hyprland.message(`eval hl.config({ general = { gaps_out = { top = ${10 + hyprlandGaps}, right = ${10 + hyprlandGaps}, bottom = ${marginBottom + hyprlandGaps}, left = ${marginLeft + hyprlandGaps}} } })`);
+    hyprland.message(
+      `eval hl.config({ general = { gaps_out = { top = ${10 + hyprlandGaps}, right = ${10 + hyprlandGaps}, bottom = ${marginBottom + hyprlandGaps}, left = ${marginLeft + hyprlandGaps}} } })`,
+    );
   } else {
-    if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
-    if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
-    if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
-    if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
+    if (topLeftCorner) {
+      topLeftCorner.marginLeft = topLeftCorner.marginTop = 0;
+    }
+    if (bottomLeftCorner) {
+      bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0;
+    }
+    if (topRightCorner) {
+      topRightCorner.marginRight = topRightCorner.marginTop = 0;
+    }
+    if (bottomRightCorner) {
+      bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0;
+    }
 
-    hyprland.message(`eval hl.config({ general = { gaps_out = ${hyprlandGaps} } })`);
+    hyprland.message(
+      `eval hl.config({ general = { gaps_out = ${10 - hyprlandGaps} } })`,
+    );
   }
 }
 
@@ -91,5 +118,7 @@ export function serviceCallback(res: (response: any) => void) {
   writeJson(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, visibleState);
 
   applyCurrentDashboardState(currentWorkspaceId);
-  res(`Workspace ${currentWorkspaceId} Dashboard: ${newStatus ? "Visible" : "Hidden"}`);
+  res(
+    `Workspace ${currentWorkspaceId} Dashboard: ${newStatus ? "Visible" : "Hidden"}`,
+  );
 }

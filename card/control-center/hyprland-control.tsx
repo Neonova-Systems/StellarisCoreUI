@@ -65,6 +65,12 @@ export default function HyprlandControl() {
         <box css={`min-height: 200px;`}>
           <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({ area, cr, width, height, notchSize: 13, backgroundColor: "#000000", backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{ corner: Corner.BottomRight }], }))} />
         </box>
+        <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+          <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
+            <CreateEntryContent name={"INNER GAP"} animation={false} value={innerGap} watchValue />
+          </box>
+          <CreateSlider value={innerGap} onChange={applyGaps} />
+        </box>
         <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={7} halign={Align.FILL} hexpand vexpand>
           <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
             <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15} />

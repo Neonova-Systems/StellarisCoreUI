@@ -81,7 +81,7 @@ export default function ControlKey() {
         <box visible={v} orientation={Gtk.Orientation.VERTICAL} marginBottom={10}>
           <box marginBottom={5}>
             <With value={decorationImage}>
-              {(path) => <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Align.FILL} hexpand />}
+              {(path: string) => <Gtk.Picture file={Gio.File.new_for_path(path)} canShrink={false} contentFit={Gtk.ContentFit.FILL} halign={Align.FILL} hexpand />}
             </With>
           </box>
           <For each={tempArray}>
