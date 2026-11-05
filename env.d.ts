@@ -131,6 +131,9 @@ declare namespace JSX {
     type: any
     props: any
   }
+  interface ElementChildrenAttribute {
+    children: {}
+  }
   function h(type: any, props: any, ...children: any[]): Element
   function cloneElement(element: Element, props: any, ...children: any[]): Element
   function isValidElement(element: any): boolean

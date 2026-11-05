@@ -105,17 +105,22 @@ export default function CreateSlider({ value, onChange, disabled = false }: Crea
         <With value={disabledState}>
             {(_) => {
                 const isDisabled = resolveDisabled(disabled);
+                const hasSegments = resolvedSegmentCount.peek() > 0;
                 return (
         <overlay>
             <box cssClasses={["slider-segment-track", ...(isDisabled ? ["disabled"] : [])]}
                 spacing={1} halign={Align.FILL} hexpand
                 $={(self) => {
                     trackWidget = self;
-                    const updateCount = () => recalculateSegmentsForWidth(self.get_width());
-                    // Width allocation can settle over multiple frames at startup.
-                    // Recalculate a few times so we converge even if notify::width is late or skipped.
-                    [0, 16, 48, 120, 250].forEach((ms) => timeout(ms, updateCount));
+                    // Set immediately on first allocation to avoid flash of empty.
+                    const updateCount = () => {
+                        const w = self.get_width();
+                        if (w > 0) recalculateSegmentsForWidth(w);
+                    };
+                    updateCount();
                     self.connect("notify::width", updateCount);
+                    // Keep fallback timeouts for late allocation adjustments.
+                    [16, 48, 120, 250].forEach((ms) => timeout(ms, updateCount));
                 }} cursor={isDisabled ? Gdk.Cursor.new_from_name("not-allowed", null) : undefined}>
                 <Gtk.GestureDrag onDragBegin={beginSegmentDrag} onDragUpdate={updateSegmentDrag} onDragEnd={endSegmentDrag} />
                 <For each={segmentIndexes}>
@@ -148,12 +153,16 @@ export default function CreateSlider({ value, onChange, disabled = false }: Crea
                     )}
                 </For>
             </box>
-            <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.TOP} halign={Align.RIGHT}>
-                <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle-invert.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-            </Adw.Clamp>
-            <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.BOTTOM} halign={Align.RIGHT}>
-                <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
-            </Adw.Clamp>
+            {hasSegments && (
+                <>
+                    <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.TOP} halign={Align.RIGHT}>
+                        <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle-invert.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                    <Adw.Clamp maximumSize={4} $type="overlay" marginEnd={2} valign={Align.BOTTOM} halign={Align.RIGHT}>
+                        <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/triangle.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
+                    </Adw.Clamp>
+                </>
+            )}
         </overlay>
                 );
             }}
