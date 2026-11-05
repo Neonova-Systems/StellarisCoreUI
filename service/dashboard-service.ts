@@ -104,7 +104,7 @@ export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
     }
 
     hyprland.message(
-      `eval hl.config({ general = { gaps_out = ${10 - hyprlandGaps} } })`,
+      `eval hl.config({ general = { gaps_out = ${hyprlandGaps} } })`,
     );
   }
 }
