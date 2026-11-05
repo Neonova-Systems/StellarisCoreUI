@@ -22,14 +22,6 @@ declare module "*.css" {
 
 // AGS core modules
 declare module "ags" {
-  export class Accessor<T> {
-    peek(): T
-    set(value: T): void
-    subscribe(callback: (value: T) => void): () => void
-    get(): T
-    constructor(get: () => T, subscribe?: (callback: () => void) => () => void)
-  }
-
   export function createState<T>(initial: T): [Accessor<T>, (value: T) => void]
   export function createBinding<T>(object: any, property: string): Accessor<T>
   export class With<T> {
@@ -39,11 +31,68 @@ declare module "ags" {
   export class For<T> {
     constructor(props: { each: Accessor<T[]>; children: (item: T, index: number) => JSX.Element })
   }
+  export type Accessor<T> = {
+    peek(): T
+    set(value: T): void
+    subscribe(callback: (value: T) => void): () => void
+    get(): T
+  }
 }
 
 declare module "ags/gtk4" {
   export const Gtk: any
   export const Gdk: any
+
+  export namespace Gtk {
+    type Box = any
+    type Orientation = any
+    type GestureDrag = any
+    type DrawingArea = any
+    type Overlay = any
+    type Label = any
+    type Image = any
+    type Button = any
+    type Widget = any
+    type Align = any
+    type CairoContext = any
+    type Picture = any
+    type ContentFit = any
+    type EventController = any
+    type Allocation = any
+    type Window = any
+    type Application = any
+    type ApplicationWindow = any
+    type Revealer = any
+    type Spinner = any
+    type Switch = any
+    type Scale = any
+    type LevelBar = any
+    type ProgressBar = any
+    type Popover = any
+    type MenuButton = any
+    type ToggleButton = any
+    type CheckButton = any
+    type RadioButton = any
+    type ComboBox = any
+    type Entry = any
+    type SearchEntry = any
+    type TextBuffer = any
+    type TextView = any
+    type ScrolledWindow = any
+    type Grid = any
+    type FlowBox = any
+    type Separator = any
+  }
+
+  export namespace Gdk {
+    type Cursor = any
+    type Rectangle = any
+    type RGBA = any
+    type EventMotion = any
+    type EventButton = any
+    type EventKey = any
+    type ScrollEvent = any
+  }
 }
 
 declare module "ags/gtk4/jsx-runtime" {
