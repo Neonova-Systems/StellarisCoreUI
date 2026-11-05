@@ -8,3 +8,4 @@ export * from "./dashboard-cards";
 export * from "./behaviour";
 export * from "./create-slider";
 export { default as createBindingCommandTableSetter } from "./create-binding-command-table-setter";
+export { default as GapSlider } from "./create-gap-slider";

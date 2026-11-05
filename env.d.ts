@@ -20,12 +20,35 @@ declare module "*.css" {
   export default content
 }
 
-// AGS core modules
+// AGS accessor type — matches the real AGS runtime API where accessors
+// are objects with peek/set/subscribe, not plain functions.
+interface Accessor<T> {
+  peek(): T
+  set(value: T): void
+  subscribe(callback: (value: T) => void): () => void
+  get(): T
+}
+
+// JSX namespace for AGS/gtk4 elements
+declare namespace JSX {
+  interface IntrinsicElements {
+    [key: string]: any
+  }
+  interface Element {
+    type: any
+    props: any
+  }
+  function h(type: any, props: any, ...children: any[]): Element
+  function cloneElement(element: Element, props: any, ...children: any[]): Element
+  function isValidElement(element: any): boolean
+  function Fragment(props: any, ...children: any[]): Element
+}
+
 declare module "ags" {
-  export function createState<T>(initial: T): [() => T, (value: T) => void]
-  export function createBinding<T>(object: any, property: string): () => T
+  export function createState<T>(initial: T): [Accessor<T>, (value: T) => void]
+  export function createBinding<T>(object: any, property: string): Accessor<T>
   export class With<T> {
-    constructor(value: T)
+    constructor(value: Accessor<T> | T)
     render(children: (value: T) => JSX.Element): JSX.Element
   }
 }
