@@ -1,25 +1,112 @@
+import { createBinding, createState, With } from "ags"
 import { Gtk } from "ags/gtk4"
-import { Align, HOME_DIR, ICON_DIR } from "../../helper"
+import { interval, timeout } from "ags/time"
+import { execAsync } from "ags/process"
+import Pango from "gi://Pango"
+import AstalHyprland from "gi://AstalHyprland?version=0.1"
+import { Align, CreateEntryContent, CreateSlider, HOME_DIR, ICON_DIR } from "../../helper"
 import { Corner, drawChamferedBackground } from "../../helper/draw-function"
 import CreateUtilityButton from "../../helper/create-utility-button"
-import { execAsync } from "ags/process"
+
+const hyprland = AstalHyprland.get_default()
+const SCRIPT_DIR = `${HOME_DIR}/.config/ags/scripts`
+const MAX_GAP = 100
+const gapDebounceMs = 40
 
 export default function HyprlandControl() {
-    const openWev = () => execAsync(`foot -e wev`)
-    return (
-        <box marginTop={10}>
-            <overlay>
-                <box css={`min-height: 50px;`}>
-                    <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({area, cr, width, height, notchSize: 13, backgroundColor: "#000000", backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{corner: Corner.BottomRight}], }))} />
-                </box>
-                <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
-                    <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
-                        <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="HYPRLAND CONTROL"/>
-                        <CreateUtilityButton imageFile={`${ICON_DIR}/mdi--keyboard.svg`} tooltipText={"Open wev event viewer\n\nDisplay keyboard inputs, keycodes,\nand key bindings in real-time"} pixelSize={8} onClicked={openWev}/>
-                    </box>
-                </box>
-            </overlay>
+  const openWev = () => execAsync(`foot -e wev`)
+
+  // Live bindings for the currently focused Hyprland client and workspace.
+  const focusedClient = createBinding(hyprland, "focusedClient")
+  const focusedWorkspace = createBinding(hyprland, "focusedWorkspace")
+
+  // Inner/outer gap sizes are not exposed by AstalHyprland, so poll hyprctl.
+  const [innerGap, setInnerGap] = createState(0)
+  const [outerGap, setOuterGap] = createState(0)
+  let gapDebounceRevision = 0
+
+  function readGapOption(option: string): Promise<number> {
+    return execAsync(`hyprctl getoption ${option} -j`)
+      .then((out) => {
+        const css = (JSON.parse(out) as { css?: string }).css ?? ""
+        const first = css.trim().split(/\s+/)[0]
+        const n = Number(first)
+        return Number.isFinite(n) ? n : 0
+      })
+      .catch(() => 0)
+  }
+
+  function refreshGaps() {
+    readGapOption("general:gaps_in").then((value) => setInnerGap(value))
+    readGapOption("general:gaps_out").then((value) => setOuterGap(value))
+  }
+
+  function applyGaps(nextPercent: number) {
+    const clamped = Math.max(0, Math.min(MAX_GAP, Math.round(nextPercent)))
+    if (Math.abs(clamped - innerGap.peek()) < 1) return
+    setInnerGap(clamped)
+    gapDebounceRevision += 1
+    const currentRevision = gapDebounceRevision
+    timeout(gapDebounceMs, () => {
+      if (currentRevision !== gapDebounceRevision) return
+      const value = innerGap.peek()
+      execAsync(`bash ${SCRIPT_DIR}/set-innergap-ratio ${value}`)
+        .then(() => refreshGaps())
+        .catch((e) => print(e))
+    })
+  }
+
+  timeout(300, refreshGaps)
+  interval(2500, refreshGaps)
+  return (
+    <box marginTop={10}>
+      <overlay>
+        <box css={`min-height: 200px;`}>
+          <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({ area, cr, width, height, notchSize: 13, backgroundColor: "#000000", backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{ corner: Corner.BottomRight }], }))} />
         </box>
-    )
+        <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={7} halign={Align.FILL} hexpand vexpand>
+          <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
+            <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15} />
+            <label cssClasses={["title"]} label="HYPRLAND CONTROL" />
+            <CreateUtilityButton imageFile={`${ICON_DIR}/mdi--keyboard.svg`} tooltipText={"Open wev event viewer\n\nDisplay keyboard inputs, keycodes,\nand key bindings in real-time"} pixelSize={8} onClicked={openWev} />
+          </box>
+          <With value={focusedClient}>
+            {(client: any) => client ? (
+              <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["entry"]} spacing={6} halign={Align.FILL}>
+                <CreateEntryContent name={"TITLE"} animation={false} value={createBinding(client, "title")} watchValue ellipsize={Pango.EllipsizeMode.END} />
+                <box orientation={Gtk.Orientation.HORIZONTAL} cssClasses={["entry"]} spacing={10} halign={Align.FILL}>
+                  <CreateEntryContent name={"CLASS"} animation={false} value={createBinding(client, "class")} watchValue ellipsize={Pango.EllipsizeMode.END} hexpand />
+                  <CreateEntryContent name={"STATE"} animation={false} value={createBinding(client, "floating")((floating: boolean) => floating ? "FLOATING" : "TILED")} watchValue />
+                </box>
+              </box>
+            ) : (
+              <CreateEntryContent name={"FOCUSED"} animation={false} value={"NO CLIENT"} />
+            )}
+          </With>
+          <With value={focusedWorkspace}>
+            {(workspace: any) => {
+              if (!workspace) return <box />;
+              const workspaceName = createBinding(workspace, "name")((name: string) => {
+                if (!name) return String(workspace.id);
+                return name !== String(workspace.id) ? `${workspace.id} [${name}]` : String(workspace.id);
+              });
+              return (
+                <box cssClasses={["entry"]} orientation={Gtk.Orientation.HORIZONTAL} spacing={10} halign={Align.FILL}>
+                  <CreateEntryContent name={"WORKSPACE"} animation={false} value={workspaceName} watchValue />
+                  <CreateEntryContent name={"MONITOR"} animation={false} value={workspace.monitor?.name ?? "N/A"} hexpand />
+                  <CreateEntryContent name={"CLIENTS"} animation={false} value={String(workspace.clients?.length ?? 0)} />
+                </box>
+              );
+            }}
+          </With>
+          <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+            <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
+              <CreateEntryContent name={"INNER GAP"} animation={false} value={innerGap} watchValue />
+            </box>
+            <CreateSlider value={innerGap} onChange={applyGaps} />
+          </box>
+        </box>
+      </overlay>
+    </box>
+  )
 }

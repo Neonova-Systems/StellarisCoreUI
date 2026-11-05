@@ -2,6 +2,7 @@ import app from "ags/gtk4/app"
 import { Astal } from "gi://Astal?version=4.0"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 import { DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, writeJson, readJson, HOME_DIR } from "../helper";
+import { execAsync } from "ags/process";
 import { writeFile } from "ags/file";
 
 type WorkspaceState = { visible: boolean; };
@@ -24,10 +25,23 @@ const defaultSchema: State = {
 let visibleState = readJson<State>(DASHBOARD_VISIBLE_WORKSPACE_STATE_JSON, defaultSchema);
 const hyprland = AstalHyprland.get_default();
 
-export function applyCurrentDashboardState(targetWorkspaceId?: string) {
+// Read the current base gap from hyprctl (first token of gaps_out CSS string)
+async function getBaseGap(): Promise<number> {
+  try {
+    const out = await execAsync(`hyprctl getoption general:gaps_out -j`);
+    const css = (JSON.parse(out) as { css?: string }).css ?? "10 10 10 10";
+    const first = css.trim().split(/\s+/)[0];
+    const n = Number(first);
+    return Number.isFinite(n) ? n : 10;
+  } catch {
+    return 10;
+  }
+}
+
+export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
   const currentWorkspaceId = targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
 
-  const hyprlandGaps = 10
+  const hyprlandGaps = await getBaseGap();
   const isDashboardVisible = !!(visibleState[currentWorkspaceId]?.visible ?? false);
   const dashboard = app.get_window("Dashboard") as Astal.Window | undefined;
   const topLeftCorner = app.get_window("TopLeftCorner") as Astal.Window | undefined;
@@ -57,18 +71,12 @@ export function applyCurrentDashboardState(targetWorkspaceId?: string) {
       bottomRightCorner.marginRight = 10;
       bottomRightCorner.marginBottom = marginBottom;
     }
-    // hyprland.get_monitors().forEach((monitor) => {
-    //   const bottom_space = monitor.height / 4;
-    //   const left_space = monitor.width / 4 - 10;
-    //   writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = { top = 10, bottom = ${bottom_space}, left = ${left_space}, right = 10 } })`);
-    // });
     hyprland.message(`eval hl.config({ general = { gaps_out = { top = ${10 + hyprlandGaps}, right = ${10 + hyprlandGaps}, bottom = ${marginBottom + hyprlandGaps}, left = ${marginLeft + hyprlandGaps}} } })`);
   } else {
     if (topLeftCorner) { topLeftCorner.marginLeft = topLeftCorner.marginTop = 0; }
     if (bottomLeftCorner) { bottomLeftCorner.marginBottom = bottomLeftCorner.marginLeft = 0; }
     if (topRightCorner) { topRightCorner.marginRight = topRightCorner.marginTop = 0; }
     if (bottomRightCorner) { bottomRightCorner.marginBottom = bottomRightCorner.marginRight = 0; }
-    // hyprland.get_monitors().forEach((monitor) => { writeFile(`${HOME_DIR}/.config/hypr/reserved-space.lua`, `hl.monitor({ output = "${monitor.name}", reserved_area = 0})`); });
 
     hyprland.message(`eval hl.config({ general = { gaps_out = ${hyprlandGaps} } })`);
   }
@@ -76,7 +84,6 @@ export function applyCurrentDashboardState(targetWorkspaceId?: string) {
 
 export function serviceCallback(res: (response: any) => void) {
   const currentWorkspaceId = `${hyprland.focusedWorkspace.id}`;
-  // Get current status or default to false
   const currentStatus = visibleState[currentWorkspaceId]?.visible ?? false;
   const newStatus = !currentStatus;
 

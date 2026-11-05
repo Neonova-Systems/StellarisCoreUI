@@ -9,8 +9,8 @@ const commandsList = [
     { name: "Toggle floating", command: "hyprctl dispatch togglefloating", keybind: "f", description: "Toggles floating mode for the active window." },
     { name: "Move to the center", command: "hyprctl dispatch centerwindow", keybind: "G", description: "Moves the active window to the center." },
     { name: "Toggle Gaps", command: `zsh -ic 'toggle-gaps'`, description: "Toggles gaps between windows." },
-    { name: "Increase Gap", command: `bash ${HOME_DIR}/.config/ags/scripts/set-innergap-ratio +5 && bash ${HOME_DIR}/.config/ags/scripts/set-outergapsize-ratio +5`, description: "Increases the gap size." },
-    { name: "Decrease Gap", command: `bash ${HOME_DIR}/.config/ags/scripts/set-innergap-ratio -5 && bash ${HOME_DIR}/.config/ags/scripts/set-outergapsize-ratio -5`, description: "Decreases the gap size." },
+    { name: "Increase Gap", command: `bash ${HOME_DIR}/.config/ags/scripts/set-innergap-ratio +5`, description: "Increases the gap size." },
+    { name: "Decrease Gap", command: `bash ${HOME_DIR}/.config/ags/scripts/set-innergap-ratio -5`, description: "Decreases the gap size." },
 ];
 
 spawnContextMenu(commandsList);

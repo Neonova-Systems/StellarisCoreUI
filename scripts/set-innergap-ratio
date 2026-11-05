@@ -14,7 +14,8 @@ if [[ -z "$value" ]]; then
 	exit 1
 fi
 
-current="$(hyprctl getoption general:gaps_in -j | jq -r '.int // empty')"
+# getoption returns the current value as a CSS string (e.g. "4 5 4 5"); take the first token.
+current="$(hyprctl getoption general:gaps_in -j | jq -r '.css // empty' | awk '{print $1}')"
 
 if [[ -z "$current" ]]; then
 	echo "Could not read current inner gap size." >&2
@@ -35,5 +36,6 @@ if (( new_gap < 0 )); then
 	new_gap=0
 fi
 
-hyprctl keyword general:gaps_in "$new_gap" >/dev/null
+# `hyprctl keyword` is rejected on modern Hyprland; use the Lua eval path.
+hyprctl eval "hl.config({ general = { gaps_in = $new_gap } })" >/dev/null
 printf '%s\n' "$new_gap"

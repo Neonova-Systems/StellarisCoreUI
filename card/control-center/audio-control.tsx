@@ -93,6 +93,9 @@ export default function AudioControl() {
         return ""
     }
 
+    let speakerVolumeInFlight = false
+    let micVolumeInFlight = false
+
     function refreshDeviceInfo() {
         if (deviceInfoRefreshInFlight) return
         deviceInfoRefreshInFlight = true
@@ -128,7 +131,14 @@ export default function AudioControl() {
             })
     }
 
-    function refreshVolume(target: string, setVolume: (v: number) => void, setMuted: (v: boolean) => void) {
+        function refreshVolume(target: string, setVolume: (v: number) => void, setMuted: (v: boolean) => void, type: 'speaker' | 'mic') {
+        if (type === 'speaker') {
+            if (speakerVolumeInFlight) return
+            speakerVolumeInFlight = true
+        } else {
+            if (micVolumeInFlight) return
+            micVolumeInFlight = true
+        }
         execAsync(`wpctl get-volume ${target}`)
             .then((out) => {
                 const match = out.match(/([0-9]*\.?[0-9]+)/)
@@ -138,10 +148,14 @@ export default function AudioControl() {
                 setMuted(out.includes('[MUTED]'))
             })
             .catch(() => { setVolume(0); setMuted(false) })
+            .finally(() => {
+                if (type === 'speaker') speakerVolumeInFlight = false
+                else micVolumeInFlight = false
+            })
     }
 
-    function refreshSpeakerVolume() { refreshVolume("@DEFAULT_AUDIO_SINK@", setSpeakerVolume, setSpeakerMuted) }
-    function refreshMicVolume() { refreshVolume("@DEFAULT_AUDIO_SOURCE@", setMicVolume, setMicMuted) }
+    function refreshSpeakerVolume() { refreshVolume("@DEFAULT_AUDIO_SINK@", setSpeakerVolume, setSpeakerMuted, 'speaker') }
+    function refreshMicVolume() { refreshVolume("@DEFAULT_AUDIO_SOURCE@", setMicVolume, setMicMuted, 'mic') }
 
     function handleSpeakerVolume(nextPercent: number) {
         const clamped = Math.max(0, Math.min(100, Math.round(nextPercent)))

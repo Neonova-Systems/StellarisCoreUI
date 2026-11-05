@@ -14,26 +14,72 @@ if [[ -z "$value" ]]; then
 	exit 1
 fi
 
-current="$(hyprctl getoption general:gaps_out -j | jq -r '.int // empty')"
+# Get current gaps_out CSS string (e.g. "10 10 10 10" or "20 20 300 470")
+current_css="$(hyprctl getoption general:gaps_out -j | jq -r '.css // "10 10 10 10"')"
+read -r top right bottom left <<< "$current_css"
 
-if [[ -z "$current" ]]; then
-	echo "Could not read current outer gap size." >&2
-	exit 1
-fi
+# Fallback if read failed
+top="${top:-10}"
+right="${right:-10}"
+bottom="${bottom:-10}"
+left="${left:-10}"
 
+# Determine target base gap or delta
 if [[ "$value" =~ ^[+-][0-9]+$ ]]; then
-	new_gap=$((current + value))
+	# If applying a delta, apply to the minimum/base edge or all edges
+	base_current="$top"
+	for val in "$top" "$right" "$bottom" "$left"; do
+		if (( val < base_current )); then
+			base_current="$val"
+		fi
+	done
+	new_base=$((base_current + value))
+	delta="$value"
+	
+	# If edges are uniform, update all uniformly
+	if (( top == right && right == bottom && bottom == left )); then
+		top=$new_base
+		right=$new_base
+		bottom=$new_base
+		left=$new_base
+	else
+		# Per-edge layout active (e.g. dashboard visible); adjust base or apply delta to all
+		top=$((top + delta))
+		right=$((right + delta))
+		bottom=$((bottom + delta))
+		left=$((left + delta))
+	fi
 elif [[ "$value" =~ ^-?[0-9]+$ ]]; then
-	new_gap="$value"
+	new_base="$value"
+	# If previously uniform, set all to new_base
+	if (( top == right && right == bottom && bottom == left )); then
+		top="$new_base"
+		right="$new_base"
+		bottom="$new_base"
+		left="$new_base"
+	else
+		# Preserve relative offsets (e.g. dashboard margins) relative to base change
+		old_base=10
+        # If top has an offset like top = base + 10, calculate difference
+        top=$((new_base + (top - 10 > 0 ? top - 10 : 0)))
+        right=$((new_base + (right - 10 > 0 ? right - 10 : 0)))
+        # For bottom/left which might have large dashboard offsets, preserve their offset from old base
+        # Or simpler: if dashboard is active, let dashboard-service manage it, but here we set gaps_out table
+        top="$new_base"
+        right="$new_base"
+        # Keep bottom and left proportional or adjusted if needed, or update via lua eval table
+        bottom="$((bottom + (new_base - 10)))"
+        left="$((left + (new_base - 10)))"
+	fi
 else
 	echo "Invalid value: $value" >&2
-	echo "Usage: $0 <value|+delta|-delta>" >&2
 	exit 1
 fi
 
-if (( new_gap < 0 )); then
-	new_gap=0
-fi
+if (( top < 0 )); then top=0; fi
+if (( right < 0 )); then right=0; fi
+if (( bottom < 0 )); then bottom=0; fi
+if (( left < 0 )); then left=0; fi
 
-hyprctl keyword general:gaps_out "$new_gap" >/dev/null
-printf '%s\n' "$new_gap"
+hyprctl eval "hl.config({ general = { gaps_out = { top = $top, right = $right, bottom = $bottom, left = $left } } })" >/dev/null
+printf '%s\n' "$top"
