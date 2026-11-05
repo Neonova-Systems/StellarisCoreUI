@@ -31,6 +31,11 @@ let visibleState = readJson<State>(
 );
 const hyprland = AstalHyprland.get_default();
 
+// Base gaps_out captured when the dashboard opens and restored when it
+// closes. Re-reading gaps_out while open sees the already-inflated value,
+// so the base would grow by the offset on every toggle.
+let savedBaseGap: number | null = null;
+
 // Read the current base gap from hyprctl (first token of gaps_out CSS string)
 async function getBaseGap(): Promise<number> {
   try {
@@ -48,7 +53,6 @@ export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
   const currentWorkspaceId =
     targetWorkspaceId || `${hyprland.focusedWorkspace?.id ?? 1}`;
 
-  const hyprlandGaps = await getBaseGap();
   const isDashboardVisible = !!(
     visibleState[currentWorkspaceId]?.visible ?? false
   );
@@ -67,6 +71,10 @@ export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
   }
 
   if (isDashboardVisible) {
+    // Snapshot the base outer gap once so subsequent calls don't re-read
+    // the already-inflated value and stack the offset on top.
+    savedBaseGap = savedBaseGap ?? (await getBaseGap());
+    const hyprlandGaps = savedBaseGap;
     const marginBottom = hyprland.get_focused_monitor().height / 4;
     const marginLeft = hyprland.get_focused_monitor().width / 4 - 10;
 
@@ -90,6 +98,11 @@ export async function applyCurrentDashboardState(targetWorkspaceId?: string) {
       `eval hl.config({ general = { gaps_out = { top = ${10 + hyprlandGaps}, right = ${10 + hyprlandGaps}, bottom = ${marginBottom + hyprlandGaps}, left = ${marginLeft + hyprlandGaps}} } })`,
     );
   } else {
+    // Restore the saved base gap instead of re-reading (which would see
+    // the inflated value and grow on every toggle).
+    const hyprlandGaps = savedBaseGap ?? (await getBaseGap());
+    savedBaseGap = null;
+
     if (topLeftCorner) {
       topLeftCorner.marginLeft = topLeftCorner.marginTop = 0;
     }
