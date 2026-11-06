@@ -62,7 +62,7 @@ export default function HyprlandControl() {
   return (
     <box marginTop={10}>
       <overlay>
-        <box css={`min-height: 200px;`}>
+        <box css={`min-height: 150px;`}>
           <drawingarea halign={Align.FILL} valign={Align.FILL} hexpand $={(self) => self.set_draw_func((area, cr, width, height) => drawChamferedBackground({ area, cr, width, height, notchSize: 13, backgroundColor: "#000000", backgroundAlpha: 0.13, borderAlpha: 1.0, borderColor: "#0B1233", borderSize: 1.7, notchPlacements: [{ corner: Corner.BottomRight }], }))} />
         </box>
         <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={7} halign={Align.FILL} hexpand vexpand>
@@ -74,6 +74,7 @@ export default function HyprlandControl() {
           <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
             <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
               <CreateEntryContent name={"INNER GAP"} animation={false} value={innerGap} watchValue />
+              <CreateEntryContent name={"OUTER GAP"} animation={false} value={outerGap} watchValue />
             </box>
             <CreateSlider value={innerGap} onChange={applyGaps} />
           </box>
@@ -108,15 +109,8 @@ export default function HyprlandControl() {
               );
             }}
           </With>
-          <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
-            <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
-              <CreateEntryContent name={"INNER GAP"} animation={false} value={innerGap} watchValue />
-            </box>
-            <CreateSlider value={innerGap} onChange={applyGaps} />
-          </box>
         </box>
       </overlay>
     </box>
   )
-}
 }
