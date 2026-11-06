@@ -1,11 +1,6 @@
-@use "sass:string";
 @use 'sass:list';
 @use 'animation' as *;
 @use 'utility' as *;
-
-@function gtkalpha($color, $alpha) {
-  @return string.unquote("alpha(#{$color},#{$alpha})");
-}
 
 * {
   all: unset;
@@ -13,15 +8,15 @@
 
 // Unsets everything so you can style everything from scratch
 .side-left {
-  min-width: 450px
+  min-width: 450px;
 }
 
 .side-right {
-  min-width: 1441px
+  min-width: 1441px;
 }
 
 .screen {
-  border: 2px solid #0A102E
+  border: 2px solid $bg-alt;
 }
 
 .copyable {
@@ -29,7 +24,6 @@
     text-decoration: underline;
   }
 }
-
 
 .debug {
   background-color: red;
@@ -45,38 +39,26 @@
 }
 
 .layer-image {
-  border: 0.7px solid #3253F6;
-  box-shadow: 0px 0px 5px gtkalpha(#3253F6, 0.25);
+  border: 0.7px solid $primary;
+  box-shadow: 0px 0px 5px gtkalpha($primary, 0.25);
   min-width: 230px;
 }
 
 .layer-title {
-  font-family: Chakra Petch;
+  font-family: $font-main;
   font-size: 6px;
-  color: #20274d;
+  color: $text-dark;
   font-weight: bold;
   letter-spacing: 1.1px;
 }
 
 .layer-number {
-  font-family: Chakra Petch;
+  font-family: $font-main;
   font-size: 12px;
-  color: #3253F6;
+  color: $primary;
   font-weight: bold;
   letter-spacing: 1.5px;
-  text-shadow: 0px 2px 4px gtkalpha(#3253F6, 0.25);
-}
-
-.border-default {
-  border: 1.5px solid #0A102E;
-}
-
-.shadow {
-  box-shadow: 0px 0px 5px gtkalpha(black, 0.5);
-}
-
-.uppercase {
-  text-transform: uppercase;
+  text-shadow: 0px 2px 4px gtkalpha($primary, 0.25);
 }
 
 .filter-dim image {
@@ -87,47 +69,29 @@
   filter: brightness(1.3) saturate(1.2);
 }
 
-.hint-on-hover {
-  &:hover {
-    border: 0.1px solid gtkalpha(white, 0.7);
-  }
-}
-
-.clickable {
-  &:hover {
-    filter: brightness(1.2);
-  }
-
-  &:active {
-    filter: brightness(0.5);
-  }
-}
-
 window.Dashboard {
-  background: linear-gradient(to bottom, #070B1F, #040714);
+  background: linear-gradient(to bottom, $bg-dark, $bg-darker);
 }
 
 .blinking-square {
   @include apply-blink-animation(700ms);
-  box-shadow: 0px 0px 10px gtkalpha(#00AD1D, 0.5);
-  background-color: #00AD1D;
+  box-shadow: 0px 0px 10px gtkalpha($success, 0.5);
+  background-color: $success;
   min-width: 5px;
   margin-top: 3.5px;
   margin-bottom: 3.5px;
 }
 
+
 .panel {
   .content {
     @include apply-start-animation(200ms);
     border-radius: 0;
-    // background-color: #0A102E;
-    // border-left: 5px solid #3353F3;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-family: Chakra Petch;
+    padding: 0 10px;
+    font-family: $font-main;
     font-size: 12px;
     letter-spacing: 1.6px;
-    color: #c6cfff;
+    color: $text-highlight;
     text-shadow: 0px 1px 4px hsla(230, 50%, 60%, 0.2);
     font-weight: bold;
     text-transform: uppercase;
@@ -144,59 +108,59 @@ window.Dashboard {
 
 .notification {
   @include apply-start-animation(500ms);
-  background: gtkalpha(#040714, 0.5);
-  border: 1.5px solid #0B1233;
+  background: gtkalpha($bg-darker, 0.5);
+  border: 1.5px solid $bg-card;
   padding: 10px;
 
   &.critical {
-    border: 0.5px solid #F32626;
-    border-left: 3px solid #F32626;
-    background: gtkalpha(#120000, 0.3);
+    border: 0.5px solid $critical;
+    border-left: 3px solid $critical;
+    background: gtkalpha($bg-critical-dark, 0.3);
 
     .title {
-      color: #F32626;
+      color: $critical;
     }
 
     .close-button {
-      background-color: #F32626;
+      background-color: $critical;
 
       &:hover {
-        background-color: gtkalpha(#F32626, 0.5);
+        background-color: gtkalpha($critical, 0.5);
       }
     }
 
     .entry {
-      color: #aa1b1b;
+      color: $color-critical-entry;
 
       .value {
-        color: #e91111;
+        color: $color-critical-value;
       }
     }
   }
 
   .title {
-    font-family: Chakra Petch;
+    font-family: $font-main;
     font-size: 20px;
-    color: #9EA6CC;
+    color: $text-main;
     text-transform: uppercase;
     letter-spacing: 0px;
     font-weight: 600;
   }
 
   .close-button {
-    background-color: gtkalpha(#9EA6CC, 0.8);
+    background-color: gtkalpha($text-main, 0.8);
     padding-left: 1px;
     padding-right: 1px;
 
     &:hover {
-      background-color: gtkalpha(#9EA6CC, 0.5);
+      background-color: gtkalpha($text-main, 0.5);
     }
   }
 }
 
 .action-button {
-  color: #6E78A7;
-  font-family: Chakra Petch;
+  color: $text-muted;
+  font-family: $font-main;
   font-size: 10px;
   font-weight: 600;
 
@@ -208,15 +172,15 @@ window.Dashboard {
 .card {
   .card-content {
     @include apply-start-animation(500ms);
-    background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
-    border-left: 1.5px solid #0A102E;
-    border-right: 1.5px solid #0A102E;
-    border-bottom: 1.5px solid #0A102E;
+    background: $gradient-card;
+    border-left: 1.5px solid $bg-alt;
+    border-right: 1.5px solid $bg-alt;
+    border-bottom: 1.5px solid $bg-alt;
 
     levelbar {
       trough {
         block.filled {
-          background-color: #213AB4;
+          background-color: $color-levelbar;
         }
 
         block {
@@ -229,17 +193,17 @@ window.Dashboard {
       margin: 8px;
 
       .title {
-        font-family: Chakra Petch;
+        font-family: $font-main;
         font-size: 10px;
         letter-spacing: 1.1px;
         text-shadow: 0px 1px 4px hsla(230, 19%, 64%, 0.2);
         font-weight: bold;
-        color: #b4badc;
+        color: $text-card;
       }
     }
 
     .profile-picture {
-      border: 1px solid #0B1233;
+      border: 1px solid $bg-card;
       filter: grayscale(100%);
       background-color: black;
       box-shadow: 0px 2px 4px 0px hsla(0, 0%, 0%, 0.2);
@@ -250,19 +214,17 @@ window.Dashboard {
         @include apply-stagger-animation;
       }
 
-      font-family: Kode Mono;
+      font-family: $font-mono;
       font-size: 6px;
-      color: #575d83;
-      margin-left: 8px;
-      margin-right: 8px;
-      margin-bottom: 8px;
+      color: $text-extended;
+      margin: 8px 8px 8px 8px;
       padding: 7px;
-      background-color: #09090c3f;
       padding-bottom: 0px;
-      border: 1px solid #0B1233;
+      background-color: $bg-extended;
+      border: 1px solid $bg-card;
 
       &:hover {
-        color: #7680b8;
+        color: $text-hover;
       }
     }
 
@@ -270,25 +232,25 @@ window.Dashboard {
 }
 
 .entry {
-  font-family: Rajdhani;
+  font-family: $font-ui;
   font-size: 9px;
   font-weight: 600;
-  color: #6E78A7;
+  color: $text-muted;
 
   .value {
-    color: #9EA6CC;
+    color: $text-main;
     text-transform: uppercase;
   }
 }
 
 .special-entry {
-  font-family: Rajdhani;
+  font-family: $font-ui;
   font-size: 9px;
   font-weight: 600;
-  color: #1C2552;
+  color: $text-dim;
 
   .value {
-    color: #515EA0;
+    color: $text-special;
   }
 }
 
@@ -299,18 +261,18 @@ popover.menu label {
 menubutton {
   popover {
     contents {
-      background: linear-gradient(to bottom, #070B1F, #040714);
-      border: 1.5px solid #0A102E;
-      font-family: Rajdhani;
+      background: $gradient-bg;
+      border: 1.5px solid $bg-alt;
+      font-family: $font-ui;
       font-size: 12px;
       font-weight: 600;
-      color: #6E78A7;
+      color: $text-muted;
 
       scrolledwindow {
         modelbutton:hover {
           background-color: hsla(230, 64%, 11%, 0.6);
-          color: #C6CFFF;
-          border-left: 3px solid #3353F3;
+          color: $color-modelbutton;
+          border-left: 3px solid $primary;
           padding-top: 7px;
           padding-bottom: 7px;
           padding-left: 5px;
@@ -325,12 +287,12 @@ menubutton {
         }
 
         modelbutton:first-child:disabled {
-          background-color: #0A102E;
-          color: #C6CFFF;
-          font-family: Chakra Petch;
+          background-color: $bg-alt;
+          color: $color-modelbutton;
+          font-family: $font-main;
           font-size: 12px;
           font-weight: bold;
-          border-left: 6px solid #3353F3;
+          border-left: 6px solid $primary;
           padding-top: 10px;
           padding-bottom: 10px;
           padding-left: 0px;
@@ -339,7 +301,7 @@ menubutton {
         }
 
         padding: 2px;
-        background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+        background: $gradient-card;
       }
 
       arrow {
@@ -349,13 +311,13 @@ menubutton {
   }
 
   arrow {
-    background: #0A102E
+    background: $bg-alt
   }
 }
 
 calendar {
-  background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
-  color: #9EA6CC;
+  background: $gradient-card;
+  color: $text-main;
 
   header {
     margin: 9px;
@@ -363,7 +325,7 @@ calendar {
 
   grid {
     label.week-number {
-      color: #1C2552;
+      color: $text-dim;
     }
 
     label.day-name {
@@ -378,12 +340,12 @@ calendar {
     }
 
     label.other-month {
-      color: gtkalpha(#9EA6CC, 0.5);
+      color: gtkalpha($text-main, 0.5);
     }
 
     label.today {
-      color: #0A102E;
-      background-color: #9EA6CC;
+      color: $bg-alt;
+      background-color: $text-main;
       border-radius: 99px;
       font-weight: bold;
     }
@@ -398,45 +360,45 @@ calendar {
     padding-bottom: 4.5px;
 
     block.filled {
-      background: linear-gradient(to right, hsla(229, 65%, 12%, 0.5) 55%, #1832e7);
+      background: linear-gradient(to right, hsla(229, 65%, 12%, 0.5) 55%, $accent);
     }
 
     block {
-      background: #0b123280;
+      background: $bg-workspace;
     }
   }
 }
 
 .decoration-card {
-  background: linear-gradient(to top, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
-  border: 1.5px solid #0A102E;
+  background: $gradient-card-top;
+  border: 1.5px solid $bg-alt;
 }
 
 .decoration-text {
   font-size: 4px;
-  color: #21307aff;
+  color: $color-decorate;
   letter-spacing: 1.0px;
 }
 
 .track-title {
-  font-family: Chakra Petch;
+  font-family: $font-main;
   font-size: 11px;
-  color: #9EA6CC;
+  color: $text-main;
   font-weight: 600;
   margin-bottom: 7px;
 }
 
 .layer-namespace {
-  font-family: Rajdhani;
+  font-family: $font-ui;
   font-size: 10px;
-  color: #9EA6CC;
+  color: $text-main;
   font-weight: 600;
 }
 
 .control-collection {
   .title-content {
     text-transform: uppercase;
-    font-family: Chakra Petch;
+    font-family: $font-main;
     font-size: 7.7px;
     font-weight: bold;
     letter-spacing: 1.0px;
@@ -452,7 +414,7 @@ calendar {
 
   .alt-entry:hover,
   .entry:hover {
-    color: #2043ff;
+    color: $color-hover;
   }
 
   .container:active .overlay {
@@ -469,23 +431,21 @@ calendar {
     color: black;
   }
 
-  // Font transition
   .alt-entry:active {
-    color: #2752ff;
+    color: $color-active;
   }
 
-  // Font transition
   .alt-entry {
     font-size: 6.5px;
-    font-family: Rajdhani;
+    font-family: $font-ui;
     font-weight: 600;
-    color: #1832e7;
+    color: $accent;
     padding: 5px;
   }
 
   .entry {
     font-size: 6.5px;
-    font-family: Rajdhani;
+    font-family: $font-ui;
     font-weight: 600;
     color: black;
     padding: 5px;
@@ -502,7 +462,7 @@ calendar {
 
 .workspace-container {
   .item {
-    background-color: #0b123280;
+    background-color: $bg-workspace;
     min-height: 3px;
 
     &:hover {
@@ -511,24 +471,24 @@ calendar {
   }
 
   .focused-item {
-    background-color: #1832e7;
+    background-color: $accent;
   }
 }
 
 tooltip {
   label {
     padding: 7px;
-    background-color: gtkalpha(#152052, 0.1);
+    background-color: gtkalpha($bg-tooltip, 0.1);
     text-transform: uppercase;
   }
 
-  background: linear-gradient(to bottom, #070B1F, #040714);
+  background: $gradient-bg;
   margin: 5px;
   box-shadow: 0px 0px 5px gtkalpha(black, 0.5);
-  border: 1.5px solid #0A102E;
-  font-family: Rajdhani;
+  border: 1.5px solid $bg-alt;
+  font-family: $font-ui;
   font-size: 9px;
-  color: #9EA6CC;
+  color: $text-main;
   font-weight: 600;
 }
 
@@ -554,78 +514,73 @@ tooltip {
 
 .graph-container {
   $color: (
-    #1A39ED,
-    #3353F3
+    $accent,
+    $primary
   );
-margin: 3px;
-padding: 3px;
-border-radius: 1.5px;
-border-width: 1px;
-border-style: solid;
-border-color: rgba(list.nth($color, 1), .3);
-background-color: gtkalpha(#040714, 0.5);
-box-shadow: inset 0px 0px 4px 2px rgba(list.nth($color, 1), .2), 0px 0px 2px rgba(list.nth($color, 1), .2);
+  margin: 3px;
+  padding: 3px;
+  border-radius: 1.5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(list.nth($color, 1), .3);
+  background-color: gtkalpha($bg-darker, 0.5);
+  box-shadow: inset 0px 0px 4px 2px rgba(list.nth($color, 1), .2), 0px 0px 2px rgba(list.nth($color, 1), .2);
 
-.separator {
-  min-width: 2px;
-  background-color: list.nth($color, 1);
+  .separator {
+    min-width: 2px;
+    background-color: list.nth($color, 1);
 
-  &.critical {
-    background-color: list.nth($color, 2);
-  }
-}
-
-.graph {
-  min-width: 85px;
-  min-height: 30px;
-  padding-left: 3px;
-
-  &.critical-graph {
-    @include apply-alt-blink-animation(1s);
+    &.critical {
+      background-color: list.nth($color, 2);
+    }
   }
 
-  // Critical on the graph
-}
+  .graph {
+    min-width: 85px;
+    min-height: 30px;
+    padding-left: 3px;
 
-label {
-  box-shadow: unset;
-  color: list.nth($color, 1);
-  padding-bottom: 5px;
-  text-shadow: 2px 1px 4px rgba(list.nth($color, 1), 0.5);
-  font-family: CozetteVector;
-  font-weight: bold;
-  letter-spacing: 0.7px;
+    &.critical-graph {
+      @include apply-alt-blink-animation(1s);
+    }
+  }
 
-  &.critical {
-    // Critical on label
+  label {
     box-shadow: unset;
-    color: list.nth($color, 2);
-    text-shadow: 2px 1px 4px rgba(list.nth($color, 2), 0.5);
+    color: list.nth($color, 1);
+    padding-bottom: 5px;
+    text-shadow: 2px 1px 4px rgba(list.nth($color, 1), 0.5);
+    font-family: $font-icon;
+    font-weight: bold;
+    letter-spacing: 0.7px;
+
+    &.critical {
+      box-shadow: unset;
+      color: list.nth($color, 2);
+      text-shadow: 2px 1px 4px rgba(list.nth($color, 2), 0.5);
+    }
   }
-}
 
-&.critical {
-  border-color: rgba(list.nth($color, 2), .3);
-  box-shadow: inset 0px 0px 5px 2px rgba(list.nth($color, 2), .2), 0px 0px 2px rgba(list.nth($color, 2), .2)
-}
-
-// Critical on container
+  &.critical {
+    border-color: rgba(list.nth($color, 2), .3);
+    box-shadow: inset 0px 0px 5px 2px rgba(list.nth($color, 2), .2), 0px 0px 2px rgba(list.nth($color, 2), .2)
+  }
 }
 
 .volume-control-row {
   padding: 4px 6px;
-  border: 1px solid gtkalpha(#0B1233, 0.35);
+  border: 1px solid gtkalpha($bg-card, 0.35);
   min-height: 22px;
 
   .volume-mute-button {
     min-width: 90px;
     padding: 2px 6px;
-    border: 1px solid gtkalpha(#1a2868, 0.55);
-    background: linear-gradient(to bottom, #1520522d, #0f227737);
+    border: 1px solid gtkalpha($color-volume-border, 0.55);
+    background: linear-gradient(to bottom, $bg-volume, $bg-volume-alt);
 
     label {
-      color: #20348d;
-      font-family: Chakra Petch;
+      color: $color-volume;
+      font-family: $font-main;
       font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
@@ -633,11 +588,11 @@ label {
   }
 
   .volume-value-label {
-    font-family: Chakra Petch;
+    font-family: $font-main;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.0px;
-    color: #9EA6CC;
+    color: $text-main;
   }
 }
 
@@ -660,119 +615,23 @@ label {
       margin-top: 10px;
       margin-bottom: 10px;
       margin-right: 0.2px;
-      background: #10193f;
+      background: $bg-slider;
 
       &.filled {
         margin-top: 6px;
         margin-bottom: 6px;
-        background: #afbaef;
-        box-shadow: 0px 0px 2px 1px gtkalpha(#3b4a91, 0.2);
+        background: $color-slider-filled;
+        box-shadow: 0px 0px 2px 1px gtkalpha($color-slider-shadow, 0.2);
       }
 
       &.focus {
         margin-top: 5px;
         margin-bottom: 5px;
         min-height: 13px;
-        background: #adb7ec;
-        box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
+        background: $color-slider-focus;
+        box-shadow: 0px 0px 2px 1px gtkalpha($color-slider-focus, 0.5);
         animation: slider-blink 1s ease infinite, motion-slider-base 0.5s ease 0s 1;
       }
     }
-  }
-}
-
-.apply-motion-slider1 {
-  animation: motion-slider-alt1 0.5s ease 0s 1;
-}
-
-.apply-motion-slider2 {
-  animation: motion-slider-alt2 0.5s ease 0s 1;
-}
-
-.apply-motion-slider3 {
-  animation: motion-slider-alt3 0.5s ease 0s 1;
-}
-
-@keyframes motion-slider-base {
-  0% {
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-
-  100% {
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-}
-
-@keyframes motion-slider-alt1 {
-  0% {
-    margin-top: 3px;
-    margin-bottom: 3px;
-  }
-
-  100% {
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-}
-
-@keyframes motion-slider-alt2 {
-  0% {
-    margin-top: 4px;
-    margin-bottom: 4px;
-  }
-
-  100% {
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-}
-
-@keyframes motion-slider-alt3 {
-  0% {
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-
-  100% {
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-}
-
-@keyframes slider-blink {
-  0% {
-    background: #bdc5ea;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
-  }
-
-  50% {
-    background: #adb7ec;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0);
-  }
-
-  100% {
-    background: #bdc5ea;
-    box-shadow: 0px 0px 2px 1px gtkalpha(#adb7ec, 0.5);
-  }
-}
-
-.scrollbar scrollbar {
-
-  // trough { background-color: gtkalpha(#111423, 0.5); }
-  slider {
-    background-color: #0c1235;
-    min-width: 2.5px;
-    min-height: 2.5px;
-  }
-
-  slider:hover {
-    filter: brightness(2)
-  }
-
-  slider:active {
-    background-color: #1A39ED;
-    filter: none;
   }
 }
