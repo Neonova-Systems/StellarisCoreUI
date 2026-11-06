@@ -15,7 +15,7 @@ export default function NetworkControl() {
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="NETWORK CONTROL"/>
+                        <label cssClasses={["title", "text-uppercase", "font-main"]} label="NETWORK CONTROL"/>
                         <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open nmtui for network management\n\nConfigure WiFi connections,\nedit network settings"} pixelSize={8} onClicked={openNMTUI}/>
                     </box>
                 </box>

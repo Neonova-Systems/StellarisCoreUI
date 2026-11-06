@@ -15,7 +15,7 @@ export default function HyprlandControl() {
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="HYPRLAND CONTROL"/>
+                        <label cssClasses={["title", "text-uppercase", "font-main"]} label="HYPRLAND CONTROL"/>
                         <CreateUtilityButton imageFile={`${ICON_DIR}/mdi--keyboard.svg`} tooltipText={"Open wev event viewer\n\nDisplay keyboard inputs, keycodes,\nand key bindings in real-time"} pixelSize={8} onClicked={openWev}/>
                     </box>
                 </box>

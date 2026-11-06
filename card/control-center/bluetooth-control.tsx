@@ -15,7 +15,7 @@ export default function BluetoothControl() {
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT}>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="BLUETOOTH CONTROL"/>
+                        <label cssClasses={["title", "text-uppercase", "font-main"]} label="BLUETOOTH CONTROL"/>
                         <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open Blueman manager\n\nPair, connect, and configure\nBluetooth devices"} pixelSize={8} onClicked={openBlueman}/>
                     </box>
                 </box>
