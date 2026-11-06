@@ -61,7 +61,7 @@ export default function RecentlyUsed({ onDragUp, onDragDown }: { onDragUp?: () =
                                                     </box>
                                                     <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={5}>
                                                         <box spacing={5} valign={Align.TOP} halign={Align.FILL} hexpand>
-                                                            <label cssClasses={["title", "uppercase"]} justify={Gtk.Justification.LEFT} halign={Align.FILL} hexpand xalign={0} label={item.title ?? item.class} singleLineMode ellipsize={Pango.EllipsizeMode.MIDDLE} />
+                                                            <label cssClasses={["title", "text-uppercase"]} justify={Gtk.Justification.LEFT} halign={Align.FILL} hexpand xalign={0} label={item.title ?? item.class} singleLineMode ellipsize={Pango.EllipsizeMode.MIDDLE} />
                                                         </box>
                                                         <box cssClasses={["entry"]} halign={Align.FILL} marginTop={3} spacing={5} hexpand>
                                                             <box orientation={Gtk.Orientation.VERTICAL} spacing={5} halign={Align.FILL} hexpand>

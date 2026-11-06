@@ -62,7 +62,7 @@ function OSD() {
         marginTop={Math.round(focusedClientY + (focusedClientHeight / 2) - (osdHeight / 2))}
         marginLeft={Math.round(focusedClientX + (focusedClientWidth / 2) - (osdWidth / 2))}
         namespace={"resizing-osd"}>
-        <box cssClasses={["onscreen-display", "with-bg", "shadow"]} css={'margin: 5px;'} valign={Align.FILL} vexpand>
+        <box cssClasses={["onscreen-display", "with-bg", "shadow-sm", "m-1"]} valign={Align.FILL} vexpand>
             <Gtk.GestureClick onPressed={() => openContextMenu("ratio-preset-selection.tsx")} />
             <box cssClasses={["contents", "entry"]} valign={Align.FILL} orientation={Gtk.Orientation.VERTICAL} spacing={3} hexpand>
                 <box vexpand/>
