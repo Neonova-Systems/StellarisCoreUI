@@ -140,8 +140,8 @@ function SpawnContextMenu(commandsList: CommandItem[], windowName: string, curso
             <Gtk.EventControllerKey onKeyPressed={(widget, keyval: number, keycode: number, state: Gdk.ModifierType) =>
                 handleKeyPress(keyval, keycode, state)
             } />
-            <box cssClasses={["context-menu", "shadow"]} css={`margin: 5px;`} orientation={Gtk.Orientation.VERTICAL}>
-                <box cssClasses={["contents"]} orientation={Gtk.Orientation.VERTICAL} css={`padding: 7px;`} hexpand homogeneous={false} spacing={7}>
+            <box cssClasses={["context-menu", "shadow-sm", "m-1"]} orientation={Gtk.Orientation.VERTICAL}>
+                <box cssClasses={["contents", "p-2"]} orientation={Gtk.Orientation.VERTICAL} hexpand homogeneous={false} spacing={7}>
                     {commandsList.map((command: CommandItem) => (
                         <button onClicked={() => { execCommand(command, windowName) }}>
                             <box cssClasses={["entry"]} orientation={Gtk.Orientation.VERTICAL} halign={Align.FILL} spacing={3}>

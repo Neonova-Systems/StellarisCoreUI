@@ -216,10 +216,10 @@ export default function AudioControl() {
                 <box cssClasses={["content"]} $type="overlay" orientation={Gtk.Orientation.VERTICAL} spacing={7} halign={Align.FILL} hexpand vexpand>
                     <box spacing={5} valign={Align.TOP} halign={Align.LEFT} vexpand>
                         <image file={`${HOME_DIR}/.config/ags/assets/ornament/frame-01.svg`} pixelSize={15}/>
-                        <label cssClasses={["title"]} label="AUDIO CONTROL"/>
-                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n<span size='small'>[pavucontrol]</span>"} pixelSize={8} onClicked={openSettings}/>
+                        <label cssClasses={["title", "text-uppercase", "font-main"]} label="AUDIO CONTROL"/>
+                        <CreateUtilityButton imageFile={`${ICON_DIR}/majesticons--open.svg`} tooltipText={"Open audio setting\n\n<span size='small'>[pavucontrol]</span>"} pixelSize={8} onClicked={openSettings} cssClasses={["clickable"]}/>
                         <With value={verboseInformation}>
-                            {(v) => <CreateUtilityButton imageFile={v ? `${ICON_DIR}/mdi--eye.svg` : `${ICON_DIR}/mdi--eye-off.svg`} tooltipText={"Hide detailed audio device information for a cleaner, compact view"} pixelSize={8} onClicked={toggleVerbosity}/> }
+                            {(v) => <CreateUtilityButton imageFile={v ? `${ICON_DIR}/mdi--eye.svg` : `${ICON_DIR}/mdi--eye-off.svg`} tooltipText={"Hide detailed audio device information for a cleaner, compact view"} pixelSize={8} onClicked={toggleVerbosity} cssClasses={["clickable"]}/> }
                         </With>
                     </box>
                     <CreateValueWatcher value={verboseInformation}>

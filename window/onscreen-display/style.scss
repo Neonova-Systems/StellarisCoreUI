@@ -1,43 +1,71 @@
-@use "sass:string";
-@import '../../animation.scss';
-
-@function gtkalpha($color, $alpha) {
-  @return string.unquote("alpha(#{$color},#{$alpha})");
-}
+@use '../../animation' as *;
+@use '../../utility' as *;
 
 * { all: unset; }
-.debug { background-color: red; color: black; .debug { background-color: blue; .debug { background-color: green; } } }
-.shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
-.uppercase { text-transform: uppercase; }
 
 .with-bg {
-  border: 1.5px solid #0A102E;
-  background: linear-gradient(to bottom, #070B1F, #040714);
+  border: 1.5px solid $bg-alt;
+  background: $gradient-bg;
+
   .contents {
     padding: 10px;
-    background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+    background: $gradient-card;
   }
 }
 
-.onscreen-display {
-    font-family: Rajdhani;
-    text-transform: uppercase;
-    color: #e0eaf8; font-weight: 600;
-    text-shadow: 0px 1px 4px hsla(230, 50%, 60%, 0.2);
-    font-size: 8px;
-    title { color: #9EA6CC; font-size: 13px; font-weight: bold; font-family: Chakra Petch;}
-    .entry {
-      font-family: Rajdhani;
-      font-size: 10.3px;
-      font-weight: 600;
-      color: #6E78A7;
+.shadow-sm { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
 
-      .value {
-        color: #9EA6CC;
-      }
+.text-uppercase { text-transform: uppercase; }
+
+.onscreen-display {
+  font-family: $font-ui;
+  text-transform: uppercase;
+  color: #e0eaf8;
+  font-weight: 600;
+  text-shadow: 0px 1px 4px hsla(230, 50%, 60%, 0.2);
+  font-size: 8px;
+
+  title {
+    color: $text-main;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: $font-main;
+  }
+
+  .entry {
+    font-family: $font-ui;
+    font-size: 10.3px;
+    font-weight: 600;
+    color: $text-muted;
+
+    .value {
+      color: $text-main;
     }
-    .id { font-size: 35px; font-weight: bolder; font-family: Chakra Petch; }
-    .prev-id { font-size: 13px; font-weight: bolder; font-family: Chakra Petch; }
-    .decoration-text { font-size: 5px; color: #161a30; letter-spacing: 1.0px; }
-    .monitor { font-size: 7px; color: #6E78A7; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700;}
+  }
+
+  .id {
+    font-size: 35px;
+    font-weight: bolder;
+    font-family: $font-main;
+  }
+
+  .prev-id {
+    font-size: 13px;
+    font-weight: bolder;
+    font-family: $font-main;
+  }
+
+  .decoration-text {
+    font-size: 5px;
+    color: #161a30;
+    letter-spacing: 1.0px;
+  }
+
+  .monitor {
+    font-size: 7px;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+  }
 }

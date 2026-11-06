@@ -55,7 +55,7 @@ function OSD() {
                             </box>
                         </box>
                         <label halign={Align.CENTER} valign={Align.LEFT} $type="overlay" marginTop={3} cssClasses={['monitor']} label={`${workspaceMonitor} ${monitor.width}x${monitor.height}@${monitor.refreshRate}Hz`}/>
-                        <label cssClasses={["decoration-text", "uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Align.RIGHT} halign={Align.RIGHT}/>
+                        <label cssClasses={["decoration-text", "text-uppercase"]} $type="overlay" label={"Igne Natura Renovatur Integra"} marginBottom={4} marginEnd={20} valign={Align.RIGHT} halign={Align.RIGHT}/>
                         {focusedWorkspace_has_fullscreen &&
                             <Adw.Clamp maximumSize={9} $type="overlay" marginStart={7} marginTop={23} valign={Align.TOP} halign={Align.LEFT}>
                                 <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/icon/streamline--dangerous-zone-sign-remix.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />

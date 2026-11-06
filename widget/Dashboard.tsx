@@ -78,7 +78,7 @@ export default function Dashboard(gdkmonitor: Gdk.Monitor) {
                       <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament1.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                     </Adw.Clamp>
                     <label cssClasses={["decoration-text"]} $type="overlay" label={"XDG_CONFIG_HOME/ags/dashboard"} marginBottom={3} marginEnd={35} valign={Align.RIGHT} halign={Align.RIGHT} />
-                    <label cssClasses={["uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Align.LEFT} halign={Align.LEFT} />
+                    <label cssClasses={["text-uppercase", "decoration-text"]} $type="overlay" label={"wayland"} marginTop={3} valign={Align.LEFT} halign={Align.LEFT} />
                     <Adw.Clamp maximumSize={55} $type="overlay" marginEnd={45} valign={Align.LEFT} halign={Align.RIGHT}>
                       <Gtk.Picture file={Gio.File.new_for_path(`${HOME_DIR}/.config/ags/assets/ornament/ornament3.svg`)} canShrink={true} contentFit={Gtk.ContentFit.CONTAIN} />
                     </Adw.Clamp>

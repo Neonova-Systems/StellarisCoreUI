@@ -38,8 +38,8 @@ function LayerContentFragment({ layers, layerNumber, layerTitle, maximumSize }: 
                             <For each={layers}>
                                 {(item) => (
                                     <box orientation={Gtk.Orientation.VERTICAL} spacing={1}>
-                                        <label cssClasses={["layer-namespace", "uppercase"]} label={`${item.namespace}`} halign={Align.LEFT} />
-                                        <label cssClasses={["entry", "uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Align.LEFT} />
+                                        <label cssClasses={["layer-namespace", "text-uppercase"]} label={`${item.namespace}`} halign={Align.LEFT} />
+                                        <label cssClasses={["entry", "text-uppercase"]} css={'font-size: 7px;'} label={`${item.address} ${item.w}X${item.h} ${item.x}X${item.y}`} halign={Align.LEFT} />
                                     </box>
                                 )}
                             </For>
@@ -55,10 +55,10 @@ export default function LayerInformation() {
     const hyprland = AstalHyprland.get_default();
     const currentMonitorName = hyprland.focused_monitor.name;
 
-    const [backgroundLayerJson, setBackgroundLayerJson] = createState<Array<Layer>>([]);
-    const [bottomLayerJson, setBottomLayerJson] = createState<Array<Layer>>([]);
-    const [topLayerJson, setTopLayerJson] = createState<Array<Layer>>([]);
-    const [overlayLayerJson, setOverlayLayerJson] = createState<Array<Layer>>([]);
+    const [backgroundLayerJson, setContentBackgroundLayerJson] = createState<Array<Layer>>([]);
+    const [bottomLayerJson, setContentBottomLayerJson] = createState<Array<Layer>>([]);
+    const [topLayerJson, setContentTopLayerJson] = createState<Array<Layer>>([]);
+    const [overlayLayerJson, setContentOverlayLayerJson] = createState<Array<Layer>>([]);
     const [toggleContentState, settoggleContentState] = createState(false);
 
     initToggleState("LayerInformation", settoggleContentState);
@@ -68,10 +68,10 @@ export default function LayerInformation() {
             const currentMonitorLayers = layerData[currentMonitorName] || [];
 
             if (currentMonitorLayers) {
-                setBackgroundLayerJson(currentMonitorLayers.levels["0"] || []);
-                setBottomLayerJson(currentMonitorLayers.levels["1"] || []);
-                setTopLayerJson(currentMonitorLayers.levels["2"] || []);
-                setOverlayLayerJson(currentMonitorLayers.levels["3"] || []);
+                setContentBackgroundLayerJson(currentMonitorLayers.levels["0"] || []);
+                setContentBottomLayerJson(currentMonitorLayers.levels["1"] || []);
+                setContentTopLayerJson(currentMonitorLayers.levels["2"] || []);
+                setContentOverlayLayerJson(currentMonitorLayers.levels["3"] || []);
             } else {
                 console.log(`No layer information available for monitor ${currentMonitorName}.`);
             }
@@ -85,19 +85,19 @@ export default function LayerInformation() {
             <With value={toggleContentState}>
                 {(v) => (
                     <box visible={v} cssClasses={["card-content"]} css={`padding: 14px;`} spacing={15} orientation={Gtk.Orientation.VERTICAL}>
-                        <LayerContentFragment 
+                        <LayerContentFragment
                             layers={backgroundLayerJson}
                             layerNumber="0"
                             layerTitle="BACKGROUND"
                             maximumSize={masximumSize}
                         />
-                        <LayerContentFragment 
+                        <LayerContentFragment
                             layers={bottomLayerJson}
                             layerNumber="1"
                             layerTitle="BOTTOM"
                             maximumSize={masximumSize}
                         />
-                        <LayerContentFragment 
+                        <LayerContentFragment
                             layers={topLayerJson}
                             layerNumber="2"
                             layerTitle="TOP"

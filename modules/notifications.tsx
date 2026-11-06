@@ -118,7 +118,7 @@ export default function Notification({ notification: n, mute, stackCount = 1, on
                         <label label={label} halign={Align.CENTER} />
                         <image file={`${ICON_DIR}/majesticons--open.svg`} pixelSize={12} />
                       </box>
-                      <label $type="overlay" label={id} cssClasses={["uppercase", "decoration-text"]} css={"margin: 4px;"} halign={Align.LEFT} valign={Align.LEFT} vexpand />
+                      <label $type="overlay" label={id} cssClasses={["text-uppercase", "decoration-text", "m-1"]} halign={Align.LEFT} valign={Align.LEFT} vexpand />
                     </overlay>
                   </button>
                 )

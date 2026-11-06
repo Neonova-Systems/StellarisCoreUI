@@ -1,3 +1,64 @@
+@use "sass:string";
+
+@function gtkalpha($color, $alpha) {
+  @return string.unquote("alpha(#{$color},#{$alpha})");
+}
+
+// Colors
+$bg-darker: #040714;
+$bg-dark: #070B1F;
+$bg-alt: #0A102E;
+$bg-card: #0B1233;
+$primary: #3253F6;
+$primary-alt: #1A39ED;
+$accent: #1832e7;
+$text-main: #9EA6CC;
+$text-muted: #6E78A7;
+$text-dim: #1C2552;
+$critical: #F32626;
+$success: #00AD1D;
+
+// Fonts
+$font-main: 'Chakra Petch';
+$font-mono: 'Kode Mono';
+$font-ui: 'Rajdhani';
+$font-icon: 'CozetteVector';
+
+// Gradients
+$gradient-bg: linear-gradient(to bottom, $bg-dark, $bg-darker);
+$gradient-card: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+$gradient-card-top: linear-gradient(to top, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+
+// Extended colors
+$text-highlight: #c6cfff;
+$text-dark: #20274d;
+$text-card: #b4badc;
+$text-extended: #575d83;
+$text-special: #515EA0;
+$text-hover: #7680b8;
+$bg-critical-dark: #120000;
+$bg-extended: #09090c3f;
+$bg-slider: #10193f;
+$bg-tooltip: #152052;
+$bg-volume: #1520522d;
+$bg-volume-alt: #0f227737;
+$bg-scroll: #0c1235;
+$bg-workspace: #0b123280;
+$color-hover: #2043ff;
+$color-active: #2752ff;
+$color-volume: #20348d;
+$color-volume-border: #1a2868;
+$color-volume-label: #152052;
+$color-slider-filled: #afbaef;
+$color-slider-focus: #adb7ec;
+$color-slider-shadow: #3b4a91;
+$color-slider-blink: #bdc5ea;
+$color-critical-entry: #aa1b1b;
+$color-critical-value: #e91111;
+$color-levelbar: #213AB4;
+$color-decorate: #21307aff;
+$color-modelbutton: #C6CFFF;
+
 // 1 unit = 0.25rem = 4px
 $spacing: (
   "0": 0px,
@@ -103,5 +164,141 @@ $min-heights: (
 @each $key, $val in $min-heights {
   .min-h-#{$key} {
     min-height: $val;
+  }
+}
+
+// Typography
+.font-main { font-family: $font-main; }
+.font-mono { font-family: $font-mono; }
+.font-ui { font-family: $font-ui; }
+.font-icon { font-family: $font-icon; }
+
+.text-uppercase { text-transform: uppercase; }
+.text-bold { font-weight: bold; }
+.text-semibold { font-weight: 600; }
+
+.text-main { color: $text-main; }
+.text-muted { color: $text-muted; }
+.text-dim { color: $text-dim; }
+.text-primary { color: $primary; }
+
+// Borders
+.border-default { border: 1.5px solid $bg-alt; }
+.border-primary { border: 1.5px solid $primary; }
+
+// Effects
+.shadow-sm { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
+.shadow-primary { box-shadow: 0px 0px 5px gtkalpha($primary, 0.25); }
+
+.clickable {
+  &:hover { filter: brightness(1.2); }
+  &:active { filter: brightness(0.5); }
+}
+
+.hint-on-hover {
+  &:hover { border: 0.1px solid gtkalpha(white, 0.7); }
+}
+
+// Slider
+$slider-base: 2px;
+$slider-alt1: 3px;
+$slider-alt2: 4px;
+$slider-alt3: 5px;
+$slider-target: 6px;
+
+@keyframes motion-slider-base {
+  0% {
+    margin-top: $slider-base;
+    margin-bottom: $slider-base;
+  }
+
+  100% {
+    margin-top: $slider-target;
+    margin-bottom: $slider-target;
+  }
+}
+
+@keyframes motion-slider-alt1 {
+  0% {
+    margin-top: $slider-alt1;
+    margin-bottom: $slider-alt1;
+  }
+
+  100% {
+    margin-top: $slider-target;
+    margin-bottom: $slider-target;
+  }
+}
+
+@keyframes motion-slider-alt2 {
+  0% {
+    margin-top: $slider-alt2;
+    margin-bottom: $slider-alt2;
+  }
+
+  100% {
+    margin-top: $slider-target;
+    margin-bottom: $slider-target;
+  }
+}
+
+@keyframes motion-slider-alt3 {
+  0% {
+    margin-top: $slider-alt3;
+    margin-bottom: $slider-alt3;
+  }
+
+  100% {
+    margin-top: $slider-target;
+    margin-bottom: $slider-target;
+  }
+}
+
+@keyframes slider-blink {
+  0% {
+    background: $color-slider-blink;
+    box-shadow: 0px 0px 2px 1px gtkalpha($color-slider-focus, 0.5);
+  }
+
+  50% {
+    background: $color-slider-focus;
+    box-shadow: 0px 0px 2px 1px gtkalpha($color-slider-focus, 0);
+  }
+
+  100% {
+    background: $color-slider-blink;
+    box-shadow: 0px 0px 2px 1px gtkalpha($color-slider-focus, 0.5);
+  }
+}
+
+.apply-motion-slider1 {
+  animation: motion-slider-alt1 0.5s ease 0s 1;
+}
+
+.apply-motion-slider2 {
+  animation: motion-slider-alt2 0.5s ease 0s 1;
+}
+
+.apply-motion-slider3 {
+  animation: motion-slider-alt3 0.5s ease 0s 1;
+}
+
+// Scrollbar
+.scrollbar {
+  scrollbar {
+    slider {
+      background-color: $bg-scroll;
+      min-width: 2.5px;
+      min-height: 2.5px;
+    }
+
+    slider:hover {
+      filter: brightness(2)
+    }
+
+    slider:active {
+      background-color: $primary-alt;
+      filter: none;
+    }
   }
 }

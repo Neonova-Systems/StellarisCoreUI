@@ -117,7 +117,7 @@ export default function ControlKey() {
                               <label label={"0x" + createRandomString(3).toUpperCase()} halign={Align.RIGHT} />
                             </box>
                             <label cssClasses={["title-content"]} label={entry.name} halign={Align.CENTER} valign={Align.CENTER} vexpand wrap />
-                            <label label={createRandomString(13)} cssClasses={["uppercase"]} halign={Align.FILL} valign={Align.RIGHT} vexpand wrap />
+                            <label label={createRandomString(13)} cssClasses={["text-uppercase"]} halign={Align.FILL} valign={Align.RIGHT} vexpand wrap />
                           </box>
                         </overlay>
                       </button>
