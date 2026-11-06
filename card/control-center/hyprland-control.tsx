@@ -23,6 +23,7 @@ export default function HyprlandControl() {
   // Inner/outer gap sizes are not exposed by AstalHyprland, so poll hyprctl.
   const [innerGap, setInnerGap] = createState(0)
   const [outerGap, setOuterGap] = createState(0)
+  const [brightness, setBrightness] = createState(50)
   let gapDebounceRevision = 0
 
   function readGapOption(option: string): Promise<number> {
@@ -56,6 +57,11 @@ export default function HyprlandControl() {
     })
   }
 
+  function applyBrightness(nextPercent: number) {
+    const clamped = Math.max(0, Math.min(100, Math.round(nextPercent)))
+    if (clamped !== brightness.peek()) setBrightness(clamped)
+  }
+
   // Read gaps immediately on mount so slider shows correct value at startup.
   refreshGaps()
   interval(2500, refreshGaps)
@@ -77,6 +83,12 @@ export default function HyprlandControl() {
               <CreateEntryContent name={"OUTER GAP"} animation={false} value={outerGap} watchValue />
             </box>
             <CreateSlider value={innerGap} onChange={applyGaps} />
+          </box>
+          <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+            <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
+              <CreateEntryContent name={"BRIGHTNESS"} animation={false} value={brightness} watchValue />
+            </box>
+            <CreateSlider value={brightness} onChange={applyBrightness} />
           </box>
           <With value={focusedClient}>
             {(client: any) => client ? (
