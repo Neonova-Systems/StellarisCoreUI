@@ -1,50 +1,55 @@
-@use "sass:string";
-@import '../../animation.scss';
-
-@function gtkalpha($color, $alpha) {
-  @return string.unquote("alpha(#{$color},#{$alpha})");
-}
+@use '../../animation' as *;
+@use '../../utility' as *;
 
 * { all: unset; }
+
 .shadow { box-shadow: 0px 0px 5px gtkalpha(black, 0.5); }
 
+.text-uppercase { text-transform: uppercase; }
+
 .context-menu {
-  background: linear-gradient(to bottom, #070B1F, #040714);
-  border: 1.5px solid #0A102E;
+  background: $gradient-bg;
+  border: 1.5px solid $bg-alt;
+
   .contents {
     padding: 2px;
-    background: linear-gradient(to left, hsla(230, 63%, 11%, 0.5), hsla(0, 0%, 0%, 0.5), hsla(230, 63%, 11%, 0.5));
+    background: $gradient-card;
   }
+
   .title {
     text-transform: uppercase;
     font-size: 10.5px;
-    color: #9EA6CC;
+    color: $text-main;
     font-weight: 600;
   }
+
   .entry:hover {
     background-color: hsla(230, 64%, 11%, 0.6);
-    .title { color: #C6CFFF; }
-    .keybind { color: #C6CFFF; }
-    border-left: 3px solid #3353F3;
+    .title { color: $color-modelbutton; }
+    .keybind { color: $color-modelbutton; }
+    border-left: 3px solid $primary;
     padding-top: 7px;
     padding-bottom: 7px;
     padding-left: 5px;
     padding-right: 8px;
   }
+
   .entry {
-    font-family: Rajdhani;
+    font-family: $font-ui;
     font-size: 9px;
     font-weight: 600;
-    color: #6E78A7;
+    color: $text-muted;
     padding-top: 7px;
     padding-bottom: 7px;
     padding-left: 8px;
     padding-right: 8px;
-    .value { color: #9EA6CC; }
+
+    .value { color: $text-main; }
   }
+
   .keybind {
     text-transform: uppercase;
-    background-color: gtkalpha(#152052, 0.5);
+    background-color: gtkalpha($bg-tooltip, 0.5);
     padding-right: 3px;
     padding-left: 3px;
     padding-top: 2px;
