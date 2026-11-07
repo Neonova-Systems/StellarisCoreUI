@@ -12,6 +12,7 @@ const hyprland = AstalHyprland.get_default()
 const SCRIPT_DIR = `${HOME_DIR}/.config/ags/scripts`
 const MAX_GAP = 100
 const gapDebounceMs = 40
+const brightnessDebounceMs = 40
 
 export default function HyprlandControl() {
   const openWev = () => execAsync(`foot -e wev`)
@@ -23,8 +24,10 @@ export default function HyprlandControl() {
   // Inner/outer gap sizes are not exposed by AstalHyprland, so poll hyprctl.
   const [innerGap, setInnerGap] = createState(0)
   const [outerGap, setOuterGap] = createState(0)
-  const [brightness, setBrightness] = createState(50)
+  const [brightness, setBrightness] = createState(0)
+  const [brightnessAvailable, setBrightnessAvailable] = createState(false)
   let gapDebounceRevision = 0
+  let brightnessDebounceRevision = 0
 
   function readGapOption(option: string): Promise<number> {
     return execAsync(`hyprctl getoption ${option} -j`)
@@ -59,11 +62,39 @@ export default function HyprlandControl() {
 
   function applyBrightness(nextPercent: number) {
     const clamped = Math.max(0, Math.min(100, Math.round(nextPercent)))
-    if (clamped !== brightness.peek()) setBrightness(clamped)
+    if (clamped === brightness.peek()) return
+    setBrightness(clamped)
+    brightnessDebounceRevision += 1
+    const currentRevision = brightnessDebounceRevision
+    timeout(brightnessDebounceMs, () => {
+      if (currentRevision !== brightnessDebounceRevision) return
+      execAsync(`bash ${SCRIPT_DIR}/set-brightness ${brightness.peek()}`)
+        .then((out) => {
+          // The script floors 0 to 1 and echoes what the device accepted, so
+          // trust that over the requested value.
+          const applied = Number(out.trim())
+          if (Number.isFinite(applied) && applied !== brightness.peek()) setBrightness(applied)
+        })
+        .catch((e) => print(e))
+    })
+  }
+
+  // Brightness is read once on mount and never polled: a poll would overwrite the
+  // slider mid-drag the way gap polling once inflated the value on every toggle.
+  function refreshBrightness() {
+    execAsync(`bash ${SCRIPT_DIR}/get-brightness`)
+      .then((out) => {
+        const value = Number(out.trim())
+        if (!Number.isFinite(value)) throw new Error(`unexpected brightness output: ${out}`)
+        setBrightness(value)
+        setBrightnessAvailable(true)
+      })
+      .catch(() => setBrightnessAvailable(false))
   }
 
   // Read gaps immediately on mount so slider shows correct value at startup.
   refreshGaps()
+  refreshBrightness()
   interval(2500, refreshGaps)
   return (
     <box marginTop={10}>
@@ -84,12 +115,21 @@ export default function HyprlandControl() {
             </box>
             <CreateSlider value={innerGap} onChange={applyGaps} />
           </box>
-          <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
-            <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
-              <CreateEntryContent name={"BRIGHTNESS"} animation={false} value={brightness} watchValue />
-            </box>
-            <CreateSlider value={brightness} onChange={applyBrightness} />
-          </box>
+          <With value={brightnessAvailable}>
+            {(available: boolean) => (
+              <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
+                <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
+                  <CreateEntryContent
+                    name={"BRIGHTNESS"}
+                    animation={false}
+                    value={brightness((v: number) => (available ? v : "N/A"))}
+                    watchValue={available}
+                  />
+                </box>
+                <CreateSlider value={brightness} onChange={applyBrightness} disabled={!available} />
+              </box>
+            )}
+          </With>
           <With value={focusedClient}>
             {(client: any) => client ? (
               <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["entry"]} spacing={6} halign={Align.FILL}>
