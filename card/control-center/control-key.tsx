@@ -30,13 +30,13 @@ export default function ControlKey() {
 
   const controlEntry: ControlEntry[] = [
     { name: "Open Powermenu", target: "", command: `ags run ${HOME_DIR}/.config/ags/window/context-menu/power-menu.tsx --gtk 4`, description: "Show options to shutdown, restart, or log out.", index: 1 },
-    { name: "Scan Text", target: "", command: "", description: "Scan and copy text from an area of the screen (OCR).", index: 2 },
-    { name: "Scan QR", target: "", command: "", description: "Scan a QR code from the screen or webcam.", index: 3 },
+    { name: "Scan Text", target: "", command: `bash ${HOME_DIR}/.config/ags/scripts/scan-text`, description: "Scan and copy text from an area of the screen (OCR).", index: 2 },
+    { name: "Scan QR", target: "", command: `bash ${HOME_DIR}/.config/ags/scripts/scan-qr`, description: "Scan a QR code from the screen or webcam.", index: 3 },
     { name: "Switch Window", target: "ALL-WORKSPACE", command: "", description: "List and switch between all open windows.", index: 4 },
     { name: "Change Wallpaper", target: "", command: "", description: "Open the wallpaper selector to change your background.", index: 5 },
     { name: "None", target: "", command: "", description: "", index: 6 },
     { name: "Kill Application", target: "", command: "hyprctl kill", description: "Force-quit an unresponsive application by clicking on it.", index: 7 },
-    { name: "Screen Record", target: "", command: "", description: "Start recording a video of your screen.", index: 8 },
+    { name: "Screen Record", target: "", command: `bash ${HOME_DIR}/.config/ags/scripts/record-screen toggle`, description: "Start or stop recording a video of the screen.", index: 8 },
     { name: "Color Picker", target: "", command: "zsh -ic 'autoload colorpicker && colorpicker | wl-copy'", description: "Select a color from anywhere on your screen.", index: 9 },
     { name: "Cursor Zoom", target: "", command: "", description: "Magnify the area around the cursor for visibility.", index: 10 },
     { name: "None", target: "", command: "", description: "", index: 11 },

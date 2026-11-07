@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v brightnessctl >/dev/null 2>&1; then
+	echo "brightnessctl is required but not installed." >&2
+	exit 1
+fi
+
+# -m list yields device,class,value,percent,max and only lists devices that
+# expose brightness control, so empty output means there is nothing to control.
+devices="$(brightnessctl -m list 2>/dev/null || true)"
+line="${devices%%$'\n'*}"
+device="${line%%,*}"
+
+if [[ -z "$line" || -z "$device" ]]; then
+	echo "No backlight device found." >&2
+	exit 1
+fi
+
+raw="$(printf '%s' "$line" | cut -d, -f3)"
+max="$(printf '%s' "$line" | cut -d, -f5)"
+
+if [[ ! "$raw" =~ ^[0-9]+$ || ! "$max" =~ ^[1-9][0-9]*$ ]]; then
+	echo "Could not parse brightness from '${line}'." >&2
+	exit 1
+fi
+
+# Round to nearest percent instead of truncating, so the top of the slider
+# reports 100 rather than 99 when raw sits just under max.
+percent="$(( (raw * 100 + max / 2) / max ))"
+
+printf '%s\n' "$percent"
