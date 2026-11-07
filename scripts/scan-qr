@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v slurp >/dev/null 2>&1; then
+	echo "slurp is required but not installed." >&2
+	exit 1
+fi
+if ! command -v grim >/dev/null 2>&1; then
+	echo "grim is required but not installed." >&2
+	exit 1
+fi
+if ! command -v zbarimg >/dev/null 2>&1; then
+	echo "zbarimg is required but not installed." >&2
+	exit 1
+fi
+if ! command -v wl-copy >/dev/null 2>&1; then
+	echo "wl-copy is required but not installed." >&2
+	exit 1
+fi
+
+# Cancel cleanly on Escape rather than handing zbarimg an empty geometry.
+# slurp outputs geometry as "x,y widthxheight" on stdout when successful.
+geom="$(slurp 2>/dev/null || true)"
+if [[ -z "$geom" ]]; then
+	echo "Selection cancelled." >&2
+	exit 1
+fi
+
+# zbarimg prints "QR-Code:<data>" lines; strip the prefix and take the first hit.
+raw="$(grim -g "$geom" - | zbarimg - 2>/dev/null || true)"
+if [[ -z "$raw" ]]; then
+	echo "No QR code found in the selection." >&2
+	exit 1
+fi
+
+data="$(printf '%s' "$raw" | sed -n '1s/^QR-Code://p')"
+if [[ -z "$data" ]]; then
+	# Fallback for decoders that emit the data verbatim.
+	data="$(printf '%s' "$raw" | head -n1)"
+fi
+
+printf '%s' "$data" | wl-copy
+printf '%s\n' "$data"

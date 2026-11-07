@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v wf-recorder >/dev/null 2>&1; then
+	echo "wf-recorder is required but not installed." >&2
+	exit 1
+fi
+
+PIDFILE="/tmp/opencode/record-screen.pid"
+OUTFILE="/tmp/opencode/record-screen.mp4"
+
+action="${1:-start}"
+
+case "$action" in
+	start)
+		if [[ -f "$PIDFILE" ]]; then
+			existing="$(cat "$PIDFILE" 2>/dev/null || true)"
+			if [[ -n "$existing" ]] && kill -0 "$existing" 2>/dev/null; then
+				echo "A recording is already in progress." >&2
+				exit 1
+			fi
+		fi
+
+		# wf-recorder stops on SIGINT and only then finalises the file, so the
+		# process is left running until the user stops it. It can fail to start
+		# (no DRM device, no audio backend) and die immediately, so verify the
+		# process is actually alive before claiming success.
+		wf-recorder -f "$OUTFILE" >/dev/null 2>&1 &
+		pid=$!
+		for _ in $(seq 1 10); do
+			kill -0 "$pid" 2>/dev/null || { echo "wf-recorder failed to start." >&2; exit 1; }
+			sleep 0.1
+		done
+		printf '%s' "$pid" > "$PIDFILE"
+		echo "Recording started -> ${OUTFILE} (pid ${pid})"
+		;;
+	stop)
+		if [[ ! -f "$PIDFILE" ]]; then
+			echo "No recording is in progress." >&2
+			exit 1
+		fi
+		pid="$(cat "$PIDFILE" 2>/dev/null || true)"
+		if [[ -z "$pid" ]] || ! kill -0 "$pid" 2>/dev/null; then
+			rm -f "$PIDFILE"
+			echo "No recording is in progress." >&2
+			exit 1
+		fi
+		# SIGINT is how wf-recorder is told to stop and to write the file.
+		kill -INT "$pid"
+		# Wait for it to flush, then clean up.
+		for _ in $(seq 1 50); do
+			kill -0 "$pid" 2>/dev/null || break
+			sleep 0.1
+		done
+		rm -f "$PIDFILE"
+		if [[ -f "$OUTFILE" ]]; then
+			echo "Recording saved -> ${OUTFILE}"
+		else
+			echo "Recording produced no output." >&2
+			exit 1
+		fi
+		;;
+	# Flip between starting and stopping based on the pidfile, so the control-key
+	# button can be a single static command that works from either state.
+	toggle)
+		if [[ -f "$PIDFILE" ]]; then
+			existing="$(cat "$PIDFILE" 2>/dev/null || true)"
+			if [[ -n "$existing" ]] && kill -0 "$existing" 2>/dev/null; then
+				exec "$0" stop
+			fi
+		fi
+		exec "$0" start
+		;;
+	*)
+		echo "Usage: $0 start|stop|toggle" >&2
+		exit 1
+		;;
+esac

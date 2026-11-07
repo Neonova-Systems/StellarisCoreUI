@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v slurp >/dev/null 2>&1; then
+	echo "slurp is required but not installed." >&2
+	exit 1
+fi
+if ! command -v grim >/dev/null 2>&1; then
+	echo "grim is required but not installed." >&2
+	exit 1
+fi
+if ! command -v tesseract >/dev/null 2>&1; then
+	echo "tesseract is required but not installed." >&2
+	exit 1
+fi
+if ! command -v wl-copy >/dev/null 2>&1; then
+	echo "wl-copy is required but not installed." >&2
+	exit 1
+fi
+
+# Cancel cleanly on Escape (slurp exits 1 on cancel) rather than feeding an
+# empty geometry to grim, which would error out.
+# slurp outputs geometry as "x,y widthxheight" on stdout when successful.
+geom="$(slurp 2>/dev/null || true)"
+if [[ -z "$geom" ]]; then
+	echo "Selection cancelled." >&2
+	exit 1
+fi
+
+text="$(grim -g "$geom" - | tesseract - -l eng 2>/dev/null || true)"
+if [[ -z "${text//[[:space:]]/}" ]]; then
+	echo "No text found in the selection." >&2
+	exit 1
+fi
+
+printf '%s' "$text" | wl-copy
+printf '%s\n' "$text"
