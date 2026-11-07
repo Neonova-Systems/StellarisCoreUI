@@ -75,7 +75,12 @@ export default function HyprlandControl() {
           const applied = Number(out.trim())
           if (Number.isFinite(applied) && applied !== brightness.peek()) setBrightness(applied)
         })
-        .catch((e) => print(e))
+        // A rejected write leaves the optimistic value on screen next to
+        // hardware that never changed. Re-read so the slider tells the truth.
+        .catch((e) => {
+          print(e)
+          refreshBrightness()
+        })
     })
   }
 
@@ -119,12 +124,11 @@ export default function HyprlandControl() {
             {(available: boolean) => (
               <box cssClasses={["volume-control-row"]} spacing={8} valign={Align.CENTER} halign={Align.FILL} hexpand>
                 <box cssClasses={["entry"]} spacing={12} halign={Align.FILL}>
-                  <CreateEntryContent
-                    name={"BRIGHTNESS"}
-                    animation={false}
-                    value={brightness((v: number) => (available ? v : "N/A"))}
-                    watchValue={available}
-                  />
+                  {available ? (
+                    <CreateEntryContent name={"BRIGHTNESS"} animation={false} value={brightness} watchValue />
+                  ) : (
+                    <CreateEntryContent name={"BRIGHTNESS"} animation={false} value={"N/A"} />
+                  )}
                 </box>
                 <CreateSlider value={brightness} onChange={applyBrightness} disabled={!available} />
               </box>
