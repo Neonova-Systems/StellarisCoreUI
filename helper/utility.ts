@@ -24,7 +24,9 @@ const AUDIO_DIR = `${HOME_DIR}/.config/ags/assets/audio`;
 
 /**
  * Audio backends in order of preference. `paplay` goes through PipeWire and
- * starts faster; `aplay` is the bare ALSA fallback.
+ * exits when playback finishes; `aplay` is the bare ALSA fallback, but it
+ * ignores SIGTERM and can stay blocked on the device, so it is only tried when
+ * `paplay` is missing or fails immediately.
  */
 const AUDIO_PLAYERS = ["paplay", "aplay"] as const;
 
@@ -35,12 +37,27 @@ const AUDIO_PLAYERS = ["paplay", "aplay"] as const;
  */
 const SOUND_COALESCE_MS = 250;
 
+/**
+ * How long one backend may run before it counts as failed. `timeout -k` also
+ * sends SIGKILL, because a blocked aplay ignores SIGTERM.
+ */
+const PLAYBACK_TIMEOUT_SECONDS = 3;
+
 let lastSoundRequest: { file: string; at: number } | null = null;
 
 async function playWithFallback(filePath: string): Promise<void> {
   for (const [index, player] of AUDIO_PLAYERS.entries()) {
+    // `timeout -k 1 3` sends SIGTERM at 3s and SIGKILL one second later, so a
+    // blocked player cannot outlive the request or block the next backend.
     try {
-      await execAsync([player, filePath]);
+      await execAsync([
+        "timeout",
+        "-k",
+        "1",
+        `${PLAYBACK_TIMEOUT_SECONDS}`,
+        player,
+        filePath,
+      ]);
       return;
     } catch (error) {
       if (index === AUDIO_PLAYERS.length - 1) {
