@@ -5,9 +5,10 @@
 ;;;; Run: sbcl --load lisp/battery-window.lisp
 ;;;; CSS: sass --no-source-map style.scss lisp/style.css
 
-(load "/home/xaxeric/quicklisp/setup.lisp")
+(load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
 (ql:quickload '(:cl-gobject-introspection :uiop) :silent t)
-(load "/usr/local/lib/domain-specific-language-lisp/load.lisp")
+(load (or (uiop:getenv "DSL_KIT_LOAD")
+          "/usr/local/lib/domain-specific-language-lisp/load.lisp"))
 (use-package :dsl-kit)
 
 (define-introspection-namespaces

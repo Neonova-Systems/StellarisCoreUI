@@ -13,6 +13,8 @@ import { AudioFile, playSound } from "./utility";
  * @param setterFunction - A callback function, typically a state setter,
  * that will be called with the new visibility status (`true` for visible,
  * `false` for hidden) received from the 'ags' command.
+ * @param sound - Audio feedback played when the panel becomes visible
+ * (defaults to the panel sound).
  * 
  * @example
  * // In a component with state
@@ -23,13 +25,13 @@ import { AudioFile, playSound } from "./utility";
  *   ...
  * </CreatePanel>
  */
-export function panelClicked(stateName: string, setterFunction: (value: boolean) => void): void {
+export function panelClicked(stateName: string, setterFunction: (value: boolean) => void, sound: AudioFile | string = AudioFile.Panel): void {
   execAsync(`ags request "toggle ${stateName}"`)
     .then(out => {
       const isVisible = out === 'true';
       setterFunction(isVisible);
       if (isVisible) {
-        playSound(AudioFile.Panel, 500);
+        playSound(sound, 500);
       }
     })
     .catch(err => {
