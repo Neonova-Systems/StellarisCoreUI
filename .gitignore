@@ -6,3 +6,5 @@ __pycache__
 Vk
 Project_Vault_knowledge
 .worktrees/
+lisp/style.css
+domain-specific-language-lisp
