@@ -31,7 +31,7 @@ export default function NetworkInfo() {
   const [toggleContentState, setToggleContentState] = createState(false);
   const [noiseGridImage, setNoiseGridImage] = createState(`${HOME_DIR}/.config/ags/assets/NoiseGrid-variant1.svg`);
 
-  playSound(AudioFile.Panel, 1500);
+  playSound(AudioFile.Panel);
   initToggleState("NetworkInfo", setToggleContentState);
 
   interval(500, () => {

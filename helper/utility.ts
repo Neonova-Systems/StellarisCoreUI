@@ -20,28 +20,67 @@ export enum AudioFile {
   Hover = "hover-panel.wav",
 }
 
+const AUDIO_DIR = `${HOME_DIR}/.config/ags/assets/audio`;
+
 /**
- * Plays an audio file using aplay after a specified timeout.
+ * Audio backends in order of preference. `paplay` goes through PipeWire and
+ * starts faster; `aplay` is the bare ALSA fallback.
+ */
+const AUDIO_PLAYERS = ["paplay", "aplay"] as const;
+
+/**
+ * Minimum gap between two requests for the same sound. Several widgets mount
+ * together and each asks for the panel sound; without this the requests stack
+ * into overlapping playback.
+ */
+const SOUND_COALESCE_MS = 250;
+
+let lastSoundRequest: { file: string; at: number } | null = null;
+
+async function playWithFallback(filePath: string): Promise<void> {
+  for (const [index, player] of AUDIO_PLAYERS.entries()) {
+    try {
+      await execAsync([player, filePath]);
+      return;
+    } catch (error) {
+      if (index === AUDIO_PLAYERS.length - 1) {
+        console.error(`Error playing sound ${filePath}:`, error);
+      }
+    }
+  }
+}
+
+/**
+ * Plays an audio file from `assets/audio` after an optional delay.
  *
- * @param audioFileName - The name of the audio file in ~/.config/ags/assets/audio/
- * @param timeoutMs - Delay in milliseconds before playing the sound (default: 100)
+ * Tries `paplay`, then `aplay`. A request for the same file within
+ * `SOUND_COALESCE_MS` of the previous one is dropped, so widgets that mount
+ * together do not layer the same sound.
+ *
+ * @param audioFileName - File name or AudioFile member in `assets/audio/`.
+ * @param delayMs - Delay in milliseconds before playing (default: 100).
  *
  * @example
  * playSound(AudioFile.Panel, 500);
- * playSound(AudioFile.Notification); // Uses default 100ms timeout
+ * playSound(AudioFile.Notification); // Uses default 100ms delay
  */
 export function playSound(
   audioFileName: AudioFile | string,
-  timeoutMs: number = 100,
+  delayMs: number = 100,
 ): void {
-  timeout(timeoutMs, () => {
-    execAsync([
-      "aplay",
-      `${HOME_DIR}/.config/ags/assets/audio/${audioFileName}`,
-    ]).catch((err) =>
-      console.error(`Error playing sound ${audioFileName}:`, err),
-    );
-  });
+  const filePath = `${AUDIO_DIR}/${audioFileName}`;
+  const now = Date.now();
+
+  if (
+    lastSoundRequest &&
+    lastSoundRequest.file === filePath &&
+    now - lastSoundRequest.at < SOUND_COALESCE_MS
+  ) {
+    return;
+  }
+
+  lastSoundRequest = { file: filePath, at: now };
+  timeout(delayMs, () => void playWithFallback(filePath));
 }
 
 /**
