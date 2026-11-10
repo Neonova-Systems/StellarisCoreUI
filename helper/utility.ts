@@ -1,5 +1,5 @@
 import { execAsync } from "ags/process";
-import { timeout} from "ags/time";
+import { timeout } from "ags/time";
 import { HOME_DIR } from "./constants";
 import { Gdk } from "ags/gtk4";
 import Gio from "gi://Gio?version=2.0";
@@ -35,7 +35,7 @@ const AUDIO_PLAYERS = ["paplay", "aplay"] as const;
  * together and each asks for the panel sound; without this the requests stack
  * into overlapping playback.
  */
-const SOUND_COALESCE_MS = 250;
+const SOUND_COALESCE_MS = 13;
 
 /**
  * How long one backend may run before it counts as failed. `timeout -k` also
