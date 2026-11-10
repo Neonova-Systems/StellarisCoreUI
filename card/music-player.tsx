@@ -1,5 +1,5 @@
 import { Accessor, createBinding, createState, For, With } from "ags"
-import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, playSound, Align, ICON_DIR } from "../helper";
+import { CreatePanel, CreateEntryContent, HOME_DIR, TOOLTIP_TEXT_CONTEXT_MENU, AudioFile, Align, ICON_DIR, panelClicked, initToggleState } from "../helper";
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { execAsync } from "ags/process";
@@ -12,10 +12,12 @@ export default function MusicPlayer() {
 
     const [toggleContentState, settoggleContentState] = createState(false);
     const [trackPercentage, setTrackPercentage] = createState(0.0);
-    function panelClicked() {
-        const currentState = toggleContentState.get();
-        settoggleContentState(!currentState);
-        (!currentState && players.length > 0 ? playSound(AudioFile.Panel) : playSound(AudioFile.Error))
+
+    initToggleState("MusicPlayer", settoggleContentState);
+
+    function onPanelClicked() {
+        const sound = players.length > 0 ? AudioFile.Panel : AudioFile.Error;
+        panelClicked("MusicPlayer", settoggleContentState, sound);
     }
 
     function formatDuration(lengthInSeconds: number) {
@@ -81,7 +83,7 @@ export default function MusicPlayer() {
 
     return (
         <box cssClasses={["card"]} orientation={Gtk.Orientation.VERTICAL} vexpand={false}>
-            <CreatePanel name="MUSIC PLAYER" isActive={toggleContentState} onClicked={panelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} />
+            <CreatePanel name="MUSIC PLAYER" isActive={toggleContentState} onClicked={onPanelClicked} onRightClick={onRightClicked} tooltipText={TOOLTIP_TEXT_CONTEXT_MENU} />
             <With value={toggleContentState}>
                 {(v) => ( 
                     <box visible={v} cssClasses={["card-content"]} valign={Align.LEFT}>

@@ -30,7 +30,7 @@ export default function FilesystemInfo() {
   let readDiskOperationInterval: Timer | null = null;
   let writeDiskOperationInterval: Timer | null = null;
 
-  playSound(AudioFile.Panel, 1600)
+  playSound(AudioFile.Panel);
   initToggleState("FilesystemInfo", setToggleContentState);
   watchRequestBoolean("FilesystemGraph", 800, (enabled) => {
     setToggleGraphState(enabled);

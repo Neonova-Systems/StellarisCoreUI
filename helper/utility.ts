@@ -20,28 +20,84 @@ export enum AudioFile {
   Hover = "hover-panel.wav",
 }
 
+const AUDIO_DIR = `${HOME_DIR}/.config/ags/assets/audio`;
+
 /**
- * Plays an audio file using aplay after a specified timeout.
+ * Audio backends in order of preference. `paplay` goes through PipeWire and
+ * exits when playback finishes; `aplay` is the bare ALSA fallback, but it
+ * ignores SIGTERM and can stay blocked on the device, so it is only tried when
+ * `paplay` is missing or fails immediately.
+ */
+const AUDIO_PLAYERS = ["paplay", "aplay"] as const;
+
+/**
+ * Minimum gap between two requests for the same sound. Several widgets mount
+ * together and each asks for the panel sound; without this the requests stack
+ * into overlapping playback.
+ */
+const SOUND_COALESCE_MS = 250;
+
+/**
+ * How long one backend may run before it counts as failed. `timeout -k` also
+ * sends SIGKILL, because a blocked aplay ignores SIGTERM.
+ */
+const PLAYBACK_TIMEOUT_SECONDS = 3;
+
+let lastSoundRequest: { file: string; at: number } | null = null;
+
+async function playWithFallback(filePath: string): Promise<void> {
+  for (const [index, player] of AUDIO_PLAYERS.entries()) {
+    // `timeout -k 1 3` sends SIGTERM at 3s and SIGKILL one second later, so a
+    // blocked player cannot outlive the request or block the next backend.
+    try {
+      await execAsync([
+        "timeout",
+        "-k",
+        "1",
+        `${PLAYBACK_TIMEOUT_SECONDS}`,
+        player,
+        filePath,
+      ]);
+      return;
+    } catch (error) {
+      if (index === AUDIO_PLAYERS.length - 1) {
+        console.error(`Error playing sound ${filePath}:`, error);
+      }
+    }
+  }
+}
+
+/**
+ * Plays an audio file from `assets/audio` after an optional delay.
  *
- * @param audioFileName - The name of the audio file in ~/.config/ags/assets/audio/
- * @param timeoutMs - Delay in milliseconds before playing the sound (default: 100)
+ * Tries `paplay`, then `aplay`. A request for the same file within
+ * `SOUND_COALESCE_MS` of the previous one is dropped, so widgets that mount
+ * together do not layer the same sound.
+ *
+ * @param audioFileName - File name or AudioFile member in `assets/audio/`.
+ * @param delayMs - Delay in milliseconds before playing (default: 100).
  *
  * @example
  * playSound(AudioFile.Panel, 500);
- * playSound(AudioFile.Notification); // Uses default 100ms timeout
+ * playSound(AudioFile.Notification); // Uses default 100ms delay
  */
 export function playSound(
   audioFileName: AudioFile | string,
-  timeoutMs: number = 100,
+  delayMs: number = 100,
 ): void {
-  timeout(timeoutMs, () => {
-    execAsync([
-      "aplay",
-      `${HOME_DIR}/.config/ags/assets/audio/${audioFileName}`,
-    ]).catch((err) =>
-      console.error(`Error playing sound ${audioFileName}:`, err),
-    );
-  });
+  const filePath = `${AUDIO_DIR}/${audioFileName}`;
+  const now = Date.now();
+
+  if (
+    lastSoundRequest &&
+    lastSoundRequest.file === filePath &&
+    now - lastSoundRequest.at < SOUND_COALESCE_MS
+  ) {
+    return;
+  }
+
+  lastSoundRequest = { file: filePath, at: now };
+  timeout(delayMs, () => void playWithFallback(filePath));
 }
 
 /**

@@ -26,7 +26,7 @@ export default function SystemInfo() {
   const [systemdBlame, setSystemdBlame] = createState("");
   const [toggleContentState, setToggleContentState] = createState(false);
 
-  playSound(AudioFile.Panel, 1400);
+  playSound(AudioFile.Panel);
   initToggleState("SystemInfo", setToggleContentState);
 
   function changeProfilePicture() {

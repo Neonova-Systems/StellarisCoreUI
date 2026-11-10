@@ -19,7 +19,8 @@ const stateKeys = {
   notificationVerbosityState: "NotificationVerbosity",
   notificationDNDState: "NotificationDND",
   audioControlVerbosityState: "AudioControlVerbosity",
-  controlKeyState: "ControlKey"
+  controlKeyState: "ControlKey",
+  musicPlayerVisible: "MusicPlayer"
 } as const;
 
 export type GlobalState = Record<keyof typeof stateKeys, boolean>;
@@ -30,7 +31,15 @@ const defaultDashboardState = Object.keys(stateKeys).reduce((acc, key) => {
   return acc;
 }, {} as GlobalState);
 
-let state = readJson<GlobalState>(GLOBAL_BOOLEAN_STATE_JSON, defaultDashboardState);
+// The music player panel starts collapsed, unlike the dashboard cards.
+defaultDashboardState.musicPlayerVisible = false;
+
+// Merge over the defaults so a cache written before a key existed still reads
+// as its default instead of undefined.
+const state: GlobalState = {
+  ...defaultDashboardState,
+  ...readJson<Partial<GlobalState>>(GLOBAL_BOOLEAN_STATE_JSON, {}),
+};
 
 try {
   const notifd = AstalNotifd.get_default();
